@@ -107,12 +107,12 @@
         <span class="material-icons bg-green-900 text-green-400 rounded-full p-3 text-5xl mb-4 select-none">person</span>
         <h3 class="text-white font-semibold mb-1">Company Login</h3>
         <p class="text-slate-400 mb-6 text-center text-sm">Access for all SafeNet personnel</p>
-        <form class="w-full space-y-5" autocomplete="off" novalidate>
+        <form id="login-form" class="w-full space-y-5" autocomplete="off" novalidate>
           <label class="block w-full">
             <span class="text-slate-300 text-sm font-semibold mb-1 block select-none">Username</span>
             <div class="relative">
               <span class="material-icons absolute top-1/2 left-3 -translate-y-1/2 text-slate-400">Username</span>
-              <input type="text" placeholder="Enter your Username" required
+              <input id="username" type="text" placeholder="Enter your Username" required
                 class="w-full rounded-lg bg-slate-700 text-white pl-10 pr-4 py-3 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-green-400" />
             </div>
           </label>
@@ -120,7 +120,7 @@
             <span class="text-slate-300 text-sm font-semibold mb-1 block select-none">Password</span>
             <div class="relative">
               <span class="material-icons absolute top-1/2 left-3 -translate-y-1/2 text-slate-400">lock</span>
-              <input type="password" placeholder="Enter your password" required
+              <input id="password" type="password" placeholder="Enter your password" required
                 class="w-full rounded-lg bg-slate-700 text-white pl-10 pr-4 py-3 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-green-400" />
             </div>
           </label>
@@ -134,23 +134,22 @@
         </form>
         <p id="login-status" class="mt-4 text-center text-red-400 hidden">Invalid credentials</p>
       </div>
+      
       <p class="mt-6 text-center text-slate-400 text-sm select-none">
         Don't have an account? <a href="#" class="text-green-400 hover:underline">Contact your administrator</a>
       </p>
     </section>
   </main>
-
+  <div id="response-message"></div>
   <!-- Responsive Footer -->
   <footer class="bg-slate-900 bg-opacity-90 backdrop-blur-md text-slate-400 font-light text-sm mt-auto py-6">
     <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-y-4 md:gap-y-0">
-      <p>© 2023 SafeNet. All rights reserved.</p>
+      <p>© 2025 SafeNet. All rights reserved.</p>
       
     </div>
-  </footer>
-
-  <script src="./script.js"></script>
+  </footer>ig
   <script src="./login.js"></script>
-    
- 
+  <script src="./script.js"></script>
+
 </body>
 </html>
