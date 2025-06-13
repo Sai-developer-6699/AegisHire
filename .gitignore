@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+
+# Virtual environment
+venv/
+
+# Django secret environment variables
+.env
+
+# VS Code or other IDEs
+.vscode/
+.idea/
+*.iml
+# Logs
+*.log

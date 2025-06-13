@@ -19,5 +19,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('recruitment.urls')),
     path('api/', include('recruitment.urls')),  # 👈 this connects your app
 ]

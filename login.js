@@ -21,19 +21,26 @@ document.getElementById('login-form').addEventListener('submit', function (e) {
   document.getElementById('response-message').innerText = 'Logging in...';
   // Send login request to the server
 
-  fetch('http://127.0.0.1:8000/api/login/', {
-    method: 'POST',
+ fetch("http://127.0.0.1:8000/api/login/", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify({ username, password })
+    body: JSON.stringify({ username, password }),
   })
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      return response.json();
+    })
     .then(data => {
-      document.getElementById('response-message').innerText = data.message;
+      console.log(data.message); // Optional: Debug log
+      // ✅ Redirect to dashboard
+      window.location.href = "dashboard.html";
     })
     .catch(error => {
-      console.error('Error:', error);
-      document.getElementById('response-message').innerText = 'An error occurred';
+      console.error("Login failed:", error);
+      document.getElementById("response-message").innerText = "Login failed: " + error.message;
     });
 });

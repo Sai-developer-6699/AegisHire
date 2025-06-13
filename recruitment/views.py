@@ -1,9 +1,14 @@
 from django.shortcuts import render
-
+from django.http import HttpResponse
 # Create your views here.
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+
+
+def home(request):
+    return HttpResponse("Welcome to the AI Recruitment Tool Backend")
+
 
 @api_view(['POST'])
 def login_api(request):
