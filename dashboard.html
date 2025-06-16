@@ -1,249 +1,510 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>SafeNet Admin Dashboard</title>
-
-    <!-- Tailwind CSS CDN -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add User</title>
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Google Material Icons -->
     <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
-
-    <!-- Anime.js CDN -->
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"
-      defer
-    ></script>
-
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="dashboard.css" />
   </head>
-  <body>
-    <header role="banner" aria-label="Primary header">
-      <button
-        id="mobile-menu-button"
-        aria-label="Toggle navigation menu"
-        aria-expanded="false"
-        aria-controls="sidebar-nav"
-      >
-        <span class="material-icons">menu</span>
-      </button>
-      <div class="logo" aria-label="SafeNet logo, Home">
-        <span class="material-icons" aria-hidden="true">shield</span>
-        SafeNet
-      </div>
-
-      <nav
-        class="hidden md:flex items-center space-x-8 text-slate-300 text-sm font-medium"
-        aria-label="Main navigation"
-      >
-        <div class="relative">
-          <button id="profile-btn" aria-label="Profile menu" class="flex items-center focus:outline-none">
-        <span class="material-icons">account_circle</span>
-          </button>
-          <div id="profile-menu" class="absolute right-0 mt-2 w-40 bg-white rounded shadow-lg py-2 z-50 hidden">
-        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
-        <button id="logout-btn" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</button>
-          </div>
-        </div>
-        <a href="#" id="admin-icon" style="display: none;">
-          🔧 Admin
-        </a>
-      </nav>
-      <script>
-        // Profile menu toggle
-        const profileBtn = document.getElementById("profile-btn");
-        const profileMenu = document.getElementById("profile-menu");
-        document.addEventListener("click", (e) => {
-          if (profileBtn.contains(e.target)) {
-        profileMenu.classList.toggle("hidden");
-          } else if (!profileMenu.contains(e.target)) {
-        profileMenu.classList.add("hidden");
-          }
-        });
-      </script>
-    </header>
-
-    <nav
-      id="sidebar-nav"
-      class="sidebar"
-      role="navigation"
-      aria-label="Primary sidebar navigation"
-    >
-      <ul>
-        <li class="active" tabindex="0">
-          <span class="material-icons">home</span> Dashboard
-        </li>
-        <li tabindex="0" aria-expanded="false" aria-haspopup="true">
-          <span class="material-icons">group</span> User Management
-          <span class="material-icons dropdown-icon" style="margin-left: auto"
-            >expand_more</span
-          >
-
-          <ul class="submenu" aria-label="User Management submenu">
-            <li tabindex="0">All Users</li>
-            <li tabindex="0">Add New User</li>
-            <li tabindex="0">User Groups</li>
-          </ul>
-        </li>
-        <li tabindex="0" aria-expanded="false" aria-haspopup="true">
-          <span class="material-icons">security</span> Role Assignment
-          <span class="material-icons dropdown-icon" style="margin-left: auto"
-            >expand_more</span
-          >
-          <ul class="submenu" aria-label="Role Assignment submenu">
-            <li tabindex="0">Manage Roles</li>
-            <li tabindex="0">Assign Roles</li>
-            <li tabindex="0">Role Permissions</li>
-          </ul>
-        </li>
-        <li tabindex="0">
-          <span class="material-icons">settings</span> Settings
-        </li>
-      </ul>
-    </nav>
-
-    <main class="content" role="main">
-      <h1 class="dashboard-header">Dashboard Overview</h1>
-      <section class="dashboard-cards" aria-label="Dashboard summary cards">
-        <article class="card" tabindex="0" aria-label="Total Users">
-          <div class="card-icon" aria-hidden="true">
-            <span class="material-icons">people</span>
-          </div>
-          <div class="card-title">Total Users</div>
-          <div class="card-value" id="total-users">1,245</div>
-          <div class="card-desc">Users registered in the system</div>
-        </article>
-
-        <article class="card" tabindex="0" aria-label="Active Sessions">
-          <div class="card-icon" aria-hidden="true">
-            <span class="material-icons">notification_important</span>
-          </div>
-          <div class="card-title">Active Sessions</div>
-          <div class="card-value" id="active-sessions">87</div>
-          <div class="card-desc">Active user sessions right now</div>
-        </article>
-
-        <article class="card" tabindex="0" aria-label="Open Alerts">
-          <div class="card-icon" aria-hidden="true">
-            <span class="material-icons">warning</span>
-          </div>
-          <div class="card-title">Open Alerts</div>
-          <div class="card-value" id="open-alerts">3</div>
-          <div class="card-desc">Security alerts to review</div>
-        </article>
-
-        <article class="card" tabindex="0" aria-label="System Uptime">
-          <div class="card-icon" aria-hidden="true">
-            <span class="material-icons">query_stats</span>
-          </div>
-          <div class="card-title">System Uptime</div>
-          <div class="card-value" id="system-uptime">99.98%</div>
-          <div class="card-desc">Service availability this month</div>
-        </article>
-      </section>
-
-      <section class="dashboard-graph" aria-label="System security graph">
-        <h3>Security Event Trends</h3>
-        <img
-          src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/3da71f8f-d5d1-4a64-baf5-7f65c89c0c78.png"
-          alt="Sample line chart showing security event trends over time with green and dark colors"
-          width="800"
-          height="450"
-          loading="lazy"
-        />
-      </section>
-    </main>
-
-    <footer role="contentinfo">
-      <div
-        class="container"
-        style="
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        "
-      >
-        <div>© 2024 SafeNet. All Rights Reserved.</div>
-        <div class="social-icons" aria-label="Social media links">
-          <a href="#" aria-label="SafeNet Twitter" tabindex="0">
-            <span class="material-icons">twitter</span>
-          </a>
-          <a href="#" aria-label="SafeNet LinkedIn" tabindex="0">
-            <span class="material-icons">linkedin</span>
-          </a>
-          <a href="#" aria-label="SafeNet GitHub" tabindex="0">
-            <span class="material-icons">code</span>
-          </a>
-        </div>
-      </div>
-    </footer>
-
-    <script>
-      // Sidebar submenu toggle logic
-      const sidebar = document.querySelector("nav.sidebar");
-      const submenuToggles = sidebar.querySelectorAll(
-        'li[aria-haspopup="true"]'
-      );
-
-      submenuToggles.forEach((menu) => {
-        menu.addEventListener("click", (e) => {
-          // Prevent toggling for child submenu items
-          if (e.target.closest("ul.submenu") && e.target !== menu) return;
-          const submenu = menu.querySelector(".submenu");
-          if (!submenu) return;
-
-          const isExpanded = menu.getAttribute("aria-expanded") === "true";
-          menu.setAttribute("aria-expanded", !isExpanded);
-          submenu.classList.toggle("show", !isExpanded);
-        });
-        // Keyboard accessibility
-        menu.addEventListener("keydown", (e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            menu.click();
-          }
-        });
-      });
-
-      // Mobile menu toggle
-      const mobileMenuButton = document.getElementById("mobile-menu-button");
-      mobileMenuButton.addEventListener("click", () => {
-        const expanded =
-          mobileMenuButton.getAttribute("aria-expanded") === "true";
-        mobileMenuButton.setAttribute("aria-expanded", !expanded);
-        sidebar.classList.toggle("show", !expanded);
-      });
-      window.addEventListener("DOMContentLoaded", () => {
-        const loggedIn = localStorage.getItem("loggedIn");
-
-        // If not logged in, redirect to login
-        if (loggedIn !== "true") {
-          window.location.href = "/index.html";
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0a0a0a;
+            color: #e0e0e0;
         }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #0a2e1f 0%, #0f3d29 100%);
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(46, 213, 115, 0.2);
+            animation: particle-animation 15s infinite;
+        }
+        
+        @keyframes particle-animation {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(100px, -50px); }
+            50% { transform: translate(50px, 100px); }
+            75% { transform: translate(-50px, 50px); }
+            100% { transform: translate(0, 0); }
+        }
+        
+        .glow {
+            box-shadow: 0 0 15px rgba(46, 213, 115, 0.3);
+        }
+        
+        .shield-icon {
+            animation: shield-pulse 3s infinite;
+        }
+        
+        @keyframes shield-pulse {
+            0% { filter: drop-shadow(0 0 2px rgba(46, 213, 115, 0.4)); }
+            50% { filter: drop-shadow(0 0 8px rgba(46, 213, 115, 0.6)); }
+            100% { filter: drop-shadow(0 0 2px rgba(46, 213, 115, 0.4)); }
+        }
+        
+        .sidebar-item {
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-item:hover {
+            background-color: rgba(46, 213, 115, 0.15);
+            transform: translateX(5px);
+        }
+        
+        .sidebar-item.active {
+            background-color: rgba(46, 213, 115, 0.2);
+            border-left: 3px solid #2ed573;
+        }
+        
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .submenu.open {
+            max-height: 500px;
+        }
+        
+        .submenu a {
+            transform: translateX(0);
+            transition: all 0.3s ease;
+        }
+        
+        .submenu a:hover {
+            transform: translateX(5px);
+        }
+        
+        .table-row {
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .table-row:hover {
+            background-color: rgba(46, 213, 115, 0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+        }
+        
+        .status-active {
+            background-color: rgba(46, 213, 115, 0.2);
+            color: #2ed573;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .status-active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: status-shine 3s infinite;
+        }
+        
+        @keyframes status-shine {
+            0% { left: -100%; }
+            50% { left: 100%; }
+            100% { left: 100%; }
+        }
+        
+        .status-inactive {
+            background-color: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+        }
+        
+        .status-pending {
+            background-color: rgba(255, 159, 67, 0.2);
+            color: #ff9f43;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .status-pending::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: status-shine 3s infinite;
+            animation-delay: 1s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #2ed573 0%, #10ac84 100%);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.6s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-primary:hover::after {
+            left: 100%;
+        }
+        
+        .search-input {
+            background-color: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            background-color: rgba(255, 255, 255, 0.12);
+            border-color: #2ed573;
+            box-shadow: 0 0 0 3px rgba(46, 213, 115, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .pagination-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .pagination-btn:hover:not(.disabled) {
+            background-color: rgba(46, 213, 115, 0.2);
+            color: #2ed573;
+            transform: translateY(-2px);
+        }
+        
+        .pagination-btn.active {
+            background-color: rgba(46, 213, 115, 0.2);
+            color: #2ed573;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pagination-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #2ed573;
+            animation: pagination-active 2s infinite;
+        }
+        
+        @keyframes pagination-active {
+            0% { transform: scaleX(0.3); opacity: 0.3; }
+            50% { transform: scaleX(1); opacity: 1; }
+            100% { transform: scaleX(0.3); opacity: 0.3; }
+        }
+        
+        .pagination-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .action-btn {
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.4s ease;
+            z-index: -1;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+        }
+        
+        .action-btn:hover::before {
+            width: 35px;
+            height: 35px;
+        }
+        
+        .user-avatar {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .user-avatar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .table-row:hover .user-avatar::before {
+            border-color: #2ed573;
+            transform: scale(1.1);
+        }
+        
+        .checkbox-custom {
+            position: relative;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #4a5568;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .checkbox-custom.checked {
+            background-color: #2ed573;
+            border-color: #2ed573;
+        }
+        
+        .checkbox-custom.checked::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 5px;
+            width: 4px;
+            height: 8px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        
+        .checkbox-custom:hover {
+            border-color: #2ed573;
+        }
+        
+        .header-animation {
+            animation: header-slide-down 0.6s ease-out;
+        }
+        
+        @keyframes header-slide-down {
+            0% { transform: translateY(-20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        
+        .content-animation {
+            animation: content-fade-in 0.8s ease-out;
+        }
+        
+        @keyframes content-fade-in {
+            0% { transform: translateY(20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        
+        .sidebar-animation {
+            animation: sidebar-slide-in 0.7s ease-out;
+        }
+        
+        @keyframes sidebar-slide-in {
+            0% { transform: translateX(-30px); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+        
+        .pulse-effect {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(46, 213, 115, 0.4);
+            transform: scale(0);
+            animation: ripple 0.8s linear;
+        }
+        
+        @keyframes ripple {
+            to {
+                transform: scale(2.5);
+                opacity: 0;
+            }
+        }
+        
+        .hover-glow:hover {
+            box-shadow: 0 0 15px rgba(46, 213, 115, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Particles -->
+    <div class="fixed inset-0 z-0 overflow-hidden">
+        <div class="particle w-4 h-4 top-[10%] left-[10%]"></div>
+        <div class="particle w-6 h-6 top-[20%] left-[80%]"></div>
+        <div class="particle w-3 h-3 top-[60%] left-[5%]"></div>
+        <div class="particle w-5 h-5 top-[70%] left-[70%]"></div>
+        <div class="particle w-4 h-4 top-[40%] left-[30%]"></div>
+        <div class="particle w-2 h-2 top-[30%] left-[50%]"></div>
+        <div class="particle w-3 h-3 top-[80%] left-[40%]"></div>
+    </div>
 
-        // Show admin icon
-        document.getElementById("admin-icon").style.display = "block";
-      });
-      document.getElementById("logout-btn").addEventListener("click", () => {
-        localStorage.removeItem("loggedIn");
-        window.location.href = "index.html";
-      });
-      // Initialize anime.js animations
+    <div class="min-h-screen flex relative z-10">
+        <!-- Sidebar -->
+        <div class="w-64 bg-gray-900 border-r border-gray-800 flex flex-col sidebar-animation">
+            <!-- Logo -->
+            <div class="p-4 border-b border-gray-800">
+                <div class="flex items-center">
+                    <svg class="w-8 h-8 text-green-400 shield-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <h1 class="text-xl font-bold ml-3 text-white">SafeNet</h1>
+                </div>
+            </div>
+            
+            <!-- Navigation -->
+            <div class="flex-1 overflow-y-auto py-4">
+                <nav class="px-2 space-y-1">
+                    <div class="sidebar-item active px-3 py-3 rounded-md">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                            </svg>
+                            <span class="ml-3 text-sm font-medium text-white">Dashboard</span>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-item px-3 py-3 rounded-md">
+                        <div class="flex items-center justify-between cursor-pointer" id="user-management-menu">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                                </svg>
+                                <span class="ml-3 text-sm font-medium text-white">User Management</span>
+                            </div>
+                            <svg class="w-4 h-4 text-gray-400 transform transition-transform rotate-180" id="user-management-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="submenu open mt-1 pl-6 space-y-1" id="user-management-submenu">
+                            <a href="#" class="block py-2 px-3 text-sm text-gray-300 hover:bg-gray-800  rounded-md">All Users</a>
+                            <a href="#" class="block py-2 px-3 text-sm text-gray-300 rounded-md hover:bg-gray-800">Add New User</a>
+                            <a href="#" class="block py-2 px-3 text-sm text-gray-300 rounded-md hover:bg-gray-800">User Groups</a>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-item px-3 py-3 rounded-md">
+                        <div class="flex items-center justify-between cursor-pointer" id="role-assignment-menu">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                                <span class="ml-3 text-sm font-medium text-white">Role Assignment</span>
+                            </div>
+                            <svg class="w-4 h-4 text-gray-400 transform transition-transform rotate-180" id="role-assignment-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="submenu open mt-1 pl-6 space-y-1" id="role-assignment-submenu">
+                            <a href="#" class="block py-2 px-3 text-sm text-gray-300 rounded-md hover:bg-gray-800">Manage Roles</a>
+                            <a href="#" class="block py-2 px-3 text-sm text-gray-300 rounded-md hover:bg-gray-800">Assign Roles</a>
+                            <a href="#" class="block py-2 px-3 text-sm text-gray-300 rounded-md hover:bg-gray-800">Role Permissions</a>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-item px-3 py-3 rounded-md">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="ml-3 text-sm font-medium text-white">Settings</span>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+            
+            <!-- User Profile -->
+            <div class="p-4 border-t border-gray-800">
+                <div class="flex items-center hover-glow rounded-lg p-2 transition-all duration-300 cursor-pointer">
+                    <div class="bg-gray-800 rounded-full w-8 h-8 flex items-center justify-center pulse-effect">
+                        <svg class="w-5 h-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-white">Admin User</p>
+                        <p class="text-xs text-gray-400">System Administrator</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Main Content -->
+    </div>
+  >
 
-      anime({
-        targets: ".card",
-        translateY: [-20, 0],
-        opacity: [0, 1],
-        duration: 500,
-        easing: "easeOutExpo",
-        delay: anime.stagger(100),
-      });
-    </script>
-  </body>
+<script>
+  // Toggle for User Management submenu
+  document.getElementById("user-management-menu").addEventListener("click", function () {
+    const submenu = document.getElementById("user-management-submenu");
+    const arrow = document.getElementById("user-management-arrow");
+    
+    submenu.classList.toggle("hidden");
+    arrow.classList.toggle("rotate-180");
+  });
+
+  // Toggle for Role Assignment submenu
+  document.getElementById("role-assignment-menu").addEventListener("click", function () {
+    const submenu = document.getElementById("role-assignment-submenu");
+    const arrow = document.getElementById("role-assignment-arrow");
+    
+    submenu.classList.toggle("hidden");
+    arrow.classList.toggle("rotate-180");
+  });
+</script>
+
+</body>
 </html>

@@ -540,20 +540,6 @@
                             </a>
                             <h1 class="text-2xl font-bold text-white">Add New User</h1>
                         </div>
-                        <div class="flex items-center space-x-4">
-                            <button class="bg-gray-800 text-white px-4 py-2 rounded-md flex items-center hover:bg-gray-700 transition-colors hover-glow" id="cancel-btn">
-                                <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                                Cancel
-                            </button>
-                            <button class="btn-primary text-white px-4 py-2 rounded-md flex items-center" id="save-user-btn">
-                                <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                </svg>
-                                Save User
-                            </button>
-                        </div>
                     </div>
                 </div>
             </header>
@@ -570,23 +556,7 @@
                                 </svg>
                                 <span>Basic Information</span>
                             </div>
-                        </div>
-                        <div class="form-tab pb-3 px-1" data-tab="roles-permissions">
-                            <div class="flex items-center">
-                                <svg class="w-5 h-5 mr-2 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                </svg>
-                                <span>Roles & Permissions</span>
-                            </div>
-                        </div>
-                        <div class="form-tab pb-3 px-1" data-tab="notifications">
-                            <div class="flex items-center">
-                                <svg class="w-5 h-5 mr-2 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
-                                </svg>
-                                <span>Notifications</span>
-                            </div>
-                        </div>
+                        </div>                    
                     </div>
                 </div>
                 
@@ -595,20 +565,7 @@
                     <div class="bg-gray-800 rounded-lg shadow-lg p-6 mb-6 hover-glow">
                         <h2 class="text-xl font-semibold mb-6 text-white">User Information</h2>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <!-- Avatar Upload -->
-                            <div class="flex flex-col items-center space-y-4">
-                                <div class="avatar-preview" id="avatar-preview">
-                                    <div class="avatar-initials">JD</div>
-                                </div>
-                                <button class="text-sm text-green-400 hover:text-green-300 transition-colors">
-                                    Change Avatar
-                                </button>
-                                <p class="text-xs text-gray-400 text-center">
-                                    Recommended: Square image, at least 200x200px
-                                </p>
-                            </div>
-                            
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 form-section">
                             <!-- User Details -->
                             <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="form-group">
@@ -622,8 +579,9 @@
                                 </div>
                                 
                                 <div class="form-group">
-                                    <input type="email" id="email" class="form-input w-full px-3 py-2 rounded-md focus:outline-none" placeholder=" ">
+                                    <input type="email" id="email" class="form-input w-full px-3 py-2 rounded-md focus:outline-none" placeholder=" " required>
                                     <label for="email">Email Address</label>
+                                    <span id="email-error" style="color: red;"></span>
                                 </div>
                                 
                                 <div class="form-group">
@@ -632,24 +590,24 @@
                                 </div>
                                 
                                 <div class="form-group">
-                                    <select id="department" class="form-select w-full px-3 py-2 rounded-md focus:outline-none">
+                                    <select id="department" class="form-select w-full px-3 py-2 rounded-md  focus:outline-none">
                                         <option value="" selected disabled>Select Department</option>
-                                        <option value="hr">Human Resources</option>
-                                        <option value="it">Information Technology</option>
-                                        <option value="marketing">Marketing</option>
-                                        <option value="finance">Finance</option>
-                                        <option value="operations">Operations</option>
+                                        <option class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white" value="hr">Human Resources</option>
+                                        <option class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white" value="it">Information Technology</option>
+                                        <option class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white" value="marketing">Marketing</option>
+                                        <option class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white" value="finance">Finance</option>
+                                        <option class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white" value="operations">Operations</option>
                                     </select>
                                 </div>
                                 
-                                <div class="form-group">
+                                <div class="form-group ">
                                     <select id="position" class="form-select w-full px-3 py-2 rounded-md focus:outline-none">
                                         <option value="" selected disabled>Select Position</option>
-                                        <option value="manager">Manager</option>
-                                        <option value="team-lead">Team Lead</option>
-                                        <option value="senior">Senior</option>
-                                        <option value="junior">Junior</option>
-                                        <option value="intern">Intern</option>
+                                        <option class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white" value="manager">Manager</option>
+                                        <option class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white" value="team-lead">Team Lead</option>
+                                        <option class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white" value="senior">Senior</option>
+                                        <option class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white" value="junior">Junior</option>
+                                        <option class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white" value="intern">Intern</option>
                                     </select>
                                 </div>
                             </div>
@@ -668,9 +626,8 @@
                             <div class="form-group">
                                 <select id="status" class="form-select w-full px-3 py-2 rounded-md focus:outline-none">
                                     <option value="" selected disabled>Select Status</option>
-                                    <option value="active">Active</option>
-                                    <option value="inactive">Inactive</option>
-                                    <option value="pending">Pending</option>
+                                    <option class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white" value="active">Active</option>
+                                    <option class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white" value="inactive">Inactive</option>
                                 </select>
                             </div>
                             
@@ -699,191 +656,7 @@
                     </div>
                 </div>
                 
-                <div class="tab-content" id="roles-permissions-content">
-                    <div class="bg-gray-800 rounded-lg shadow-lg p-6 mb-6 hover-glow">
-                        <h2 class="text-xl font-semibold mb-6 text-white">Role Assignment</h2>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Primary Role</label>
-                                <select class="form-select w-full px-3 py-2 rounded-md focus:outline-none">
-                                    <option value="" selected disabled>Select Primary Role</option>
-                                    <option value="admin">Administrator</option>
-                                    <option value="manager">Manager</option>
-                                    <option value="recruiter">Recruiter</option>
-                                    <option value="candidate">Candidate</option>
-                                    <option value="guest">Guest</option>
-                                </select>
-                            </div>
-                            
-                            <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Secondary Roles</label>
-                                <div class="space-y-2">
-                                    <div class="flex items-center space-x-2">
-                                        <div class="form-checkbox" id="role-viewer"></div>
-                                        <label for="role-viewer" class="text-sm text-gray-300 cursor-pointer">Viewer</label>
-                                    </div>
-                                    <div class="flex items-center space-x-2">
-                                        <div class="form-checkbox" id="role-editor"></div>
-                                        <label for="role-editor" class="text-sm text-gray-300 cursor-pointer">Editor</label>
-                                    </div>
-                                    <div class="flex items-center space-x-2">
-                                        <div class="form-checkbox" id="role-approver"></div>
-                                        <label for="role-approver" class="text-sm text-gray-300 cursor-pointer">Approver</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-gray-800 rounded-lg shadow-lg p-6 hover-glow">
-                        <h2 class="text-xl font-semibold mb-6 text-white">Permissions</h2>
-                        
-                        <div class="space-y-6">
-                            <div>
-                                <h3 class="text-md font-medium text-white mb-3">User Management</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-300">View Users</span>
-                                        <div class="permission-toggle active" data-permission="view-users"></div>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-300">Create Users</span>
-                                        <div class="permission-toggle active" data-permission="create-users"></div>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-300">Edit Users</span>
-                                        <div class="permission-toggle active" data-permission="edit-users"></div>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-300">Delete Users</span>
-                                        <div class="permission-toggle" data-permission="delete-users"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <h3 class="text-md font-medium text-white mb-3">Role Management</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-300">View Roles</span>
-                                        <div class="permission-toggle active" data-permission="view-roles"></div>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-300">Create Roles</span>
-                                        <div class="permission-toggle" data-permission="create-roles"></div>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-300">Edit Roles</span>
-                                        <div class="permission-toggle" data-permission="edit-roles"></div>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-300">Delete Roles</span>
-                                        <div class="permission-toggle" data-permission="delete-roles"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <h3 class="text-md font-medium text-white mb-3">System Settings</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-300">View Settings</span>
-                                        <div class="permission-toggle active" data-permission="view-settings"></div>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-300">Edit Settings</span>
-                                        <div class="permission-toggle" data-permission="edit-settings"></div>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-300">System Backup</span>
-                                        <div class="permission-toggle" data-permission="system-backup"></div>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-300">System Restore</span>
-                                        <div class="permission-toggle" data-permission="system-restore"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 
-                <div class="tab-content" id="notifications-content">
-                    <div class="bg-gray-800 rounded-lg shadow-lg p-6 hover-glow">
-                        <h2 class="text-xl font-semibold mb-6 text-white">Notification Preferences</h2>
-                        
-                        <div class="space-y-6">
-                            <div>
-                                <h3 class="text-md font-medium text-white mb-3">Email Notifications</h3>
-                                <div class="space-y-3">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-300">System Updates</span>
-                                        <div class="permission-toggle active" data-notification="system-updates-email"></div>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-300">Security Alerts</span>
-                                        <div class="permission-toggle active" data-notification="security-alerts-email"></div>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-300">User Activity</span>
-                                        <div class="permission-toggle" data-notification="user-activity-email"></div>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-300">Role Changes</span>
-                                        <div class="permission-toggle active" data-notification="role-changes-email"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <h3 class="text-md font-medium text-white mb-3">In-App Notifications</h3>
-                                <div class="space-y-3">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-300">System Updates</span>
-                                        <div class="permission-toggle active" data-notification="system-updates-app"></div>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-300">Security Alerts</span>
-                                        <div class="permission-toggle active" data-notification="security-alerts-app"></div>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-300">User Activity</span>
-                                        <div class="permission-toggle active" data-notification="user-activity-app"></div>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-300">Role Changes</span>
-                                        <div class="permission-toggle active" data-notification="role-changes-app"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <h3 class="text-md font-medium text-white mb-3">Notification Schedule</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-300 mb-2">Email Digest Frequency</label>
-                                        <select class="form-select w-full px-3 py-2 rounded-md focus:outline-none">
-                                            <option value="immediate">Immediate</option>
-                                            <option value="daily" selected>Daily</option>
-                                            <option value="weekly">Weekly</option>
-                                            <option value="monthly">Monthly</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-300 mb-2">Quiet Hours</label>
-                                        <div class="flex space-x-4">
-                                            <input type="time" class="form-input px-3 py-2 rounded-md focus:outline-none" value="22:00">
-                                            <span class="text-gray-300 self-center">to</span>
-                                            <input type="time" class="form-input px-3 py-2 rounded-md focus:outline-none" value="08:00">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 
                 <!-- Form Actions -->
                 <div class="mt-6 flex justify-end space-x-4">
@@ -931,6 +704,8 @@
             submenu.classList.toggle('open');
             arrow.classList.toggle('rotate-180');
         });
+
+        
         
         // Tab functionality
         const tabs = document.querySelectorAll('.form-tab');
@@ -999,12 +774,7 @@
         document.getElementById('save-user-btn').addEventListener('click', createRippleEffect);
         document.getElementById('cancel-btn-bottom').addEventListener('click', createRippleEffect);
         document.getElementById('save-user-btn-bottom').addEventListener('click', createRippleEffect);
-        
-        // Avatar preview functionality
-        document.getElementById('avatar-preview').addEventListener('click', function() {
-            // In a real implementation, this would open a file picker
-            alert('This would open a file picker in a real implementation');
-        });
+    
         
         // Form validation and submission
         document.getElementById('save-user-btn').addEventListener('click', function(e) {
