@@ -1,0 +1,710 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Recruiter - Filter Resumes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkblue: {
+                            900: '#0A1929',
+                            800: '#0F2942',
+                            700: '#173A5E',
+                            600: '#1E4976',
+                        },
+                        darkgreen: {
+                            600: '#0D5F4C',
+                            500: '#0E6655',
+                            400: '#117A63',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0A1929;
+        }
+        .sidebar-item {
+            transition: all 0.3s ease;
+        }
+        .sidebar-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .sidebar-item.active {
+            background-color: rgba(14, 102, 85, 0.3);
+            border-left: 3px solid #0E6655;
+        }
+        .btn-primary {
+            background-color: #0E6655;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #117A63;
+        }
+        .filter-tag {
+            transition: all 0.2s ease;
+        }
+        .filter-tag:hover {
+            background-color: rgba(14, 102, 85, 0.5);
+        }
+        .candidate-card {
+            transition: all 0.3s ease;
+        }
+        .candidate-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+        .skill-badge {
+            background-color: rgba(14, 102, 85, 0.2);
+            transition: all 0.2s ease;
+        }
+        .skill-badge:hover {
+            background-color: rgba(14, 102, 85, 0.4);
+        }
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #0E6655;
+            cursor: pointer;
+        }
+        .range-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #0E6655;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-darkblue-900 text-gray-200 min-h-screen">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div class="w-64 bg-darkblue-800 border-r border-darkblue-700 flex flex-col">
+            <!-- Logo and Title -->
+            <div class="p-5 border-b border-darkblue-700">
+                <div class="flex items-center space-x-3">
+                    <svg class="w-8 h-8 text-darkgreen-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M6.672 1.911a1 1 0 10-1.932.518l.259.966a1 1 0 001.932-.518l-.26-.966zM2.429 4.74a1 1 0 10-.517 1.932l.966.259a1 1 0 00.517-1.932l-.966-.26zm8.814-.569a1 1 0 00-1.415-1.414l-.707.707a1 1 0 101.415 1.415l.707-.708zm-7.071 7.072l.707-.707A1 1 0 003.465 9.12l-.708.707a1 1 0 001.415 1.415zm3.2-5.171a1 1 0 00-1.3 1.3l4 10a1 1 0 001.823.075l1.38-2.759 3.018 3.02a1 1 0 001.414-1.415l-3.019-3.02 2.76-1.379a1 1 0 00-.076-1.822l-10-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <h1 class="text-xl font-semibold text-white">AI Recruiter</h1>
+                </div>
+            </div>
+            
+            <!-- Navigation Menu -->
+            <nav class="flex-1 pt-5 pb-4 overflow-y-auto">
+                <ul class="space-y-1 px-2">
+                    <li>
+                        <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-md group">
+                            <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                            <span>Upload Resume</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="sidebar-item active flex items-center px-4 py-3 text-gray-100 rounded-md group">
+                            <svg class="w-5 h-5 mr-3 text-darkgreen-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                            </svg>
+                            <span>Filter Resumes</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-md group">
+                            <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Generate Qs</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-md group">
+                            <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                            </svg>
+                            <span>Start Interview</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-md group">
+                            <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <span>Reports</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <!-- User Profile -->
+            <div class="p-4 border-t border-darkblue-700">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 rounded-full bg-darkgreen-500 flex items-center justify-center text-white font-medium">
+                            HR
+                        </div>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-white">HR Manager</p>
+                        <p class="text-xs text-gray-400">Online</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <!-- Top Header -->
+            <header class="bg-darkblue-800 shadow-md">
+                <div class="px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xl font-semibold text-white">Filter Resumes</h2>
+                        <div class="flex items-center space-x-4">
+                            <button class="p-1 rounded-full text-gray-400 hover:text-white focus:outline-none">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                                </svg>
+                            </button>
+                            <button class="p-1 rounded-full text-gray-400 hover:text-white focus:outline-none">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Dashboard Content -->
+            <main class="p-6">
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <!-- Filter Panel -->
+                    <div class="lg:col-span-1">
+                        <div class="bg-darkblue-800 rounded-lg shadow-lg p-5">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-medium text-white">Filters</h3>
+                                <button class="text-sm text-darkgreen-400 hover:text-darkgreen-500">Reset All</button>
+                            </div>
+                            
+                            <!-- Search -->
+                            <div class="mb-5">
+                                <label for="search" class="block text-sm font-medium text-gray-300 mb-1">Search</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <input type="text" id="search" class="block w-full pl-10 pr-3 py-2 border border-darkblue-600 rounded-md bg-darkblue-700 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-darkgreen-500 focus:border-darkgreen-500" placeholder="Search keywords...">
+                                </div>
+                            </div>
+                            
+                            <!-- Job Position -->
+                            <div class="mb-5">
+                                <label for="position" class="block text-sm font-medium text-gray-300 mb-1">Job Position</label>
+                                <select id="position" class="block w-full px-3 py-2 border border-darkblue-600 rounded-md bg-darkblue-700 text-gray-200 focus:outline-none focus:ring-darkgreen-500 focus:border-darkgreen-500">
+                                    <option value="">All Positions</option>
+                                    <option value="developer" selected>Senior Developer</option>
+                                    <option value="designer">UX Designer</option>
+                                    <option value="manager">Product Manager</option>
+                                    <option value="analyst">Data Analyst</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Experience Level -->
+                            <div class="mb-5">
+                                <label class="block text-sm font-medium text-gray-300 mb-1">Experience Level</label>
+                                <div class="space-y-2">
+                                    <div class="flex items-center">
+                                        <input id="exp-entry" type="checkbox" class="h-4 w-4 text-darkgreen-500 border-gray-600 rounded focus:ring-darkgreen-500 bg-darkblue-900">
+                                        <label for="exp-entry" class="ml-2 text-sm text-gray-300">Entry Level (0-2 years)</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input id="exp-mid" type="checkbox" class="h-4 w-4 text-darkgreen-500 border-gray-600 rounded focus:ring-darkgreen-500 bg-darkblue-900">
+                                        <label for="exp-mid" class="ml-2 text-sm text-gray-300">Mid Level (3-5 years)</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input id="exp-senior" type="checkbox" class="h-4 w-4 text-darkgreen-500 border-gray-600 rounded focus:ring-darkgreen-500 bg-darkblue-900" checked>
+                                        <label for="exp-senior" class="ml-2 text-sm text-gray-300">Senior (5+ years)</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Skills -->
+                            <div class="mb-5">
+                                <label class="block text-sm font-medium text-gray-300 mb-1">Skills</label>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="filter-tag inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-darkgreen-600 text-white">
+                                        JavaScript
+                                        <button type="button" class="ml-1 flex-shrink-0 inline-flex">
+                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        </button>
+                                    </span>
+                                    <span class="filter-tag inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-darkgreen-600 text-white">
+                                        React
+                                        <button type="button" class="ml-1 flex-shrink-0 inline-flex">
+                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        </button>
+                                    </span>
+                                    <span class="filter-tag inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-darkgreen-600 text-white">
+                                        Node.js
+                                        <button type="button" class="ml-1 flex-shrink-0 inline-flex">
+                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        </button>
+                                    </span>
+                                </div>
+                                <div class="mt-2 relative">
+                                    <input type="text" class="block w-full pl-3 pr-10 py-2 border border-darkblue-600 rounded-md bg-darkblue-700 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-darkgreen-500 focus:border-darkgreen-500" placeholder="Add skill...">
+                                    <button class="absolute inset-y-0 right-0 px-3 flex items-center">
+                                        <svg class="h-4 w-4 text-darkgreen-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Location -->
+                            <div class="mb-5">
+                                <label for="location" class="block text-sm font-medium text-gray-300 mb-1">Location</label>
+                                <select id="location" class="block w-full px-3 py-2 border border-darkblue-600 rounded-md bg-darkblue-700 text-gray-200 focus:outline-none focus:ring-darkgreen-500 focus:border-darkgreen-500">
+                                    <option value="">Any Location</option>
+                                    <option value="remote" selected>Remote</option>
+                                    <option value="onsite">On-site</option>
+                                    <option value="hybrid">Hybrid</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Match Score -->
+                            <div class="mb-5">
+                                <label class="block text-sm font-medium text-gray-300 mb-1">Minimum Match Score</label>
+                                <div class="flex items-center space-x-3">
+                                    <input type="range" min="0" max="100" value="70" class="range-slider w-full h-2 bg-darkblue-600 rounded-lg appearance-none cursor-pointer">
+                                    <span class="text-sm font-medium text-white bg-darkgreen-600 px-2 py-1 rounded">70%</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Date Range -->
+                            <div class="mb-5">
+                                <label class="block text-sm font-medium text-gray-300 mb-1">Application Date</label>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label for="date-from" class="block text-xs text-gray-400 mb-1">From</label>
+                                        <input type="date" id="date-from" class="block w-full px-3 py-2 border border-darkblue-600 rounded-md bg-darkblue-700 text-gray-200 focus:outline-none focus:ring-darkgreen-500 focus:border-darkgreen-500">
+                                    </div>
+                                    <div>
+                                        <label for="date-to" class="block text-xs text-gray-400 mb-1">To</label>
+                                        <input type="date" id="date-to" class="block w-full px-3 py-2 border border-darkblue-600 rounded-md bg-darkblue-700 text-gray-200 focus:outline-none focus:ring-darkgreen-500 focus:border-darkgreen-500">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="w-full py-2 btn-primary rounded-md text-white font-medium">Apply Filters</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Results Panel -->
+                    <div class="lg:col-span-3">
+                        <!-- Results Header -->
+                        <div class="bg-darkblue-800 rounded-lg shadow-lg p-5 mb-6">
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                                <div>
+                                    <h3 class="text-lg font-medium text-white">24 Candidates Found</h3>
+                                    <p class="text-sm text-gray-400">Filtered for Senior Developer position</p>
+                                </div>
+                                <div class="mt-3 md:mt-0 flex items-center space-x-3">
+                                    <div class="relative">
+                                        <select class="block w-full pl-3 pr-10 py-2 text-sm border border-darkblue-600 rounded-md bg-darkblue-700 text-gray-200 focus:outline-none focus:ring-darkgreen-500 focus:border-darkgreen-500">
+                                            <option>Sort by: Match Score</option>
+                                            <option>Sort by: Recent</option>
+                                            <option>Sort by: Experience</option>
+                                        </select>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="p-2 bg-darkblue-700 rounded-md text-gray-300 hover:bg-darkblue-600">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                                            </svg>
+                                        </button>
+                                        <button class="p-2 bg-darkgreen-600 rounded-md text-white">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Candidates Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Candidate Card 1 -->
+                            <div class="candidate-card bg-darkblue-800 rounded-lg shadow-lg overflow-hidden">
+                                <div class="p-5">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex items-center">
+                                            <div class="h-12 w-12 rounded-full bg-darkgreen-600 flex items-center justify-center text-white font-semibold text-lg">
+                                                JD
+                                            </div>
+                                            <div class="ml-3">
+                                                <h4 class="text-lg font-medium text-white">John Doe</h4>
+                                                <p class="text-sm text-gray-400">Senior Frontend Developer</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col items-end">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-900 text-green-300">
+                                                95% Match
+                                            </span>
+                                            <span class="text-xs text-gray-400 mt-1">Applied 2 days ago</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-4">
+                                        <div class="flex items-center text-sm text-gray-400 mb-2">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                            </svg>
+                                            7 years experience
+                                        </div>
+                                        <div class="flex items-center text-sm text-gray-400 mb-2">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            </svg>
+                                            Remote (San Francisco, CA)
+                                        </div>
+                                        <div class="flex items-center text-sm text-gray-400">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                            </svg>
+                                            Previously at Google, Amazon
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-4">
+                                        <div class="flex flex-wrap gap-2">
+                                            <span class="skill-badge px-2 py-1 rounded-md text-xs font-medium text-darkgreen-400">JavaScript</span>
+                                            <span class="skill-badge px-2 py-1 rounded-md text-xs font-medium text-darkgreen-400">React</span>
+                                            <span class="skill-badge px-2 py-1 rounded-md text-xs font-medium text-darkgreen-400">Node.js</span>
+                                            <span class="skill-badge px-2 py-1 rounded-md text-xs font-medium text-darkgreen-400">TypeScript</span>
+                                            <span class="skill-badge px-2 py-1 rounded-md text-xs font-medium text-darkgreen-400">+3</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="border-t border-darkblue-700 px-5 py-3 flex justify-between">
+                                    <div class="flex space-x-3">
+                                        <button class="flex items-center text-sm text-gray-300 hover:text-white">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                            View
+                                        </button>
+                                        <button class="flex items-center text-sm text-gray-300 hover:text-white">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                                            </svg>
+                                            Save
+                                        </button>
+                                    </div>
+                                    <button class="btn-primary px-4 py-1 rounded-md text-sm text-white">Interview</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Candidate Card 2 -->
+                            <div class="candidate-card bg-darkblue-800 rounded-lg shadow-lg overflow-hidden">
+                                <div class="p-5">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex items-center">
+                                            <div class="h-12 w-12 rounded-full bg-blue-700 flex items-center justify-center text-white font-semibold text-lg">
+                                                AS
+                                            </div>
+                                            <div class="ml-3">
+                                                <h4 class="text-lg font-medium text-white">Anna Smith</h4>
+                                                <p class="text-sm text-gray-400">Full Stack Developer</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col items-end">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-900 text-green-300">
+                                                92% Match
+                                            </span>
+                                            <span class="text-xs text-gray-400 mt-1">Applied 3 days ago</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-4">
+                                        <div class="flex items-center text-sm text-gray-400 mb-2">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                            </svg>
+                                            6 years experience
+                                        </div>
+                                        <div class="flex items-center text-sm text-gray-400 mb-2">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            </svg>
+                                            Remote (New York, NY)
+                                        </div>
+                                        <div class="flex items-center text-sm text-gray-400">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                            </svg>
+                                            Previously at Microsoft, Dropbox
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-4">
+                                        <div class="flex flex-wrap gap-2">
+                                            <span class="skill-badge px-2 py-1 rounded-md text-xs font-medium text-darkgreen-400">JavaScript</span>
+                                            <span class="skill-badge px-2 py-1 rounded-md text-xs font-medium text-darkgreen-400">React</span>
+                                            <span class="skill-badge px-2 py-1 rounded-md text-xs font-medium text-darkgreen-400">Python</span>
+                                            <span class="skill-badge px-2 py-1 rounded-md text-xs font-medium text-darkgreen-400">Django</span>
+                                            <span class="skill-badge px-2 py-1 rounded-md text-xs font-medium text-darkgreen-400">+4</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="border-t border-darkblue-700 px-5 py-3 flex justify-between">
+                                    <div class="flex space-x-3">
+                                        <button class="flex items-center text-sm text-gray-300 hover:text-white">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                            View
+                                        </button>
+                                        <button class="flex items-center text-sm text-gray-300 hover:text-white">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                                            </svg>
+                                            Save
+                                        </button>
+                                    </div>
+                                    <button class="btn-primary px-4 py-1 rounded-md text-sm text-white">Interview</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Candidate Card 3 -->
+                            <div class="candidate-card bg-darkblue-800 rounded-lg shadow-lg overflow-hidden">
+                                <div class="p-5">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex items-center">
+                                            <div class="h-12 w-12 rounded-full bg-purple-700 flex items-center justify-center text-white font-semibold text-lg">
+                                                MJ
+                                            </div>
+                                            <div class="ml-3">
+                                                <h4 class="text-lg font-medium text-white">Michael Johnson</h4>
+                                                <p class="text-sm text-gray-400">Backend Developer</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col items-end">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-900 text-yellow-300">
+                                                85% Match
+                                            </span>
+                                            <span class="text-xs text-gray-400 mt-1">Applied 1 week ago</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-4">
+                                        <div class="flex items-center text-sm text-gray-400 mb-2">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                            </svg>
+                                            5 years experience
+                                        </div>
+                                        <div class="flex items-center text-sm text-gray-400 mb-2">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            </svg>
+                                            Remote (Austin, TX)
+                                        </div>
+                                        <div class="flex items-center text-sm text-gray-400">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                            </svg>
+                                            Previously at IBM, Oracle
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-4">
+                                        <div class="flex flex-wrap gap-2">
+                                            <span class="skill-badge px-2 py-1 rounded-md text-xs font-medium text-darkgreen-400">Node.js</span>
+                                            <span class="skill-badge px-2 py-1 rounded-md text-xs font-medium text-darkgreen-400">Java</span>
+                                            <span class="skill-badge px-2 py-1 rounded-md text-xs font-medium text-darkgreen-400">MongoDB</span>
+                                            <span class="skill-badge px-2 py-1 rounded-md text-xs font-medium text-darkgreen-400">AWS</span>
+                                            <span class="skill-badge px-2 py-1 rounded-md text-xs font-medium text-darkgreen-400">+2</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="border-t border-darkblue-700 px-5 py-3 flex justify-between">
+                                    <div class="flex space-x-3">
+                                        <button class="flex items-center text-sm text-gray-300 hover:text-white">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                            View
+                                        </button>
+                                        <button class="flex items-center text-sm text-gray-300 hover:text-white">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                                            </svg>
+                                            Save
+                                        </button>
+                                    </div>
+                                    <button class="btn-primary px-4 py-1 rounded-md text-sm text-white">Interview</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Candidate Card 4 -->
+                            <div class="candidate-card bg-darkblue-800 rounded-lg shadow-lg overflow-hidden">
+                                <div class="p-5">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex items-center">
+                                            <div class="h-12 w-12 rounded-full bg-red-700 flex items-center justify-center text-white font-semibold text-lg">
+                                                EW
+                                            </div>
+                                            <div class="ml-3">
+                                                <h4 class="text-lg font-medium text-white">Emily Wilson</h4>
+                                                <p class="text-sm text-gray-400">DevOps Engineer</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col items-end">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-900 text-yellow-300">
+                                                82% Match
+                                            </span>
+                                            <span class="text-xs text-gray-400 mt-1">Applied 5 days ago</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-4">
+                                        <div class="flex items-center text-sm text-gray-400 mb-2">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                            </svg>
+                                            6 years experience
+                                        </div>
+                                        <div class="flex items-center text-sm text-gray-400 mb-2">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            </svg>
+                                            Remote (Seattle, WA)
+                                        </div>
+                                        <div class="flex items-center text-sm text-gray-400">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                            </svg>
+                                            Previously at Netflix, Airbnb
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-4">
+                                        <div class="flex flex-wrap gap-2">
+                                            <span class="skill-badge px-2 py-1 rounded-md text-xs font-medium text-darkgreen-400">Docker</span>
+                                            <span class="skill-badge px-2 py-1 rounded-md text-xs font-medium text-darkgreen-400">Kubernetes</span>
+                                            <span class="skill-badge px-2 py-1 rounded-md text-xs font-medium text-darkgreen-400">CI/CD</span>
+                                            <span class="skill-badge px-2 py-1 rounded-md text-xs font-medium text-darkgreen-400">AWS</span>
+                                            <span class="skill-badge px-2 py-1 rounded-md text-xs font-medium text-darkgreen-400">+5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="border-t border-darkblue-700 px-5 py-3 flex justify-between">
+                                    <div class="flex space-x-3">
+                                        <button class="flex items-center text-sm text-gray-300 hover:text-white">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                            View
+                                        </button>
+                                        <button class="flex items-center text-sm text-gray-300 hover:text-white">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                                            </svg>
+                                            Save
+                                        </button>
+                                    </div>
+                                    <button class="btn-primary px-4 py-1 rounded-md text-sm text-white">Interview</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Pagination -->
+                        <div class="mt-6 flex items-center justify-between">
+                            <div class="text-sm text-gray-400">
+                                Showing <span class="font-medium">1</span> to <span class="font-medium">4</span> of <span class="font-medium">24</span> results
+                            </div>
+                            <div class="flex space-x-1">
+                                <button class="px-3 py-1 rounded-md bg-darkblue-700 text-gray-400 hover:bg-darkblue-600">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                    </svg>
+                                </button>
+                                <button class="px-3 py-1 rounded-md bg-darkgreen-600 text-white">1</button>
+                                <button class="px-3 py-1 rounded-md bg-darkblue-700 text-gray-300 hover:bg-darkblue-600">2</button>
+                                <button class="px-3 py-1 rounded-md bg-darkblue-700 text-gray-300 hover:bg-darkblue-600">3</button>
+                                <button class="px-3 py-1 rounded-md bg-darkblue-700 text-gray-300 hover:bg-darkblue-600">4</button>
+                                <button class="px-3 py-1 rounded-md bg-darkblue-700 text-gray-300 hover:bg-darkblue-600">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Range slider functionality
+        const rangeSlider = document.querySelector('.range-slider');
+        const rangeValue = document.querySelector('.range-slider + span');
+        
+        rangeSlider.addEventListener('input', function() {
+            rangeValue.textContent = this.value + '%';
+        });
+        
+        // Filter tag removal
+        document.querySelectorAll('.filter-tag button').forEach(button => {
+            button.addEventListener('click', function() {
+                this.closest('.filter-tag').remove();
+            });
+        });
+        
+        // Checkbox functionality for tasks
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const label = this.nextElementSibling.querySelector('label');
+                if (this.checked) {
+                    label.classList.add('text-gray-500');
+                } else {
+                    label.classList.remove('text-gray-500');
+                }
+            });
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9503d8f830537f4d',t:'MTc1MDAwOTE3NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

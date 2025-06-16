@@ -1,0 +1,416 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Recruiter - HR Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkblue: {
+                            900: '#0A1929',
+                            800: '#0F2942',
+                            700: '#173A5E',
+                            600: '#1E4976',
+                        },
+                        darkgreen: {
+                            600: '#0D5F4C',
+                            500: '#0E6655',
+                            400: '#117A63',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0A1929;
+        }
+        .sidebar-item {
+            transition: all 0.3s ease;
+        }
+        .sidebar-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .sidebar-item.active {
+            background-color: rgba(14, 102, 85, 0.3);
+            border-left: 3px solid #0E6655;
+        }
+        .upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .upload-area:hover {
+            border-color: #0E6655;
+        }
+        .btn-primary {
+            background-color: #0E6655;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #117A63;
+        }
+    </style>
+</head>
+<body class="bg-darkblue-900 text-gray-200 min-h-screen">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div class="w-64 bg-darkblue-800 border-r border-darkblue-700 flex flex-col">
+            <!-- Logo and Title -->
+            <div class="p-5 border-b border-darkblue-700">
+                <div class="flex items-center space-x-3">
+                    <svg class="w-8 h-8 text-darkgreen-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M6.672 1.911a1 1 0 10-1.932.518l.259.966a1 1 0 001.932-.518l-.26-.966zM2.429 4.74a1 1 0 10-.517 1.932l.966.259a1 1 0 00.517-1.932l-.966-.26zm8.814-.569a1 1 0 00-1.415-1.414l-.707.707a1 1 0 101.415 1.415l.707-.708zm-7.071 7.072l.707-.707A1 1 0 003.465 9.12l-.708.707a1 1 0 001.415 1.415zm3.2-5.171a1 1 0 00-1.3 1.3l4 10a1 1 0 001.823.075l1.38-2.759 3.018 3.02a1 1 0 001.414-1.415l-3.019-3.02 2.76-1.379a1 1 0 00-.076-1.822l-10-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <h1 class="text-xl font-semibold text-white">AI Recruiter</h1>
+                </div>
+            </div>
+            
+            <!-- Navigation Menu -->
+            <nav class="flex-1 pt-5 pb-4 overflow-y-auto">
+                <ul class="space-y-1 px-2">
+                    <li>
+                        <a href="#" class="sidebar-item active flex items-center px-4 py-3 text-gray-100 rounded-md group">
+                            <svg class="w-5 h-5 mr-3 text-darkgreen-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                            <span>Upload Resume</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-md group">
+                            <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                            </svg>
+                            <span>Filter Resumes</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-md group">
+                            <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Generate Qs</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-md group">
+                            <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                            </svg>
+                            <span>Start Interview</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-md group">
+                            <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <span>Reports</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <!-- User Profile -->
+            <div class="p-4 border-t border-darkblue-700">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 rounded-full bg-darkgreen-500 flex items-center justify-center text-white font-medium">
+                            HR
+                        </div>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-white">HR Manager</p>
+                        <p class="text-xs text-gray-400">Online</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <!-- Top Header -->
+            <header class="bg-darkblue-800 shadow-md">
+                <div class="px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xl font-semibold text-white">Upload Resume</h2>
+                        <div class="flex items-center space-x-4">
+                            <button class="p-1 rounded-full text-gray-400 hover:text-white focus:outline-none">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                                </svg>
+                            </button>
+                            <button class="p-1 rounded-full text-gray-400 hover:text-white focus:outline-none">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Dashboard Content -->
+            <main class="p-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Upload Area -->
+                    <div class="lg:col-span-2">
+                        <div class="bg-darkblue-800 rounded-lg shadow-lg p-6">
+                            <h3 class="text-lg font-medium text-white mb-4">Upload Candidate Resumes</h3>
+                            <div class="upload-area bg-darkblue-700 rounded-lg p-8 flex flex-col items-center justify-center cursor-pointer">
+                                <svg class="w-16 h-16 text-darkgreen-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                </svg>
+                                <p class="text-gray-300 text-center mb-2">Drag and drop resume files here</p>
+                                <p class="text-gray-400 text-sm text-center mb-4">Supports PDF, DOCX, TXT (Max 10MB)</p>
+                                <button class="btn-primary px-6 py-2 rounded-md text-white font-medium">Browse Files</button>
+                                <input type="file" class="hidden" multiple accept=".pdf,.docx,.txt">
+                            </div>
+                            
+                            <div class="mt-6">
+                                <h4 class="text-white font-medium mb-3">Upload Options</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="bg-darkblue-700 p-4 rounded-lg">
+                                        <div class="flex items-start">
+                                            <div class="flex items-center h-5">
+                                                <input id="auto-parse" type="checkbox" class="h-4 w-4 text-darkgreen-500 border-gray-600 rounded focus:ring-darkgreen-500 bg-darkblue-900">
+                                            </div>
+                                            <div class="ml-3">
+                                                <label for="auto-parse" class="text-sm font-medium text-gray-200">Auto-parse resumes</label>
+                                                <p class="text-xs text-gray-400">Extract key information automatically</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-darkblue-700 p-4 rounded-lg">
+                                        <div class="flex items-start">
+                                            <div class="flex items-center h-5">
+                                                <input id="ai-match" type="checkbox" class="h-4 w-4 text-darkgreen-500 border-gray-600 rounded focus:ring-darkgreen-500 bg-darkblue-900" checked>
+                                            </div>
+                                            <div class="ml-3">
+                                                <label for="ai-match" class="text-sm font-medium text-gray-200">AI matching</label>
+                                                <p class="text-xs text-gray-400">Match candidates to open positions</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-darkblue-800 rounded-lg shadow-lg p-6 mt-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-medium text-white">Recent Uploads</h3>
+                                <button class="text-sm text-darkgreen-400 hover:text-darkgreen-500">View All</button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-darkblue-700">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Name</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Match Score</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-darkblue-700">
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <div class="flex-shrink-0 h-8 w-8 rounded-full bg-darkgreen-600 flex items-center justify-center">
+                                                        <span class="text-xs font-medium text-white">JD</span>
+                                                    </div>
+                                                    <div class="ml-4">
+                                                        <div class="text-sm font-medium text-white">John Doe</div>
+                                                        <div class="text-xs text-gray-400">Software Engineer</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">Today, 10:30 AM</td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-900 text-green-300">Processed</span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">92%</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <div class="flex-shrink-0 h-8 w-8 rounded-full bg-blue-800 flex items-center justify-center">
+                                                        <span class="text-xs font-medium text-white">AS</span>
+                                                    </div>
+                                                    <div class="ml-4">
+                                                        <div class="text-sm font-medium text-white">Anna Smith</div>
+                                                        <div class="text-xs text-gray-400">UX Designer</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">Today, 9:15 AM</td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-900 text-green-300">Processed</span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">87%</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <div class="flex-shrink-0 h-8 w-8 rounded-full bg-purple-800 flex items-center justify-center">
+                                                        <span class="text-xs font-medium text-white">RJ</span>
+                                                    </div>
+                                                    <div class="ml-4">
+                                                        <div class="text-sm font-medium text-white">Robert Johnson</div>
+                                                        <div class="text-xs text-gray-400">Product Manager</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">Yesterday</td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-900 text-yellow-300">Reviewing</span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">78%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sidebar Content -->
+                    <div class="lg:col-span-1">
+                        <div class="bg-darkblue-800 rounded-lg shadow-lg p-6 mb-6">
+                            <h3 class="text-lg font-medium text-white mb-4">Open Positions</h3>
+                            <div class="space-y-3">
+                                <div class="p-3 bg-darkblue-700 rounded-lg">
+                                    <div class="flex justify-between items-center">
+                                        <h4 class="font-medium text-white">Senior Developer</h4>
+                                        <span class="bg-darkgreen-600 text-xs px-2 py-1 rounded text-white">12 apps</span>
+                                    </div>
+                                    <p class="text-xs text-gray-400 mt-1">Engineering • Remote</p>
+                                    <div class="mt-2 flex justify-between items-center">
+                                        <div class="w-2/3 bg-darkblue-900 rounded-full h-1.5">
+                                            <div class="bg-darkgreen-500 h-1.5 rounded-full" style="width: 70%"></div>
+                                        </div>
+                                        <span class="text-xs text-gray-400">70%</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="p-3 bg-darkblue-700 rounded-lg">
+                                    <div class="flex justify-between items-center">
+                                        <h4 class="font-medium text-white">UX Designer</h4>
+                                        <span class="bg-darkgreen-600 text-xs px-2 py-1 rounded text-white">8 apps</span>
+                                    </div>
+                                    <p class="text-xs text-gray-400 mt-1">Design • On-site</p>
+                                    <div class="mt-2 flex justify-between items-center">
+                                        <div class="w-2/3 bg-darkblue-900 rounded-full h-1.5">
+                                            <div class="bg-darkgreen-500 h-1.5 rounded-full" style="width: 45%"></div>
+                                        </div>
+                                        <span class="text-xs text-gray-400">45%</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="p-3 bg-darkblue-700 rounded-lg">
+                                    <div class="flex justify-between items-center">
+                                        <h4 class="font-medium text-white">Product Manager</h4>
+                                        <span class="bg-darkgreen-600 text-xs px-2 py-1 rounded text-white">5 apps</span>
+                                    </div>
+                                    <p class="text-xs text-gray-400 mt-1">Product • Hybrid</p>
+                                    <div class="mt-2 flex justify-between items-center">
+                                        <div class="w-2/3 bg-darkblue-900 rounded-full h-1.5">
+                                            <div class="bg-darkgreen-500 h-1.5 rounded-full" style="width: 30%"></div>
+                                        </div>
+                                        <span class="text-xs text-gray-400">30%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="w-full mt-4 py-2 bg-darkblue-700 hover:bg-darkblue-600 text-gray-300 rounded-md text-sm">View All Positions</button>
+                        </div>
+                        
+                        <div class="bg-darkblue-800 rounded-lg shadow-lg p-6">
+                            <h3 class="text-lg font-medium text-white mb-4">AI Assistant</h3>
+                            <div class="bg-darkblue-700 rounded-lg p-4">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-8 h-8 rounded-full bg-darkgreen-500 flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-300">Need help optimizing your job descriptions for better candidate matching?</p>
+                                        <button class="mt-3 px-3 py-1 bg-darkgreen-600 hover:bg-darkgreen-500 text-white text-xs rounded">Get AI Help</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 bg-darkblue-700 rounded-lg p-4">
+                                <h4 class="text-sm font-medium text-white mb-2">Quick Actions</h4>
+                                <div class="space-y-2">
+                                    <button class="w-full py-2 bg-darkblue-600 hover:bg-darkblue-500 text-gray-300 rounded text-sm flex items-center justify-center">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                        Scan Business Card
+                                    </button>
+                                    <button class="w-full py-2 bg-darkblue-600 hover:bg-darkblue-500 text-gray-300 rounded text-sm flex items-center justify-center">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                        Schedule Interviews
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Upload functionality
+        const uploadArea = document.querySelector('.upload-area');
+        const fileInput = document.querySelector('input[type="file"]');
+        const browseButton = document.querySelector('.btn-primary');
+        
+        browseButton.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('border-darkgreen-400');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('border-darkgreen-400');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('border-darkgreen-400');
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                // Here you would handle the file upload
+                alert(`${e.dataTransfer.files.length} file(s) selected for upload`);
+            }
+        });
+        
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length) {
+                // Here you would handle the file upload
+                alert(`${fileInput.files.length} file(s) selected for upload`);
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9503c3a6f5e3f242',t:'MTc1MDAwODMwMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

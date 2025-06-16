@@ -1,22 +1,28 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SafeNet Admin Dashboard</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SafeNet Admin Dashboard</title>
 
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Google Material Icons -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <!-- Google Material Icons -->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
 
-  <!-- Anime.js CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" defer></script>
+    <!-- Anime.js CDN -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"
+      defer
+    ></script>
 
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="dashboard.css" />
-</head>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="dashboard.css" />
+  </head>
   <body>
     <header role="banner" aria-label="Primary header">
       <button
@@ -31,6 +37,36 @@
         <span class="material-icons" aria-hidden="true">shield</span>
         SafeNet
       </div>
+
+      <nav
+        class="hidden md:flex items-center space-x-8 text-slate-300 text-sm font-medium"
+        aria-label="Main navigation"
+      >
+        <div class="relative">
+          <button id="profile-btn" aria-label="Profile menu" class="flex items-center focus:outline-none">
+        <span class="material-icons">account_circle</span>
+          </button>
+          <div id="profile-menu" class="absolute right-0 mt-2 w-40 bg-white rounded shadow-lg py-2 z-50 hidden">
+        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
+        <button id="logout-btn" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</button>
+          </div>
+        </div>
+        <a href="#" id="admin-icon" style="display: none;">
+          🔧 Admin
+        </a>
+      </nav>
+      <script>
+        // Profile menu toggle
+        const profileBtn = document.getElementById("profile-btn");
+        const profileMenu = document.getElementById("profile-menu");
+        document.addEventListener("click", (e) => {
+          if (profileBtn.contains(e.target)) {
+        profileMenu.classList.toggle("hidden");
+          } else if (!profileMenu.contains(e.target)) {
+        profileMenu.classList.add("hidden");
+          }
+        });
+      </script>
     </header>
 
     <nav
@@ -182,6 +218,31 @@
           mobileMenuButton.getAttribute("aria-expanded") === "true";
         mobileMenuButton.setAttribute("aria-expanded", !expanded);
         sidebar.classList.toggle("show", !expanded);
+      });
+      window.addEventListener("DOMContentLoaded", () => {
+        const loggedIn = localStorage.getItem("loggedIn");
+
+        // If not logged in, redirect to login
+        if (loggedIn !== "true") {
+          window.location.href = "/index.html";
+        }
+
+        // Show admin icon
+        document.getElementById("admin-icon").style.display = "block";
+      });
+      document.getElementById("logout-btn").addEventListener("click", () => {
+        localStorage.removeItem("loggedIn");
+        window.location.href = "index.html";
+      });
+      // Initialize anime.js animations
+
+      anime({
+        targets: ".card",
+        translateY: [-20, 0],
+        opacity: [0, 1],
+        duration: 500,
+        easing: "easeOutExpo",
+        delay: anime.stagger(100),
       });
     </script>
   </body>
