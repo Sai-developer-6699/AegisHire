@@ -1,0 +1,110 @@
+<html>
+  <head>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter%3Awght%40400%3B500%3B700%3B900&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900"
+    />
+
+    <title>Candidate Dashboard</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  </head>
+  <body>
+    <div class="relative flex size-full min-h-screen flex-col bg-[#111814] dark group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
+      <div class="layout-container flex h-full grow flex-col">
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#283930] px-10 py-3">
+          <div class="flex items-center gap-4 text-white">
+            <div class="size-4">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M36.7273 44C33.9891 44 31.6043 39.8386 30.3636 33.69C29.123 39.8386 26.7382 44 24 44C21.2618 44 18.877 39.8386 17.6364 33.69C16.3957 39.8386 14.0109 44 11.2727 44C7.25611 44 4 35.0457 4 24C4 12.9543 7.25611 4 11.2727 4C14.0109 4 16.3957 8.16144 17.6364 14.31C18.877 8.16144 21.2618 4 24 4C26.7382 4 29.123 8.16144 30.3636 14.31C31.6043 8.16144 33.9891 4 36.7273 4C40.7439 4 44 12.9543 44 24C44 35.0457 40.7439 44 36.7273 44Z"
+                  fill="currentColor"
+                ></path>
+              </svg>
+            </div>
+            <h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">Candidate Exam</h2>
+          </div>
+          <div class="flex flex-1 justify-end gap-8">
+            <div
+              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+              style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAVPifGnb5phLszh3CJmjJWF7tXJebTSU2c0yQV7yCWVpIW6cR0MN9C-LH1Q_LuUQ4f07SKicNEpPfpzUNiNvrXks6-PBYk8ofLDINdh08qqdk3bQcCPz2QcJkPk73jfZDfZeKtyK35ZspguReDMeGsTlckQX76Eb5GiRSGr9ToG8I6i-kDqdANepkh7B12bXN-k456euxPuT4pM5f5030ADSNExP-anc2587ND6v9crUa2F9djb54IUAcslzMIGrOykVuekaiHoFM");'
+            ></div>
+          </div>
+        </header>
+        <div class="px-40 flex flex-1 justify-center py-5">
+          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+            <div class="flex flex-wrap justify-between gap-3 p-4">
+              <div class="flex min-w-72 flex-col gap-3">
+                <p class="text-white tracking-light text-[32px] font-bold leading-tight">Automated Question Generation</p>
+                <p class="text-[#9db9a9] text-sm font-normal leading-normal">
+                  Our AI-powered system automatically generates questions based on the candidate's resume and the job description. This ensures that the questions are relevant and
+                  tailored to the specific role and candidate.
+                </p>
+              </div>
+            </div>
+            <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">How it Works</h2>
+            <div class="grid grid-cols-[40px_1fr] gap-x-2 px-4">
+              <div class="flex flex-col items-center gap-1 pt-3">
+                <div class="text-white" data-icon="MagnifyingGlass" data-size="24px" data-weight="regular">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                    <path
+                      d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"
+                    ></path>
+                  </svg>
+                </div>
+                <div class="w-[1.5px] bg-[#3b5446] h-2 grow"></div>
+              </div>
+              <div class="flex flex-1 flex-col py-3">
+                <p class="text-white text-base font-medium leading-normal">Resume Analysis</p>
+                <p class="text-[#9db9a9] text-base font-normal leading-normal">Our AI analyzes the candidate's resume to identify key skills, experiences, and qualifications.</p>
+              </div>
+              <div class="flex flex-col items-center gap-1">
+                <div class="w-[1.5px] bg-[#3b5446] h-2"></div>
+                <div class="text-white" data-icon="Question" data-size="24px" data-weight="regular">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                    <path
+                      d="M140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180ZM128,72c-22.06,0-40,16.15-40,36v4a8,8,0,0,0,16,0v-4c0-11,10.77-20,24-20s24,9,24,20-10.77,20-24,20a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-.72c18.24-3.35,32-17.9,32-35.28C168,88.15,150.06,72,128,72Zm104,56A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"
+                    ></path>
+                  </svg>
+                </div>
+                <div class="w-[1.5px] bg-[#3b5446] h-2 grow"></div>
+              </div>
+              <div class="flex flex-1 flex-col py-3">
+                <p class="text-white text-base font-medium leading-normal">Question Generation</p>
+                <p class="text-[#9db9a9] text-base font-normal leading-normal">
+                  Based on the resume analysis, the system generates a set of questions designed to assess the candidate's suitability for the role.
+                </p>
+              </div>
+              <div class="flex flex-col items-center gap-1 pb-3">
+                <div class="w-[1.5px] bg-[#3b5446] h-2"></div>
+                <div class="text-white" data-icon="Pencil" data-size="24px" data-weight="regular">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                    <path
+                      d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM51.31,160,136,75.31,152.69,92,68,176.68ZM48,179.31,76.69,208H48Zm48,25.38L79.31,188,164,103.31,180.69,120Zm96-96L147.31,64l24-24L216,84.68Z"
+                    ></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="flex flex-1 flex-col py-3">
+                <p class="text-white text-base font-medium leading-normal">Review &amp; Edit</p>
+                <p class="text-[#9db9a9] text-base font-normal leading-normal">
+                  You have the opportunity to review and edit the generated questions before sending them to the candidate.
+                </p>
+              </div>
+            </div>
+            <div class="flex px-4 py-3 justify-end">
+                <button type="submit"
+                class="w-full py-3 rounded-lg bg-gradient-to-r from-green-500 to-green-400 font-semibold text-white hover:from-green-600 hover:to-green-500 transition select-none">
+                Start
+                </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
