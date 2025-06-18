@@ -57,3 +57,26 @@ def register_api(request):
     ))
 
     return Response({'message': 'User created successfully'})
+
+@api_view(['GET'])
+def get_all_users(request):
+    role = request.GET.get('role') or None
+    status = request.GET.get('status') or None
+
+    cursor = connection.cursor()
+    cursor.callproc('get_users', [role, status])
+    result = cursor.fetchall()
+
+    users = []
+    for row in result:
+        users.append({
+            "id": row[0],
+            "name": row[1],
+            "email": row[2],
+            "role": row[3],
+            "status": row[4],
+            "initials": ''.join([n[0] for n in row[1].split()]).upper(),
+            "color": "text-green-400"  # optionally set by role/status
+        })
+
+    return Response(users)
