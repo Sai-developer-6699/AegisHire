@@ -39,10 +39,9 @@
           <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
             <div class="flex flex-wrap justify-between gap-3 p-4">
               <div class="flex min-w-72 flex-col gap-3">
-                <p class="text-white tracking-light text-[32px] font-bold leading-tight">Automated Question Generation</p>
+                <p class="text-white tracking-light text-[32px] font-bold leading-tight">Instructions for Candidates</p>
                 <p class="text-[#9db9a9] text-sm font-normal leading-normal">
-                  Our AI-powered system automatically generates questions based on the candidate's resume and the job description. This ensures that the questions are relevant and
-                  tailored to the specific role and candidate.
+                  Please read the following instructions carefully before starting the examination.
                 </p>
               </div>
             </div>
@@ -59,48 +58,76 @@
                 <div class="w-[1.5px] bg-[#3b5446] h-2 grow"></div>
               </div>
               <div class="flex flex-1 flex-col py-3">
-                <p class="text-white text-base font-medium leading-normal">Resume Analysis</p>
-                <p class="text-[#9db9a9] text-base font-normal leading-normal">Our AI analyzes the candidate's resume to identify key skills, experiences, and qualifications.</p>
+                <p class="text-white text-base font-medium leading-normal">Read Carefully</p>
+                <p class="text-[#a5b1aa] text-base font-normal leading-normal">Carefully read each question to understand the requirements.</p>
               </div>
               <div class="flex flex-col items-center gap-1">
-                <div class="w-[1.5px] bg-[#3b5446] h-2"></div>
-                <div class="text-white" data-icon="Question" data-size="24px" data-weight="regular">
+                <div class="w-[1.5px] bg-[#424c47] h-2"></div>
+                <div class="text-white" data-icon="Clock" data-size="24px" data-weight="regular">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                     <path
-                      d="M140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180ZM128,72c-22.06,0-40,16.15-40,36v4a8,8,0,0,0,16,0v-4c0-11,10.77-20,24-20s24,9,24,20-10.77,20-24,20a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-.72c18.24-3.35,32-17.9,32-35.28C168,88.15,150.06,72,128,72Zm104,56A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"
+                      d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm64-88a8,8,0,0,1-8,8H128a8,8,0,0,1-8-8V72a8,8,0,0,1,16,0v48h48A8,8,0,0,1,192,128Z"
                     ></path>
                   </svg>
                 </div>
-                <div class="w-[1.5px] bg-[#3b5446] h-2 grow"></div>
+                <div class="w-[1.5px] bg-[#424c47] h-2 grow"></div>
               </div>
               <div class="flex flex-1 flex-col py-3">
-                <p class="text-white text-base font-medium leading-normal">Question Generation</p>
-                <p class="text-[#9db9a9] text-base font-normal leading-normal">
-                  Based on the resume analysis, the system generates a set of questions designed to assess the candidate's suitability for the role.
-                </p>
+                <p class="text-white text-base font-medium leading-normal">Time Limit</p>
+                <p class="text-[#a5b1aa] text-base font-normal leading-normal">There is a time limit for each question. Ensure you manage your time effectively.</p>
+              </div>
+              <div class="flex flex-col items-center gap-1">
+                <div class="w-[1.5px] bg-[#424c47] h-2"></div>
+                <div class="text-white" data-icon="ArrowLeft" data-size="24px" data-weight="regular">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                    <path
+                      d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"
+                    ></path>
+                  </svg>
+                </div>
+                <div class="w-[1.5px] bg-[#424c47] h-2 grow"></div>
+              </div>
+              <div class="flex flex-1 flex-col py-3">
+                <p class="text-white text-base font-medium leading-normal">No Backtracking</p>
+                <p class="text-[#a5b1aa] text-base font-normal leading-normal">Once you proceed to the next question, you cannot go back to previous questions.</p>
+              </div>
+              <div class="flex flex-col items-center gap-1">
+                <div class="w-[1.5px] bg-[#424c47] h-2"></div>
+                <div class="text-white" data-icon="ArrowsClockwise" data-size="24px" data-weight="regular">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                    <path
+                      d="M197.67,186.37a8,8,0,0,1,0,11.29C196.58,198.73,170.82,224,128,224c-37.39,0-64.53-22.4-80-39.85V208a8,8,0,0,1-16,0V160a8,8,0,0,1,8-8H88a8,8,0,0,1,0,16H55.44C67.76,183.35,93,208,128,208c36,0,58.14-21.46,58.36-21.68A8,8,0,0,1,197.67,186.37ZM216,40a8,8,0,0,0-8,8V71.85C192.53,54.4,165.39,32,128,32,85.18,32,59.42,57.27,58.34,58.34a8,8,0,0,0,11.3,11.34C69.86,69.46,92,48,128,48c35,0,60.24,24.65,72.56,40H168a8,8,0,0,0,0,16h48a8,8,0,0,0,8-8V48A8,8,0,0,0,216,40Z"
+                    ></path>
+                  </svg>
+                </div>
+                <div class="w-[1.5px] bg-[#424c47] h-2 grow"></div>
+              </div>
+              <div class="flex flex-1 flex-col py-3">
+                <p class="text-white text-base font-medium leading-normal">Do Not Refresh</p>
+                <p class="text-[#a5b1aa] text-base font-normal leading-normal">Do not refresh the page during the assessment. Refreshing will reset your progress.</p>
               </div>
               <div class="flex flex-col items-center gap-1 pb-3">
-                <div class="w-[1.5px] bg-[#3b5446] h-2"></div>
-                <div class="text-white" data-icon="Pencil" data-size="24px" data-weight="regular">
+                <div class="w-[1.5px] bg-[#424c47] h-2"></div>
+                <div class="text-white" data-icon="Check" data-size="24px" data-weight="regular">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                    <path
-                      d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM51.31,160,136,75.31,152.69,92,68,176.68ZM48,179.31,76.69,208H48Zm48,25.38L79.31,188,164,103.31,180.69,120Zm96-96L147.31,64l24-24L216,84.68Z"
-                    ></path>
+                    <path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"></path>
                   </svg>
                 </div>
               </div>
               <div class="flex flex-1 flex-col py-3">
-                <p class="text-white text-base font-medium leading-normal">Review &amp; Edit</p>
-                <p class="text-[#9db9a9] text-base font-normal leading-normal">
-                  You have the opportunity to review and edit the generated questions before sending them to the candidate.
-                </p>
+                <p class="text-white text-base font-medium leading-normal">Submit Answers</p>
+                <p class="text-[#a5b1aa] text-base font-normal leading-normal">After answering all questions, submit your answers to complete the assessment.</p>
               </div>
             </div>
-            <div class="flex px-4 py-3 justify-end">
-                <button type="submit"
-                class="w-full py-3 rounded-lg bg-gradient-to-r from-green-500 to-green-400 font-semibold text-white hover:from-green-600 hover:to-green-500 transition select-none">
+            <div class="flex px-4 mt-5 justify-end">
+              <button type="submit"
+                class="w-full py-4 rounded-lg bg-gradient-to-r from-green-500 to-green-400 font-semibold text-white 
+                hover:bg-[rgba(46,213,115,0.15)] hover:translate-x-1 
+                active:bg-[rgba(46,213,115,0.1)] transition duration-300 ease-in-out">
                 Start
-                </button>
+              </button>
+            </div>
+            
             </div>
           </div>
         </div>

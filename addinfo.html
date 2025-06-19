@@ -789,9 +789,12 @@
                 <div
                   class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6"
                 >
+
+
                 
                 
                   <div class="form-group">
+                    <form id="user-form">
                     <input
                       type="text"
                       id="first-name"
@@ -1034,8 +1037,7 @@
           <div class="mt-6 flex justify-end space-x-4">
             <button
               class="btn-secondary text-white px-6 py-2 rounded-md"
-              id="cancel-btn-bottom"
-            >
+              id="cancel-btn-bottom">
               Cancel
             </button>
             <button
@@ -1044,6 +1046,7 @@
             >
               Save User
             </button>
+          </form>
           </div>
         </main>
       </div>
@@ -1208,13 +1211,14 @@
           return;
         }
 
-        if (password !== confirmPassword) {
-          alert("Passwords do not match");
-          return;
-        }
+
 
         // In a real implementation, this would submit the form data to a server
-        alert("User created successfully!");
+
+          // ✅ Clear the form (if inside form with id="user-form")
+        document.getElementById("user-form").reset();
+
+        
 
         // Redirect to users list (in a real implementation)
         // window.location.href = 'users.html';
