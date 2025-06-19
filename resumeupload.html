@@ -1,416 +1,1289 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Recruiter - HR Dashboard</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SafeNet HR Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        darkblue: {
-                            900: '#0A1929',
-                            800: '#0F2942',
-                            700: '#173A5E',
-                            600: '#1E4976',
-                        },
-                        darkgreen: {
-                            600: '#0D5F4C',
-                            500: '#0E6655',
-                            400: '#117A63',
-                        }
-                    }
-                }
-            }
-        }
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              darkblue: {
+                950: "#0a1727",
+                900: "#0d1b2a",
+                800: "rgba(3, 28, 50, 0.9)",
+                700: "#1b2c3f",
+              },
+              accent: {
+                green: "#2ed573",
+              },
+            },
+            boxShadow: {
+              glow: "0 0 15px rgba(46, 213, 115, 0.3)",
+            },
+            keyframes: {
+              float: {
+                "0%, 100%": { transform: "translateY(0)" },
+                "50%": { transform: "translateY(-10px)" },
+              },
+              pulse: {
+                "0%, 100%": { opacity: 1 },
+                "50%": { opacity: 0.7 },
+              },
+              headerSlideDown: {
+                "0%": { transform: "translateY(-20px)", opacity: 0 },
+                "100%": { transform: "translateY(0)", opacity: 1 },
+              },
+              sidebarSlideIn: {
+                "0%": { transform: "translateX(-20px)", opacity: 0 },
+                "100%": { transform: "translateX(0)", opacity: 1 },
+              },
+              contentFadeIn: {
+                "0%": { opacity: 0 },
+                "100%": { opacity: 1 },
+              },
+            },
+            animation: {
+              float: "float 3s ease-in-out infinite",
+              pulse: "pulse 2s ease-in-out infinite",
+              headerSlideDown: "headerSlideDown 0.5s ease-out forwards",
+              sidebarSlideIn: "sidebarSlideIn 0.5s ease-out forwards",
+              contentFadeIn: "contentFadeIn 0.8s ease-out forwards",
+            },
+          },
+        },
+      };
     </script>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0A1929;
-        }
-        .sidebar-item {
-            transition: all 0.3s ease;
-        }
-        .sidebar-item:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        .sidebar-item.active {
-            background-color: rgba(14, 102, 85, 0.3);
-            border-left: 3px solid #0E6655;
-        }
-        .upload-area {
-            border: 2px dashed rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-        }
-        .upload-area:hover {
-            border-color: #0E6655;
-        }
-        .btn-primary {
-            background-color: #0E6655;
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover {
-            background-color: #117A63;
-        }
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #0a1727;
+      }
+
+      .sidebar-item {
+        transition: all 0.3s ease;
+      }
+
+      .sidebar-item:hover {
+        background-color: rgba(46, 213, 115, 0.15);
+        transform: translateX(5px);
+      }
+
+      .sidebar-item.active {
+        background-color: rgba(46, 213, 115, 0.2);
+        border-left: 3px solid #2ed573;
+      }
+
+      .submenu {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      .submenu.open {
+        max-height: 500px;
+      }
+
+      .submenu a {
+        transform: translateX(0);
+        transition: all 0.3s ease;
+      }
+
+      .submenu a:hover {
+        transform: translateX(5px);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #2ed573 0%, #10ac84 100%);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-primary::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: all 0.6s ease;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .btn-primary:hover::after {
+        left: 100%;
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .form-input {
+        transition: all 0.3s ease;
+      }
+
+      .form-input:focus {
+        box-shadow: 0 0 0 2px rgba(46, 213, 115, 0.4);
+        transform: translateY(-2px);
+      }
+
+      .resume-row {
+        transition: all 0.3s ease;
+        border-left: 3px solid transparent;
+      }
+
+      .resume-row:hover {
+        background-color: rgba(46, 213, 115, 0.1);
+        border-left: 3px solid #2ed573;
+        transform: translateX(5px);
+      }
+
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(46, 213, 115, 0.1);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .shield-pulse {
+        animation: pulse 2s infinite;
+      }
+
+      .delay-100 {
+        animation-delay: 0.1s;
+      }
+
+      .delay-200 {
+        animation-delay: 0.2s;
+      }
+
+      .delay-300 {
+        animation-delay: 0.3s;
+      }
+
+      .delay-400 {
+        animation-delay: 0.4s;
+      }
+
+      .delay-500 {
+        animation-delay: 0.5s;
+      }
     </style>
-</head>
-<body class="bg-darkblue-900 text-gray-200 min-h-screen">
-    <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar -->
-        <div class="w-64 bg-darkblue-800 border-r border-darkblue-700 flex flex-col">
-            <!-- Logo and Title -->
-            <div class="p-5 border-b border-darkblue-700">
-                <div class="flex items-center space-x-3">
-                    <svg class="w-8 h-8 text-darkgreen-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M6.672 1.911a1 1 0 10-1.932.518l.259.966a1 1 0 001.932-.518l-.26-.966zM2.429 4.74a1 1 0 10-.517 1.932l.966.259a1 1 0 00.517-1.932l-.966-.26zm8.814-.569a1 1 0 00-1.415-1.414l-.707.707a1 1 0 101.415 1.415l.707-.708zm-7.071 7.072l.707-.707A1 1 0 003.465 9.12l-.708.707a1 1 0 001.415 1.415zm3.2-5.171a1 1 0 00-1.3 1.3l4 10a1 1 0 001.823.075l1.38-2.759 3.018 3.02a1 1 0 001.414-1.415l-3.019-3.02 2.76-1.379a1 1 0 00-.076-1.822l-10-4z" clip-rule="evenodd"></path>
-                    </svg>
-                    <h1 class="text-xl font-semibold text-white">AI Recruiter</h1>
-                </div>
-            </div>
-            
-            <!-- Navigation Menu -->
-            <nav class="flex-1 pt-5 pb-4 overflow-y-auto">
-                <ul class="space-y-1 px-2">
-                    <li>
-                        <a href="#" class="sidebar-item active flex items-center px-4 py-3 text-gray-100 rounded-md group">
-                            <svg class="w-5 h-5 mr-3 text-darkgreen-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                            </svg>
-                            <span>Upload Resume</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-md group">
-                            <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
-                            </svg>
-                            <span>Filter Resumes</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-md group">
-                            <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            <span>Generate Qs</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-md group">
-                            <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
-                            </svg>
-                            <span>Start Interview</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-md group">
-                            <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                            <span>Reports</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-            
-            <!-- User Profile -->
-            <div class="p-4 border-t border-darkblue-700">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <div class="w-8 h-8 rounded-full bg-darkgreen-500 flex items-center justify-center text-white font-medium">
-                            HR
-                        </div>
-                    </div>
-                    <div class="ml-3">
-                        <p class="text-sm font-medium text-white">HR Manager</p>
-                        <p class="text-xs text-gray-400">Online</p>
-                    </div>
-                </div>
-            </div>
+  </head>
+  <body class="bg-darkblue-950 text-white min-h-screen flex">
+    <!-- Background Particles -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+      <div
+        class="particle w-2 h-2 top-[10%] left-[5%] animate-float delay-100"
+      ></div>
+      <div
+        class="particle w-3 h-3 top-[20%] left-[15%] animate-float delay-200"
+      ></div>
+      <div
+        class="particle w-2 h-2 top-[30%] left-[25%] animate-float delay-300"
+      ></div>
+      <div
+        class="particle w-4 h-4 top-[40%] left-[35%] animate-float delay-400"
+      ></div>
+      <div
+        class="particle w-2 h-2 top-[50%] left-[45%] animate-float delay-500"
+      ></div>
+      <div
+        class="particle w-3 h-3 top-[60%] left-[55%] animate-float delay-100"
+      ></div>
+      <div
+        class="particle w-2 h-2 top-[70%] left-[65%] animate-float delay-200"
+      ></div>
+      <div
+        class="particle w-4 h-4 top-[80%] left-[75%] animate-float delay-300"
+      ></div>
+      <div
+        class="particle w-2 h-2 top-[90%] left-[85%] animate-float delay-400"
+      ></div>
+      <div
+        class="particle w-3 h-3 top-[15%] left-[95%] animate-float delay-500"
+      ></div>
+    </div>
+
+    <!-- Sidebar -->
+    <div
+      class="w-64 bg-darkblue-900 min-h-screen shadow-lg border-r border-gray-800 fixed animate-sidebarSlideIn z-10"
+    >
+      <!-- Logo -->
+      <div class="p-6 border-b border-gray-800">
+        <div class="flex items-center space-x-3">
+          <div
+            class="w-10 h-10 rounded-lg bg-accent-green bg-opacity-20 flex items-center justify-center shield-pulse"
+          >
+            <svg
+              class="w-6 h-6 text-accent-green"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+          </div>
+          <h1 class="text-xl font-semibold text-white">SafeNet</h1>
         </div>
-        
-        <!-- Main Content -->
-        <div class="flex-1 overflow-auto">
-            <!-- Top Header -->
-            <header class="bg-darkblue-800 shadow-md">
-                <div class="px-6 py-4">
-                    <div class="flex items-center justify-between">
-                        <h2 class="text-xl font-semibold text-white">Upload Resume</h2>
-                        <div class="flex items-center space-x-4">
-                            <button class="p-1 rounded-full text-gray-400 hover:text-white focus:outline-none">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
-                                </svg>
-                            </button>
-                            <button class="p-1 rounded-full text-gray-400 hover:text-white focus:outline-none">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </header>
-            
-            <!-- Dashboard Content -->
-            <main class="p-6">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Upload Area -->
-                    <div class="lg:col-span-2">
-                        <div class="bg-darkblue-800 rounded-lg shadow-lg p-6">
-                            <h3 class="text-lg font-medium text-white mb-4">Upload Candidate Resumes</h3>
-                            <div class="upload-area bg-darkblue-700 rounded-lg p-8 flex flex-col items-center justify-center cursor-pointer">
-                                <svg class="w-16 h-16 text-darkgreen-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                                </svg>
-                                <p class="text-gray-300 text-center mb-2">Drag and drop resume files here</p>
-                                <p class="text-gray-400 text-sm text-center mb-4">Supports PDF, DOCX, TXT (Max 10MB)</p>
-                                <button class="btn-primary px-6 py-2 rounded-md text-white font-medium">Browse Files</button>
-                                <input type="file" class="hidden" multiple accept=".pdf,.docx,.txt">
-                            </div>
-                            
-                            <div class="mt-6">
-                                <h4 class="text-white font-medium mb-3">Upload Options</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div class="bg-darkblue-700 p-4 rounded-lg">
-                                        <div class="flex items-start">
-                                            <div class="flex items-center h-5">
-                                                <input id="auto-parse" type="checkbox" class="h-4 w-4 text-darkgreen-500 border-gray-600 rounded focus:ring-darkgreen-500 bg-darkblue-900">
-                                            </div>
-                                            <div class="ml-3">
-                                                <label for="auto-parse" class="text-sm font-medium text-gray-200">Auto-parse resumes</label>
-                                                <p class="text-xs text-gray-400">Extract key information automatically</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="bg-darkblue-700 p-4 rounded-lg">
-                                        <div class="flex items-start">
-                                            <div class="flex items-center h-5">
-                                                <input id="ai-match" type="checkbox" class="h-4 w-4 text-darkgreen-500 border-gray-600 rounded focus:ring-darkgreen-500 bg-darkblue-900" checked>
-                                            </div>
-                                            <div class="ml-3">
-                                                <label for="ai-match" class="text-sm font-medium text-gray-200">AI matching</label>
-                                                <p class="text-xs text-gray-400">Match candidates to open positions</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-darkblue-800 rounded-lg shadow-lg p-6 mt-6">
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="text-lg font-medium text-white">Recent Uploads</h3>
-                                <button class="text-sm text-darkgreen-400 hover:text-darkgreen-500">View All</button>
-                            </div>
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-darkblue-700">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Name</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Match Score</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-darkblue-700">
-                                        <tr>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="flex items-center">
-                                                    <div class="flex-shrink-0 h-8 w-8 rounded-full bg-darkgreen-600 flex items-center justify-center">
-                                                        <span class="text-xs font-medium text-white">JD</span>
-                                                    </div>
-                                                    <div class="ml-4">
-                                                        <div class="text-sm font-medium text-white">John Doe</div>
-                                                        <div class="text-xs text-gray-400">Software Engineer</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">Today, 10:30 AM</td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-900 text-green-300">Processed</span>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">92%</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="flex items-center">
-                                                    <div class="flex-shrink-0 h-8 w-8 rounded-full bg-blue-800 flex items-center justify-center">
-                                                        <span class="text-xs font-medium text-white">AS</span>
-                                                    </div>
-                                                    <div class="ml-4">
-                                                        <div class="text-sm font-medium text-white">Anna Smith</div>
-                                                        <div class="text-xs text-gray-400">UX Designer</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">Today, 9:15 AM</td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-900 text-green-300">Processed</span>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">87%</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="flex items-center">
-                                                    <div class="flex-shrink-0 h-8 w-8 rounded-full bg-purple-800 flex items-center justify-center">
-                                                        <span class="text-xs font-medium text-white">RJ</span>
-                                                    </div>
-                                                    <div class="ml-4">
-                                                        <div class="text-sm font-medium text-white">Robert Johnson</div>
-                                                        <div class="text-xs text-gray-400">Product Manager</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">Yesterday</td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-900 text-yellow-300">Reviewing</span>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">78%</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Sidebar Content -->
-                    <div class="lg:col-span-1">
-                        <div class="bg-darkblue-800 rounded-lg shadow-lg p-6 mb-6">
-                            <h3 class="text-lg font-medium text-white mb-4">Open Positions</h3>
-                            <div class="space-y-3">
-                                <div class="p-3 bg-darkblue-700 rounded-lg">
-                                    <div class="flex justify-between items-center">
-                                        <h4 class="font-medium text-white">Senior Developer</h4>
-                                        <span class="bg-darkgreen-600 text-xs px-2 py-1 rounded text-white">12 apps</span>
-                                    </div>
-                                    <p class="text-xs text-gray-400 mt-1">Engineering • Remote</p>
-                                    <div class="mt-2 flex justify-between items-center">
-                                        <div class="w-2/3 bg-darkblue-900 rounded-full h-1.5">
-                                            <div class="bg-darkgreen-500 h-1.5 rounded-full" style="width: 70%"></div>
-                                        </div>
-                                        <span class="text-xs text-gray-400">70%</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="p-3 bg-darkblue-700 rounded-lg">
-                                    <div class="flex justify-between items-center">
-                                        <h4 class="font-medium text-white">UX Designer</h4>
-                                        <span class="bg-darkgreen-600 text-xs px-2 py-1 rounded text-white">8 apps</span>
-                                    </div>
-                                    <p class="text-xs text-gray-400 mt-1">Design • On-site</p>
-                                    <div class="mt-2 flex justify-between items-center">
-                                        <div class="w-2/3 bg-darkblue-900 rounded-full h-1.5">
-                                            <div class="bg-darkgreen-500 h-1.5 rounded-full" style="width: 45%"></div>
-                                        </div>
-                                        <span class="text-xs text-gray-400">45%</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="p-3 bg-darkblue-700 rounded-lg">
-                                    <div class="flex justify-between items-center">
-                                        <h4 class="font-medium text-white">Product Manager</h4>
-                                        <span class="bg-darkgreen-600 text-xs px-2 py-1 rounded text-white">5 apps</span>
-                                    </div>
-                                    <p class="text-xs text-gray-400 mt-1">Product • Hybrid</p>
-                                    <div class="mt-2 flex justify-between items-center">
-                                        <div class="w-2/3 bg-darkblue-900 rounded-full h-1.5">
-                                            <div class="bg-darkgreen-500 h-1.5 rounded-full" style="width: 30%"></div>
-                                        </div>
-                                        <span class="text-xs text-gray-400">30%</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <button class="w-full mt-4 py-2 bg-darkblue-700 hover:bg-darkblue-600 text-gray-300 rounded-md text-sm">View All Positions</button>
-                        </div>
-                        
-                        <div class="bg-darkblue-800 rounded-lg shadow-lg p-6">
-                            <h3 class="text-lg font-medium text-white mb-4">AI Assistant</h3>
-                            <div class="bg-darkblue-700 rounded-lg p-4">
-                                <div class="flex items-start space-x-3">
-                                    <div class="w-8 h-8 rounded-full bg-darkgreen-500 flex items-center justify-center">
-                                        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <p class="text-sm text-gray-300">Need help optimizing your job descriptions for better candidate matching?</p>
-                                        <button class="mt-3 px-3 py-1 bg-darkgreen-600 hover:bg-darkgreen-500 text-white text-xs rounded">Get AI Help</button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-4 bg-darkblue-700 rounded-lg p-4">
-                                <h4 class="text-sm font-medium text-white mb-2">Quick Actions</h4>
-                                <div class="space-y-2">
-                                    <button class="w-full py-2 bg-darkblue-600 hover:bg-darkblue-500 text-gray-300 rounded text-sm flex items-center justify-center">
-                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                        </svg>
-                                        Scan Business Card
-                                    </button>
-                                    <button class="w-full py-2 bg-darkblue-600 hover:bg-darkblue-500 text-gray-300 rounded text-sm flex items-center justify-center">
-                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                        </svg>
-                                        Schedule Interviews
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="mt-8 px-4">
+        <div class="space-y-2">
+          <a
+            href="#"
+            class="sidebar-item active flex items-center px-4 py-3 text-white rounded-lg"
+          >
+            <svg
+              class="w-5 h-5 mr-3 text-accent-green"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+              ></path>
+            </svg>
+            <span>Upload Resume</span>
+          </a>
+
+          <a
+            href="#"
+            class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg"
+          >
+            <svg
+              class="w-5 h-5 mr-3 text-accent-green"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+              ></path>
+            </svg>
+            <span>Filter Resume</span>
+          </a>
+
+          <a
+            href="#"
+            class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg"
+          >
+            <svg
+              class="w-5 h-5 mr-3 text-accent-green"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
+            </svg>
+            <span>Finalised Candidate</span>
+          </a>
+
+          <a
+            href="#"
+            class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg"
+          >
+            <svg
+              class="w-5 h-5 mr-3 text-accent-green"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              ></path>
+            </svg>
+            <span>Interview Scheduling</span>
+          </a>
+
+          <a
+            href="#"
+            class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg"
+          >
+            <svg
+              class="w-5 h-5 mr-3 text-accent-green"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              ></path>
+            </svg>
+            <span>Reports</span>
+          </a>
         </div>
+      </nav>
+
+      <!-- User Profile -->
+      <div class="absolute bottom-0 left-0 w-64 p-4 border-t border-gray-800">
+        <div class="flex items-center">
+          <div
+            class="w-10 h-10 rounded-full bg-darkblue-700 flex items-center justify-center text-accent-green font-semibold"
+          >
+            HR
+          </div>
+          <div class="ml-3">
+            <p class="text-sm font-medium text-white">Alex Morgan</p>
+            <p class="text-xs text-gray-400">HR Manager</p>
+          </div>
+          <button class="ml-auto text-gray-400 hover:text-accent-green">
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+              ></path>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              ></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-64 flex-1 animate-contentFadeIn">
+      <!-- Header -->
+      
+
+      <!-- Dashboard Content -->
+      <main class="p-6">
+
+        <!-- Upload Form Section -->
+        <div class="bg-darkblue-800 rounded-xl shadow-lg p-8 mb-8">
+          <h3
+            class="text-3xl font-semibold text-accent-green mb-6 flex items-center"
+          >
+            <svg
+              class="w-8 h-8 mr-3 text-accent-green animate-float"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+              ></path>
+            </svg>
+            Upload Candidate Resume
+          </h3>
+
+          <form class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label
+                  for="fullName"
+                  class="block text-sm font-medium text-gray-300 mb-1"
+                  >Full Name</label
+                >
+                <input
+                  type="text"
+                  id="fullName"
+                  class="form-input w-full px-4 py-3 rounded-lg bg-darkblue-900 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-green focus:border-transparent"
+                  placeholder="Enter candidate's full name"
+                />
+              </div>
+
+              <div>
+                <label
+                  for="email"
+                  class="block text-sm font-medium text-gray-300 mb-1"
+                  >Email Address</label
+                >
+                <input
+                  type="email"
+                  id="email"
+                  class="form-input w-full px-4 py-3 rounded-lg bg-darkblue-900 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-green focus:border-transparent"
+                  placeholder="Enter candidate's email"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
+                for="phone"
+                class="block text-sm font-medium text-gray-300 mb-1"
+                >Phone Number</label
+              >
+              <input
+                type="tel"
+                id="phone"
+                class="form-input w-full px-4 py-3 rounded-lg bg-darkblue-900 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-green focus:border-transparent"
+                placeholder="Enter candidate's phone number"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-1"
+                >Upload Resume</label
+              >
+              <div
+                class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed border-gray-700 rounded-lg bg-darkblue-900 transition-all duration-300 hover:border-accent-green hover:bg-darkblue-800"
+              >
+                <div class="space-y-1 text-center">
+                  <svg
+                    class="mx-auto h-12 w-12 text-gray-400"
+                    stroke="currentColor"
+                    fill="none"
+                    viewBox="0 0 48 48"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <div class="flex text-sm text-gray-400 justify-center">
+                    <label
+                      for="file-upload"
+                      class="relative cursor-pointer rounded-md font-medium text-accent-green hover:text-green-300 focus-within:outline-none"
+                    >
+                      <span>Upload a file</span>
+                      <input
+                        id="file-upload"
+                        name="file-upload"
+                        type="file"
+                        class="sr-only"
+                      />
+                    </label>
+                    <p class="pl-1">or drag and drop</p>
+                  </div>
+                  <p class="text-xs text-gray-400">PDF, DOC, DOCX up to 10MB</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex justify-end">
+              <button
+                type="button"
+                class="btn-secondary px-4 py-2 rounded-lg text-gray-300 hover:text-white mr-3 hover:bg-darkblue-700"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="btn-primary px-6 py-2 text-white font-medium rounded-lg shadow-md"
+              >
+                Submit
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Recent Uploads Section - Line Format -->
+        <div class="bg-darkblue-800 rounded-xl shadow-lg p-6 mb-8">
+          <div class="flex items-center justify-between mb-6">
+            <h3
+              class="text-2xl font-semibold text-accent-green flex items-center"
+            >
+              <svg
+                class="w-6 h-6 mr-2 text-accent-green"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                ></path>
+              </svg>
+              Recent Uploads
+            </h3>
+
+            <div class="flex items-center space-x-4">
+              <div class="relative">
+                <input
+                  type="text"
+                  placeholder="Search resumes..."
+                  class="form-input py-2 pl-10 pr-4 w-64 rounded-lg bg-darkblue-900 border border-gray-700 focus:outline-none focus:ring-1 focus:ring-accent-green text-sm"
+                />
+                <div class="absolute left-3 top-2.5">
+                  <svg
+                    class="w-4 h-4 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    ></path>
+                  </svg>
+                </div>
+              </div>
+
+              <button
+                class="text-sm text-accent-green hover:text-green-300 flex items-center"
+              >
+                View All
+                <svg
+                  class="w-4 h-4 ml-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                  ></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Table Header -->
+          <div
+            class="bg-darkblue-900 rounded-t-lg px-6 py-3 grid grid-cols-12 gap-4 text-sm font-medium text-gray-400"
+          >
+            <div class="col-span-1">#</div>
+            <div class="col-span-3">Name</div>
+            <div class="col-span-3">Email</div>
+            <div class="col-span-2">Date</div>
+            <div class="col-span-1">Status</div>
+            <div class="col-span-2 text-right">Actions</div>
+          </div>
+
+          <!-- Table Body -->
+          <div class="divide-y divide-darkblue-700">
+            <!-- Row 1 -->
+            <div
+              class="resume-row px-6 py-4 grid grid-cols-12 gap-4 items-center bg-darkblue-800 hover:bg-darkblue-700"
+            >
+              <div class="col-span-1 text-gray-400">01</div>
+              <div class="col-span-3 flex items-center">
+                <div
+                  class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-semibold mr-3"
+                >
+                  JD
+                </div>
+                <span class="font-medium text-white">John Doe</span>
+              </div>
+              <div class="col-span-3 text-gray-300">john.doe@example.com</div>
+              <div class="col-span-2 text-gray-400 text-sm">2 hours ago</div>
+              <div class="col-span-1">
+                <span
+                  class="px-2 py-1 bg-green-900 bg-opacity-30 text-green-400 rounded-full text-xs"
+                  >New</span
+                >
+              </div>
+              <div class="col-span-2 flex justify-end space-x-2">
+                <button
+                  class="p-1.5 rounded-lg bg-darkblue-900 text-gray-400 hover:text-accent-green"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    ></path>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    ></path>
+                  </svg>
+                </button>
+                <button
+                  class="p-1.5 rounded-lg bg-darkblue-900 text-gray-400 hover:text-accent-green"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                    ></path>
+                  </svg>
+                </button>
+                <button
+                  class="p-1.5 rounded-lg bg-darkblue-900 text-gray-400 hover:text-accent-green"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                    ></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Row 2 -->
+            <div
+              class="resume-row px-6 py-4 grid grid-cols-12 gap-4 items-center bg-darkblue-800 hover:bg-darkblue-700"
+            >
+              <div class="col-span-1 text-gray-400">02</div>
+              <div class="col-span-3 flex items-center">
+                <div
+                  class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white text-xs font-semibold mr-3"
+                >
+                  JS
+                </div>
+                <span class="font-medium text-white">Jane Smith</span>
+              </div>
+              <div class="col-span-3 text-gray-300">jane.smith@example.com</div>
+              <div class="col-span-2 text-gray-400 text-sm">3 hours ago</div>
+              <div class="col-span-1">
+                <span
+                  class="px-2 py-1 bg-blue-900 bg-opacity-30 text-blue-400 rounded-full text-xs"
+                  >Review</span
+                >
+              </div>
+              <div class="col-span-2 flex justify-end space-x-2">
+                <button
+                  class="p-1.5 rounded-lg bg-darkblue-900 text-gray-400 hover:text-accent-green"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    ></path>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    ></path>
+                  </svg>
+                </button>
+                <button
+                  class="p-1.5 rounded-lg bg-darkblue-900 text-gray-400 hover:text-accent-green"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                    ></path>
+                  </svg>
+                </button>
+                <button
+                  class="p-1.5 rounded-lg bg-darkblue-900 text-gray-400 hover:text-accent-green"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                    ></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Row 3 -->
+            <div
+              class="resume-row px-6 py-4 grid grid-cols-12 gap-4 items-center bg-darkblue-800 hover:bg-darkblue-700"
+            >
+              <div class="col-span-1 text-gray-400">03</div>
+              <div class="col-span-3 flex items-center">
+                <div
+                  class="w-8 h-8 rounded-full bg-amber-600 flex items-center justify-center text-white text-xs font-semibold mr-3"
+                >
+                  RJ
+                </div>
+                <span class="font-medium text-white">Robert Johnson</span>
+              </div>
+              <div class="col-span-3 text-gray-300">robert.j@example.com</div>
+              <div class="col-span-2 text-gray-400 text-sm">Yesterday</div>
+              <div class="col-span-1">
+                <span
+                  class="px-2 py-1 bg-purple-900 bg-opacity-30 text-purple-400 rounded-full text-xs"
+                  >Interview</span
+                >
+              </div>
+              <div class="col-span-2 flex justify-end space-x-2">
+                <button
+                  class="p-1.5 rounded-lg bg-darkblue-900 text-gray-400 hover:text-accent-green"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    ></path>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    ></path>
+                  </svg>
+                </button>
+                <button
+                  class="p-1.5 rounded-lg bg-darkblue-900 text-gray-400 hover:text-accent-green"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                    ></path>
+                  </svg>
+                </button>
+                <button
+                  class="p-1.5 rounded-lg bg-darkblue-900 text-gray-400 hover:text-accent-green"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                    ></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Row 4 -->
+            <div
+              class="resume-row px-6 py-4 grid grid-cols-12 gap-4 items-center bg-darkblue-800 hover:bg-darkblue-700"
+            >
+              <div class="col-span-1 text-gray-400">04</div>
+              <div class="col-span-3 flex items-center">
+                <div
+                  class="w-8 h-8 rounded-full bg-pink-600 flex items-center justify-center text-white text-xs font-semibold mr-3"
+                >
+                  EW
+                </div>
+                <span class="font-medium text-white">Emily Wilson</span>
+              </div>
+              <div class="col-span-3 text-gray-300">emily.w@example.com</div>
+              <div class="col-span-2 text-gray-400 text-sm">2 days ago</div>
+              <div class="col-span-1">
+                <span
+                  class="px-2 py-1 bg-amber-900 bg-opacity-30 text-amber-400 rounded-full text-xs"
+                  >Shortlist</span
+                >
+              </div>
+              <div class="col-span-2 flex justify-end space-x-2">
+                <button
+                  class="p-1.5 rounded-lg bg-darkblue-900 text-gray-400 hover:text-accent-green"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    ></path>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    ></path>
+                  </svg>
+                </button>
+                <button
+                  class="p-1.5 rounded-lg bg-darkblue-900 text-gray-400 hover:text-accent-green"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                    ></path>
+                  </svg>
+                </button>
+                <button
+                  class="p-1.5 rounded-lg bg-darkblue-900 text-gray-400 hover:text-accent-green"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                    ></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Row 5 -->
+            <div
+              class="resume-row px-6 py-4 grid grid-cols-12 gap-4 items-center bg-darkblue-800 hover:bg-darkblue-700"
+            >
+              <div class="col-span-1 text-gray-400">05</div>
+              <div class="col-span-3 flex items-center">
+                <div
+                  class="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center text-white text-xs font-semibold mr-3"
+                >
+                  MB
+                </div>
+                <span class="font-medium text-white">Michael Brown</span>
+              </div>
+              <div class="col-span-3 text-gray-300">michael.b@example.com</div>
+              <div class="col-span-2 text-gray-400 text-sm">3 days ago</div>
+              <div class="col-span-1">
+                <span
+                  class="px-2 py-1 bg-red-900 bg-opacity-30 text-red-400 rounded-full text-xs"
+                  >Rejected</span
+                >
+              </div>
+              <div class="col-span-2 flex justify-end space-x-2">
+                <button
+                  class="p-1.5 rounded-lg bg-darkblue-900 text-gray-400 hover:text-accent-green"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    ></path>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    ></path>
+                  </svg>
+                </button>
+                <button
+                  class="p-1.5 rounded-lg bg-darkblue-900 text-gray-400 hover:text-accent-green"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                    ></path>
+                  </svg>
+                </button>
+                <button
+                  class="p-1.5 rounded-lg bg-darkblue-900 text-gray-400 hover:text-accent-green"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                    ></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Row 6 -->
+            <div
+              class="resume-row px-6 py-4 grid grid-cols-12 gap-4 items-center bg-darkblue-800 hover:bg-darkblue-700"
+            >
+              <div class="col-span-1 text-gray-400">06</div>
+              <div class="col-span-3 flex items-center">
+                <div
+                  class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-semibold mr-3"
+                >
+                  SL
+                </div>
+                <span class="font-medium text-white">Sarah Lee</span>
+              </div>
+              <div class="col-span-3 text-gray-300">sarah.lee@example.com</div>
+              <div class="col-span-2 text-gray-400 text-sm">4 days ago</div>
+              <div class="col-span-1">
+                <span
+                  class="px-2 py-1 bg-green-900 bg-opacity-30 text-green-400 rounded-full text-xs"
+                  >Hired</span
+                >
+              </div>
+              <div class="col-span-2 flex justify-end space-x-2">
+                <button
+                  class="p-1.5 rounded-lg bg-darkblue-900 text-gray-400 hover:text-accent-green"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    ></path>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    ></path>
+                  </svg>
+                </button>
+                <button
+                  class="p-1.5 rounded-lg bg-darkblue-900 text-gray-400 hover:text-accent-green"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                    ></path>
+                  </svg>
+                </button>
+                <button
+                  class="p-1.5 rounded-lg bg-darkblue-900 text-gray-400 hover:text-accent-green"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                    ></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pagination -->
+          <div class="mt-6 flex items-center justify-between">
+            <div class="text-sm text-gray-400">
+              Showing <span class="font-medium text-white">1</span> to
+              <span class="font-medium text-white">6</span> of
+              <span class="font-medium text-white">24</span> results
+            </div>
+
+            <div class="flex space-x-1">
+              <button
+                class="px-3 py-1.5 rounded-lg bg-darkblue-900 text-gray-400 hover:text-accent-green disabled:opacity-50"
+                disabled
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 19l-7-7 7-7"
+                  ></path>
+                </svg>
+              </button>
+              <button
+                class="px-3 py-1.5 rounded-lg bg-accent-green text-white font-medium"
+              >
+                1
+              </button>
+              <button
+                class="px-3 py-1.5 rounded-lg bg-darkblue-900 text-gray-400 hover:text-accent-green hover:bg-darkblue-700"
+              >
+                2
+              </button>
+              <button
+                class="px-3 py-1.5 rounded-lg bg-darkblue-900 text-gray-400 hover:text-accent-green hover:bg-darkblue-700"
+              >
+                3
+              </button>
+              <button
+                class="px-3 py-1.5 rounded-lg bg-darkblue-900 text-gray-400 hover:text-accent-green hover:bg-darkblue-700"
+              >
+                4
+              </button>
+              <button
+                class="px-3 py-1.5 rounded-lg bg-darkblue-900 text-gray-400 hover:text-accent-green"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                  ></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
 
     <script>
-        // Upload functionality
-        const uploadArea = document.querySelector('.upload-area');
-        const fileInput = document.querySelector('input[type="file"]');
-        const browseButton = document.querySelector('.btn-primary');
-        
-        browseButton.addEventListener('click', () => {
-            fileInput.click();
+      // File upload preview functionality
+      const fileUpload = document.getElementById("file-upload");
+      if (fileUpload) {
+        fileUpload.addEventListener("change", function (e) {
+          const fileName = e.target.files[0].name;
+          const fileLabel = document.querySelector(
+            'label[for="file-upload"] span'
+          );
+          fileLabel.textContent = fileName;
         });
-        
-        uploadArea.addEventListener('click', () => {
-            fileInput.click();
+      }
+
+      // Form submission handling
+      const form = document.querySelector("form");
+      if (form) {
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          // Show success notification
+          const notification = document.createElement("div");
+          notification.className =
+            "fixed bottom-4 right-4 bg-accent-green text-white px-4 py-2 rounded-lg shadow-lg flex items-center transform transition-all duration-500";
+          notification.innerHTML = `
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Resume uploaded successfully!
+                `;
+          document.body.appendChild(notification);
+
+          // Clear form
+          form.reset();
+
+          // Remove notification after 3 seconds
+          setTimeout(() => {
+            notification.style.opacity = "0";
+            notification.style.transform = "translateY(20px)";
+            setTimeout(() => {
+              notification.remove();
+            }, 300);
+          }, 3000);
         });
-        
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('border-darkgreen-400');
-        });
-        
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('border-darkgreen-400');
-        });
-        
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('border-darkgreen-400');
-            if (e.dataTransfer.files.length) {
-                fileInput.files = e.dataTransfer.files;
-                // Here you would handle the file upload
-                alert(`${e.dataTransfer.files.length} file(s) selected for upload`);
+      }
+
+      // Sidebar submenu toggle
+      const menuButtons = document.querySelectorAll(".sidebar-menu button");
+      menuButtons.forEach((button) => {
+        button.addEventListener("click", function () {
+          const submenu = this.nextElementSibling;
+          const icon = this.querySelector(".icon-rotate");
+
+          submenu.classList.toggle("open");
+          icon.style.transform = submenu.classList.contains("open")
+            ? "rotate(180deg)"
+            : "rotate(0)";
+
+          // Close other submenus
+          document.querySelectorAll(".submenu.open").forEach((menu) => {
+            if (menu !== submenu) {
+              menu.classList.remove("open");
+              menu.previousElementSibling.querySelector(
+                ".icon-rotate"
+              ).style.transform = "rotate(0)";
             }
+          });
         });
-        
-        fileInput.addEventListener('change', () => {
-            if (fileInput.files.length) {
-                // Here you would handle the file upload
-                alert(`${fileInput.files.length} file(s) selected for upload`);
-            }
+      });
+
+      // Add animation to rows on page load
+      document.addEventListener("DOMContentLoaded", function () {
+        const rows = document.querySelectorAll(".resume-row");
+        rows.forEach((row, index) => {
+          setTimeout(() => {
+            row.classList.add("animate-contentFadeIn");
+          }, index * 100);
         });
+      });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9503c3a6f5e3f242',t:'MTc1MDAwODMwMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+    <script>
+      (function () {
+        function c() {
+          var b = a.contentDocument || a.contentWindow.document;
+          if (b) {
+            var d = b.createElement("script");
+            d.innerHTML =
+              "window.__CF$cv$params={r:'9521f6fad2949a89',t:'MTc1MDMyNDk3Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+            b.getElementsByTagName("head")[0].appendChild(d);
+          }
+        }
+        if (document.body) {
+          var a = document.createElement("iframe");
+          a.height = 1;
+          a.width = 1;
+          a.style.position = "absolute";
+          a.style.top = 0;
+          a.style.left = 0;
+          a.style.border = "none";
+          a.style.visibility = "hidden";
+          document.body.appendChild(a);
+          if ("loading" !== document.readyState) c();
+          else if (window.addEventListener)
+            document.addEventListener("DOMContentLoaded", c);
+          else {
+            var e = document.onreadystatechange || function () {};
+            document.onreadystatechange = function (b) {
+              e(b);
+              "loading" !== document.readyState &&
+                ((document.onreadystatechange = e), c());
+            };
+          }
+        }
+      })();
+    </script>
+  </body>
 </html>
