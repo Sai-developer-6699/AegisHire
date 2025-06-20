@@ -788,11 +788,8 @@
                 <!-- User Details -->
                 <div
                   class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6"
-                >
-
-
-                
-                
+                >               
+    
                   <div class="form-group">
                     <form id="user-form">
                     <input
@@ -1090,52 +1087,67 @@
           arrow.classList.toggle("rotate-180");
         });
 
-      // getting values from the form
 
-      document
-        .getElementById("save-user-btn-bottom")
-        .addEventListener("click", function (e) {
-          e.preventDefault();
 
-          const data = {
-            first_name: document.getElementById("first-name").value,
-            last_name: document.getElementById("last-name").value,
-            email: document.getElementById("email").value,
-            phone_number: document.getElementById("phone").value,
-            department: document.getElementById("department").value,
-            username: document.getElementById("username").value,
-            password: document.getElementById("password").value,
-            confirm_password: document.getElementById("confirm-password").value,
-            status: document.getElementById("status").value,
-            role: document.getElementById("role").value,
-          };
+      
 
-          // Optional: Basic password match check
-          if (data.password !== data.confirm_password) {
-            alert("Passwords do not match!");
-            return;
-          }
+    // getting values from the form
 
-          fetch("http://127.0.0.1:8000/api/register/", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-          })
-            .then((response) => response.json())
-            .then((response) => {
-              if (response.message) {
-                alert(response.message);
-              } else {
-                alert("Registration failed.");
-              }
-            })
-            .catch((error) => {
-              console.error("Error:", error);
-              alert("Something went wrong. Check console.");
-            });
+    document.getElementById("save-user-btn-bottom").addEventListener("click", async function (e) {
+      e.preventDefault();
+
+      const data = {
+        first_name: document.getElementById("first-name").value,
+        last_name: document.getElementById("last-name").value,
+        email: document.getElementById("email").value,
+        phone_number: document.getElementById("phone").value,
+        department: document.getElementById("department").value,
+        username: document.getElementById("username").value,
+        password: document.getElementById("password").value,
+        confirm_password: document.getElementById("confirm-password").value,
+        status: document.getElementById("status").value,
+        role: document.getElementById("role").value,
+      };
+
+      if (data.password !== data.confirm_password) {
+        alert("Passwords do not match!");
+        return;
+      }
+
+      try {
+        // 🔍 Step 1: Check if user exists using username
+        const checkRes = await fetch(`http://127.0.0.1:8000/api/get-user-by-username/${data.username}/`);
+        const checkData = await checkRes.json();
+
+        let url, method;
+
+        if (checkRes.ok && checkData.userid) {
+          // ✅ User exists → update
+          url = `http://127.0.0.1:8000/api/update-user-by-username/${data.username}/`;
+          method = "PUT";
+        } else {
+          // ❌ User doesn't exist → insert
+          url = "http://127.0.0.1:8000/api/register/";
+          method = "POST";
+        }
+
+        // 📨 Step 2: Proceed with insert/update
+        const saveRes = await fetch(url, {
+          method: method,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
         });
+
+        const saveData = await saveRes.json();
+        alert(saveData.message || "Operation completed.");
+        window.location.href = "allusers.html";
+      } catch (err) {
+        console.error("Error:", err);
+        alert("Something went wrong. Check console.");
+      }
+    });
 
       // Initialize custom checkboxes
       function initCheckboxes() {

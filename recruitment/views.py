@@ -80,3 +80,45 @@ def get_all_users(request):
         })
 
     return Response(users)
+
+@api_view(['GET'])
+def get_user_by_username(request, username):
+    cursor = connection.cursor()
+    cursor.execute("SELECT userid FROM users WHERE username = %s", [username])
+    result = cursor.fetchone()
+    
+    if result:
+        return Response({"userid": result[0]})
+    else:
+        return Response({"userid": None})  # Not found
+
+
+@api_view(['PUT'])
+def update_user_by_username(request, username):
+    data = request.data
+    cursor = connection.cursor()
+
+    roleid = get_role_id(data['role'])  # 💡 convert role name to ID
+
+    cursor.execute("""
+        UPDATE users
+        SET first_name=%s, last_name=%s, email=%s,
+            phone_number=%s, department=%s, status=%s, roleid=%s
+        WHERE username = %s
+    """, (
+        data['first_name'], data['last_name'], data['email'],
+        data['phone_number'], data['department'], data['status'], roleid, username
+    ))
+
+    return Response({"message": "User updated successfully"})
+
+
+@api_view(['DELETE'])
+def delete_user(request, userid):
+    cursor = connection.cursor()
+    cursor.execute("DELETE FROM users WHERE userid = %s", [userid])
+    return Response({"message": "User deleted successfully"})
+
+
+
+

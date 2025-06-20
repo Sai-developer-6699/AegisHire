@@ -945,6 +945,29 @@
       </div>
     </div>
 
+    <div
+      id="dialog-modal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50"
+    >
+      <div class="bg-white p-6 rounded shadow-md w-80">
+        <p id="dialog-message" class="mb-4 text-gray-800"></p>
+        <div class="flex justify-end gap-4">
+          <button
+            id="dialog-cancel"
+            class="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded text-gray-800"
+          >
+            Cancel
+          </button>
+          <button
+            id="dialog-confirm"
+            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
     <script>
       // Sample user data
       let users = [];
@@ -1027,9 +1050,9 @@
                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                 </svg>
                             </button>
-                            <button class="action-btn text-red-400 hover:text-red-300" onclick="deleteUser(${
+                            <button id="delete-btn" class="action-btn text-red-400 hover:text-red-300" data-userid="${
                               user.id
-                            })">
+                            }">
                                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                 </svg>
@@ -1066,6 +1089,33 @@
           arrow.classList.toggle("rotate-180");
         });
 
+
+
+      // dialogue box for delete confirmation
+      function showDialog(message, onConfirm) {
+        const modal = document.getElementById("dialog-modal");
+        const msg = document.getElementById("dialog-message");
+        const confirmBtn = document.getElementById("dialog-confirm");
+        const cancelBtn = document.getElementById("dialog-cancel");
+
+        msg.textContent = message;
+        modal.classList.remove("hidden");
+
+        // Clean previous listeners
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+        newConfirmBtn.addEventListener("click", () => {
+          modal.classList.add("hidden");
+          onConfirm();
+        });
+
+        cancelBtn.onclick = () => modal.classList.add("hidden");
+      }
+
+
+
+
       // Search functionality
       document
         .getElementById("search-input")
@@ -1101,20 +1151,31 @@
           });
       }
 
-      // User actions
-      function editUser(userId) {
-        createRippleEffect(event);
-        alert(`Edit user with ID: ${userId}`);
-      }
+      // Add event listeners for delete buttons
+      document.addEventListener("click", function (e) {
+        if (e.target.closest(".action-btn")) {
+          const button = e.target.closest(".action-btn");
+          const userid = button.getAttribute("data-userid");
 
-      function deleteUser(userId) {
-        createRippleEffect(event);
-        if (
-          confirm(`Are you sure you want to delete user with ID: ${userId}?`)
-        ) {
-          alert(`User ${userId} deleted successfully`);
+          // Use your custom modal dialog
+          showDialog("Are you sure you want to delete this user?", () => {
+            fetch(`http://127.0.0.1:8000/api/delete-user/${userid}/`, {
+              method: "DELETE",
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                alert(data.message || "User deleted");
+                fetchAndRenderUsers(); // Refresh your table
+              })
+              .catch((err) => {
+                console.error("Error deleting user:", err);
+                alert("Something went wrong.");
+              });
+          });
         }
-      }
+      });
+
+
 
       // Create animated background effect
       function createParticles() {
@@ -1243,7 +1304,6 @@
 
       createParticles();
 
-      
       window.onload = fetchAndRenderUsers;
     </script>
   </body>

@@ -1,0 +1,1857 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SafeNet HR - Finalised Candidates</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              darkblue: {
+                950: "#0a1727",
+                900: "#0d1b2a",
+                800: "#112240",
+                700: "#1b2c3f",
+              },
+              accent: {
+                green: "#2ed573",
+              },
+              status: {
+                finalised: "#2ed573",
+                offer: "#ffa502",
+                joined: "#70a1ff",
+                rejected: "#ff4757",
+              },
+            },
+            boxShadow: {
+              glow: "0 0 15px rgba(46, 213, 115, 0.3)",
+              "glow-lg": "0 0 25px rgba(46, 213, 115, 0.4)",
+            },
+            keyframes: {
+              float: {
+                "0%, 100%": { transform: "translateY(0)" },
+                "50%": { transform: "translateY(-10px)" },
+              },
+              pulse: {
+                "0%, 100%": { opacity: 1 },
+                "50%": { opacity: 0.7 },
+              },
+              headerSlideDown: {
+                "0%": { transform: "translateY(-20px)", opacity: 0 },
+                "100%": { transform: "translateY(0)", opacity: 1 },
+              },
+              sidebarSlideIn: {
+                "0%": { transform: "translateX(-20px)", opacity: 0 },
+                "100%": { transform: "translateX(0)", opacity: 1 },
+              },
+              contentFadeIn: {
+                "0%": { opacity: 0 },
+                "100%": { opacity: 1 },
+              },
+              cardSlideUp: {
+                "0%": { transform: "translateY(20px)", opacity: 0 },
+                "100%": { transform: "translateY(0)", opacity: 1 },
+              },
+            },
+            animation: {
+              float: "float 3s ease-in-out infinite",
+              pulse: "pulse 2s ease-in-out infinite",
+              headerSlideDown: "headerSlideDown 0.5s ease-out forwards",
+              sidebarSlideIn: "sidebarSlideIn 0.5s ease-out forwards",
+              contentFadeIn: "contentFadeIn 0.8s ease-out forwards",
+              cardSlideUp: "cardSlideUp 0.5s ease-out forwards",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #0a1727;
+      }
+
+      .sidebar-item {
+        transition: all 0.3s ease;
+      }
+
+      .sidebar-item:hover {
+        background-color: rgba(46, 213, 115, 0.15);
+        transform: translateX(5px);
+      }
+
+      .sidebar-item.active {
+        background-color: rgba(46, 213, 115, 0.2);
+        border-left: 3px solid #2ed573;
+      }
+
+      .submenu {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      .submenu.open {
+        max-height: 500px;
+      }
+
+      .submenu a {
+        transform: translateX(0);
+        transition: all 0.3s ease;
+      }
+
+      .submenu a:hover {
+        transform: translateX(5px);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #2ed573 0%, #10ac84 100%);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-primary::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: all 0.6s ease;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .btn-primary:hover::after {
+        left: 100%;
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .form-input {
+        transition: all 0.3s ease;
+      }
+
+      .form-input:focus {
+        box-shadow: 0 0 0 2px rgba(46, 213, 115, 0.4);
+        transform: translateY(-2px);
+      }
+
+      .candidate-card {
+        transition: all 0.3s ease;
+        border-left: 3px solid transparent;
+      }
+
+      .candidate-card:hover {
+        background-color: rgba(46, 213, 115, 0.1);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(46, 213, 115, 0.1);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .shield-pulse {
+        animation: pulse 2s infinite;
+      }
+
+      .delay-100 {
+        animation-delay: 0.1s;
+      }
+
+      .delay-200 {
+        animation-delay: 0.2s;
+      }
+
+      .delay-300 {
+        animation-delay: 0.3s;
+      }
+
+      .delay-400 {
+        animation-delay: 0.4s;
+      }
+
+      .delay-500 {
+        animation-delay: 0.5s;
+      }
+
+      .pagination-btn {
+        transition: all 0.3s ease;
+      }
+
+      .pagination-btn:hover:not(.active) {
+        background-color: rgba(46, 213, 115, 0.2);
+        transform: translateY(-2px);
+      }
+
+      .pagination-btn.active {
+        background-color: #2ed573;
+        color: #0d1b2a;
+      }
+
+      .status-badge {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .status-badge::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        animation: shimmer 2s infinite;
+      }
+
+      @keyframes shimmer {
+        100% {
+          left: 100%;
+        }
+      }
+
+      .btn-action {
+        transition: all 0.3s ease;
+      }
+
+      .btn-action:hover {
+        transform: translateY(-2px);
+      }
+
+      .btn-action.joined:hover {
+        box-shadow: 0 0 15px rgba(46, 213, 115, 0.5);
+      }
+
+      .btn-action.remove:hover {
+        box-shadow: 0 0 15px rgba(255, 71, 87, 0.5);
+      }
+
+      .table-row {
+        transition: all 0.3s ease;
+        border-left: 3px solid transparent;
+      }
+
+      .table-row:hover {
+        background-color: rgba(46, 213, 115, 0.1);
+        border-left: 3px solid #2ed573;
+      }
+
+      .view-toggle-btn {
+        transition: all 0.3s ease;
+      }
+
+      .view-toggle-btn.active {
+        background-color: rgba(46, 213, 115, 0.2);
+        color: #2ed573;
+      }
+
+      .view-toggle-btn:hover:not(.active) {
+        background-color: rgba(46, 213, 115, 0.1);
+      }
+    </style>
+  </head>
+  <body class="bg-darkblue-950 text-white min-h-screen flex">
+    <!-- Background Particles -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+      <div
+        class="particle w-2 h-2 top-[10%] left-[5%] animate-float delay-100"
+      ></div>
+      <div
+        class="particle w-3 h-3 top-[20%] left-[15%] animate-float delay-200"
+      ></div>
+      <div
+        class="particle w-2 h-2 top-[30%] left-[25%] animate-float delay-300"
+      ></div>
+      <div
+        class="particle w-4 h-4 top-[40%] left-[35%] animate-float delay-400"
+      ></div>
+      <div
+        class="particle w-2 h-2 top-[50%] left-[45%] animate-float delay-500"
+      ></div>
+      <div
+        class="particle w-3 h-3 top-[60%] left-[55%] animate-float delay-100"
+      ></div>
+      <div
+        class="particle w-2 h-2 top-[70%] left-[65%] animate-float delay-200"
+      ></div>
+      <div
+        class="particle w-4 h-4 top-[80%] left-[75%] animate-float delay-300"
+      ></div>
+      <div
+        class="particle w-2 h-2 top-[90%] left-[85%] animate-float delay-400"
+      ></div>
+      <div
+        class="particle w-3 h-3 top-[15%] left-[95%] animate-float delay-500"
+      ></div>
+    </div>
+
+    <!-- Sidebar -->
+    <div
+      class="w-64 bg-darkblue-900 min-h-screen shadow-lg border-r border-gray-800 fixed animate-sidebarSlideIn z-10"
+    >
+      <!-- Logo -->
+      <div class="p-6 border-b border-gray-800">
+        <div class="flex items-center space-x-3">
+          <div
+            class="w-10 h-10 rounded-lg bg-accent-green bg-opacity-20 flex items-center justify-center shield-pulse"
+          >
+            <svg
+              class="w-6 h-6 text-accent-green"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+          </div>
+          <h1 class="text-xl font-semibold text-white">SafeNet</h1>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="mt-8 px-4">
+        <div class="space-y-2">
+          <a
+            href="#"
+            class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg"
+          >
+            <svg
+              class="w-5 h-5 mr-3 text-accent-green"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+              ></path>
+            </svg>
+            <span>Upload Resume</span>
+          </a>
+
+          <div class="sidebar-menu">
+            <button
+              class="sidebar-item w-full flex items-center justify-between px-4 py-3 text-gray-300 rounded-lg"
+            >
+              <div class="flex items-center">
+                <svg
+                  class="w-5 h-5 mr-3 text-accent-green"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+                  ></path>
+                </svg>
+                <span>Filter Resume</span>
+              </div>
+              <svg
+                class="w-4 h-4 icon-rotate"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                ></path>
+              </svg>
+            </button>
+            <div class="submenu pl-12 pr-4">
+              <a
+                href="#"
+                class="block py-2 text-sm text-gray-400 hover:text-accent-green"
+                >By Skills</a
+              >
+              <a
+                href="#"
+                class="block py-2 text-sm text-gray-400 hover:text-accent-green"
+                >By Experience</a
+              >
+              <a
+                href="#"
+                class="block py-2 text-sm text-gray-400 hover:text-accent-green"
+                >By Education</a
+              >
+            </div>
+          </div>
+
+          <a
+            href="#"
+            class="sidebar-item active flex items-center px-4 py-3 text-white rounded-lg"
+          >
+            <svg
+              class="w-5 h-5 mr-3 text-accent-green"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
+            </svg>
+            <span>Finalised Candidates</span>
+          </a>
+
+          <a
+            href="#"
+            class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg"
+          >
+            <svg
+              class="w-5 h-5 mr-3 text-accent-green"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              ></path>
+            </svg>
+            <span>Interview Scheduling</span>
+          </a>
+
+          <a
+            href="#"
+            class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg"
+          >
+            <svg
+              class="w-5 h-5 mr-3 text-accent-green"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              ></path>
+            </svg>
+            <span>Reports</span>
+          </a>
+        </div>
+      </nav>
+
+      <!-- User Profile -->
+      <div class="absolute bottom-0 left-0 w-64 p-4 border-t border-gray-800">
+        <div class="flex items-center">
+          <div
+            class="w-10 h-10 rounded-full bg-darkblue-700 flex items-center justify-center text-accent-green font-semibold"
+          >
+            HR
+          </div>
+          <div class="ml-3">
+            <p class="text-sm font-medium text-white">Alex Morgan</p>
+            <p class="text-xs text-gray-400">HR Manager</p>
+          </div>
+          <button class="ml-auto text-gray-400 hover:text-accent-green">
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+              ></path>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              ></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-64 flex-1 animate-contentFadeIn">
+      <!-- Header -->
+      <header
+        class="bg-darkblue-900 shadow-md animate-headerSlideDown sticky top-0 z-10"
+      >
+        <div class="px-6 py-4 flex items-center justify-between">
+          <h2 class="text-xl font-semibold text-white">Finalised Candidates</h2>
+
+          <div class="flex items-center space-x-4">
+            <div class="relative">
+              <button
+                class="p-1 rounded-full text-gray-400 hover:text-accent-green focus:outline-none"
+              >
+                <svg
+                  class="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                  ></path>
+                </svg>
+              </button>
+              <span
+                class="absolute top-0 right-0 w-2 h-2 bg-accent-green rounded-full"
+              ></span>
+            </div>
+
+            <div class="relative">
+              <input
+                type="text"
+                placeholder="Search by name, email, or role"
+                class="form-input py-2 pl-10 pr-4 w-64 rounded-lg bg-darkblue-800 border border-gray-700 focus:outline-none focus:ring-1 focus:ring-accent-green text-sm"
+              />
+              <div class="absolute left-3 top-2.5">
+                <svg
+                  class="w-4 h-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  ></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard Content -->
+      <main class="p-6">
+        <!-- Page Title -->
+        <div class="mb-8">
+          <h1 class="text-3xl font-bold text-accent-green">
+            Finalised Candidates
+          </h1>
+          <p class="text-gray-400 mt-2">
+            View and manage candidates who have been finalised for hiring
+          </p>
+        </div>
+
+        <!-- Filters and View Toggle -->
+        <div
+          class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 space-y-4 md:space-y-0"
+        >
+          <div
+            class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4"
+          >
+            <div>
+              <label
+                for="role-filter"
+                class="block text-sm font-medium text-gray-400 mb-1"
+                >Role</label
+              >
+              <select
+                id="role-filter"
+                class="form-input py-2 px-4 rounded-lg bg-darkblue-800 border border-gray-700 text-white focus:outline-none focus:ring-1 focus:ring-accent-green text-sm w-full sm:w-auto"
+              >
+                <option value="all">All Roles</option>
+                <option value="junior-dev">Junior Developer</option>
+                <option value="senior-dev">Senior Developer</option>
+                <option value="ui-designer">UI Designer</option>
+                <option value="product-manager">Product Manager</option>
+              </select>
+            </div>
+
+            <div>
+              <label
+                for="status-filter"
+                class="block text-sm font-medium text-gray-400 mb-1"
+                >Status</label
+              >
+              <select
+                id="status-filter"
+                class="form-input py-2 px-4 rounded-lg bg-darkblue-800 border border-gray-700 text-white focus:outline-none focus:ring-1 focus:ring-accent-green text-sm w-full sm:w-auto"
+              >
+                <option value="all">All Status</option>
+                <option value="finalised">Finalised</option>
+                <option value="offer-sent">Offer Sent</option>
+                <option value="joined">Joined</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-2 self-end sm:self-auto">
+            <button
+              id="cardViewBtn"
+              class="view-toggle-btn active p-2 rounded-lg flex items-center justify-center"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                ></path>
+              </svg>
+            </button>
+            <button
+              id="tableViewBtn"
+              class="view-toggle-btn p-2 rounded-lg flex items-center justify-center"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 10h16M4 14h16M4 18h16"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card View (Default) -->
+        <div id="cardView" class="space-y-4 mb-8">
+          <!-- Candidate Card 1 -->
+          <div
+            class="candidate-card bg-darkblue-700 rounded-xl p-4 shadow-md border-l-4 border-status-finalised animate-cardSlideUp"
+            style="animation-delay: 0.1s"
+          >
+            <div
+              class="flex flex-col md:flex-row items-start md:items-center justify-between"
+            >
+              <div class="mb-4 md:mb-0">
+                <div class="flex items-center mb-1">
+                  <h4 class="text-lg font-semibold text-white">John Doe</h4>
+                  <span
+                    class="ml-3 px-2.5 py-0.5 bg-darkblue-800 text-status-finalised text-xs rounded-full border border-status-finalised status-badge"
+                    >Finalised</span
+                  >
+                </div>
+                <p class="text-gray-400 text-sm">john.doe@example.com</p>
+                <div class="mt-2 flex items-center">
+                  <span class="text-sm text-gray-400">Role:</span>
+                  <span
+                    class="ml-2 px-2 py-0.5 bg-darkblue-800 text-white text-xs rounded-lg"
+                    >Junior Developer</span
+                  >
+                </div>
+                <p class="text-xs text-gray-400 mt-2">
+                  Finalised on: <span class="text-white">15-06-2023</span>
+                </p>
+              </div>
+
+              <div
+                class="flex flex-col md:flex-row items-start md:items-center space-y-3 md:space-y-0 md:space-x-4"
+              >
+                <a
+                  href="#"
+                  class="text-accent-green hover:text-green-300 underline flex items-center text-sm"
+                >
+                  <svg
+                    class="w-4 h-4 mr-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    ></path>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    ></path>
+                  </svg>
+                  View Resume
+                </a>
+
+                <div class="flex space-x-2">
+                  <button
+                    class="btn-action joined px-3 py-1.5 bg-darkblue-800 hover:bg-darkblue-900 text-accent-green text-xs rounded-lg border border-accent-green flex items-center"
+                  >
+                    <svg
+                      class="w-3 h-3 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      ></path>
+                    </svg>
+                    Mark as Joined
+                  </button>
+
+                  <button
+                    class="btn-action remove px-3 py-1.5 bg-darkblue-800 hover:bg-darkblue-900 text-status-rejected text-xs rounded-lg border border-status-rejected flex items-center"
+                  >
+                    <svg
+                      class="w-3 h-3 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      ></path>
+                    </svg>
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Candidate Card 2 -->
+          <div
+            class="candidate-card bg-darkblue-700 rounded-xl p-4 shadow-md border-l-4 border-status-offer animate-cardSlideUp"
+            style="animation-delay: 0.2s"
+          >
+            <div
+              class="flex flex-col md:flex-row items-start md:items-center justify-between"
+            >
+              <div class="mb-4 md:mb-0">
+                <div class="flex items-center mb-1">
+                  <h4 class="text-lg font-semibold text-white">Jane Smith</h4>
+                  <span
+                    class="ml-3 px-2.5 py-0.5 bg-darkblue-800 text-status-offer text-xs rounded-full border border-status-offer status-badge"
+                    >Offer Sent</span
+                  >
+                </div>
+                <p class="text-gray-400 text-sm">jane.smith@example.com</p>
+                <div class="mt-2 flex items-center">
+                  <span class="text-sm text-gray-400">Role:</span>
+                  <span
+                    class="ml-2 px-2 py-0.5 bg-darkblue-800 text-white text-xs rounded-lg"
+                    >Senior Developer</span
+                  >
+                </div>
+                <p class="text-xs text-gray-400 mt-2">
+                  Finalised on: <span class="text-white">12-06-2023</span>
+                </p>
+              </div>
+
+              <div
+                class="flex flex-col md:flex-row items-start md:items-center space-y-3 md:space-y-0 md:space-x-4"
+              >
+                <a
+                  href="#"
+                  class="text-accent-green hover:text-green-300 underline flex items-center text-sm"
+                >
+                  <svg
+                    class="w-4 h-4 mr-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    ></path>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    ></path>
+                  </svg>
+                  View Resume
+                </a>
+
+                <div class="flex space-x-2">
+                  <button
+                    class="btn-action joined px-3 py-1.5 bg-darkblue-800 hover:bg-darkblue-900 text-accent-green text-xs rounded-lg border border-accent-green flex items-center"
+                  >
+                    <svg
+                      class="w-3 h-3 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      ></path>
+                    </svg>
+                    Mark as Joined
+                  </button>
+
+                  <button
+                    class="btn-action remove px-3 py-1.5 bg-darkblue-800 hover:bg-darkblue-900 text-status-rejected text-xs rounded-lg border border-status-rejected flex items-center"
+                  >
+                    <svg
+                      class="w-3 h-3 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      ></path>
+                    </svg>
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Candidate Card 3 -->
+          <div
+            class="candidate-card bg-darkblue-700 rounded-xl p-4 shadow-md border-l-4 border-status-joined animate-cardSlideUp"
+            style="animation-delay: 0.3s"
+          >
+            <div
+              class="flex flex-col md:flex-row items-start md:items-center justify-between"
+            >
+              <div class="mb-4 md:mb-0">
+                <div class="flex items-center mb-1">
+                  <h4 class="text-lg font-semibold text-white">
+                    Michael Johnson
+                  </h4>
+                  <span
+                    class="ml-3 px-2.5 py-0.5 bg-darkblue-800 text-status-joined text-xs rounded-full border border-status-joined status-badge"
+                    >Joined</span
+                  >
+                </div>
+                <p class="text-gray-400 text-sm">michael.j@example.com</p>
+                <div class="mt-2 flex items-center">
+                  <span class="text-sm text-gray-400">Role:</span>
+                  <span
+                    class="ml-2 px-2 py-0.5 bg-darkblue-800 text-white text-xs rounded-lg"
+                    >UI Designer</span
+                  >
+                </div>
+                <p class="text-xs text-gray-400 mt-2">
+                  Finalised on: <span class="text-white">05-06-2023</span>
+                </p>
+              </div>
+
+              <div
+                class="flex flex-col md:flex-row items-start md:items-center space-y-3 md:space-y-0 md:space-x-4"
+              >
+                <a
+                  href="#"
+                  class="text-accent-green hover:text-green-300 underline flex items-center text-sm"
+                >
+                  <svg
+                    class="w-4 h-4 mr-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    ></path>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    ></path>
+                  </svg>
+                  View Resume
+                </a>
+
+                <div class="flex space-x-2">
+                  <button
+                    class="btn-action joined px-3 py-1.5 bg-accent-green text-black text-xs rounded-lg flex items-center"
+                    disabled
+                  >
+                    <svg
+                      class="w-3 h-3 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      ></path>
+                    </svg>
+                    Joined
+                  </button>
+
+                  <button
+                    class="btn-action remove px-3 py-1.5 bg-darkblue-800 hover:bg-darkblue-900 text-status-rejected text-xs rounded-lg border border-status-rejected flex items-center"
+                  >
+                    <svg
+                      class="w-3 h-3 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      ></path>
+                    </svg>
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Candidate Card 4 -->
+          <div
+            class="candidate-card bg-darkblue-700 rounded-xl p-4 shadow-md border-l-4 border-status-finalised animate-cardSlideUp"
+            style="animation-delay: 0.4s"
+          >
+            <div
+              class="flex flex-col md:flex-row items-start md:items-center justify-between"
+            >
+              <div class="mb-4 md:mb-0">
+                <div class="flex items-center mb-1">
+                  <h4 class="text-lg font-semibold text-white">Emily Wilson</h4>
+                  <span
+                    class="ml-3 px-2.5 py-0.5 bg-darkblue-800 text-status-finalised text-xs rounded-full border border-status-finalised status-badge"
+                    >Finalised</span
+                  >
+                </div>
+                <p class="text-gray-400 text-sm">emily.w@example.com</p>
+                <div class="mt-2 flex items-center">
+                  <span class="text-sm text-gray-400">Role:</span>
+                  <span
+                    class="ml-2 px-2 py-0.5 bg-darkblue-800 text-white text-xs rounded-lg"
+                    >Junior Developer</span
+                  >
+                </div>
+                <p class="text-xs text-gray-400 mt-2">
+                  Finalised on: <span class="text-white">10-06-2023</span>
+                </p>
+              </div>
+
+              <div
+                class="flex flex-col md:flex-row items-start md:items-center space-y-3 md:space-y-0 md:space-x-4"
+              >
+                <a
+                  href="#"
+                  class="text-accent-green hover:text-green-300 underline flex items-center text-sm"
+                >
+                  <svg
+                    class="w-4 h-4 mr-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    ></path>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    ></path>
+                  </svg>
+                  View Resume
+                </a>
+
+                <div class="flex space-x-2">
+                  <button
+                    class="btn-action joined px-3 py-1.5 bg-darkblue-800 hover:bg-darkblue-900 text-accent-green text-xs rounded-lg border border-accent-green flex items-center"
+                  >
+                    <svg
+                      class="w-3 h-3 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      ></path>
+                    </svg>
+                    Mark as Joined
+                  </button>
+
+                  <button
+                    class="btn-action remove px-3 py-1.5 bg-darkblue-800 hover:bg-darkblue-900 text-status-rejected text-xs rounded-lg border border-status-rejected flex items-center"
+                  >
+                    <svg
+                      class="w-3 h-3 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      ></path>
+                    </svg>
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Candidate Card 5 -->
+          <div
+            class="candidate-card bg-darkblue-700 rounded-xl p-4 shadow-md border-l-4 border-status-offer animate-cardSlideUp"
+            style="animation-delay: 0.5s"
+          >
+            <div
+              class="flex flex-col md:flex-row items-start md:items-center justify-between"
+            >
+              <div class="mb-4 md:mb-0">
+                <div class="flex items-center mb-1">
+                  <h4 class="text-lg font-semibold text-white">Robert Brown</h4>
+                  <span
+                    class="ml-3 px-2.5 py-0.5 bg-darkblue-800 text-status-offer text-xs rounded-full border border-status-offer status-badge"
+                    >Offer Sent</span
+                  >
+                </div>
+                <p class="text-gray-400 text-sm">robert.b@example.com</p>
+                <div class="mt-2 flex items-center">
+                  <span class="text-sm text-gray-400">Role:</span>
+                  <span
+                    class="ml-2 px-2 py-0.5 bg-darkblue-800 text-white text-xs rounded-lg"
+                    >Product Manager</span
+                  >
+                </div>
+                <p class="text-xs text-gray-400 mt-2">
+                  Finalised on: <span class="text-white">08-06-2023</span>
+                </p>
+              </div>
+
+              <div
+                class="flex flex-col md:flex-row items-start md:items-center space-y-3 md:space-y-0 md:space-x-4"
+              >
+                <a
+                  href="#"
+                  class="text-accent-green hover:text-green-300 underline flex items-center text-sm"
+                >
+                  <svg
+                    class="w-4 h-4 mr-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    ></path>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    ></path>
+                  </svg>
+                  View Resume
+                </a>
+
+                <div class="flex space-x-2">
+                  <button
+                    class="btn-action joined px-3 py-1.5 bg-darkblue-800 hover:bg-darkblue-900 text-accent-green text-xs rounded-lg border border-accent-green flex items-center"
+                  >
+                    <svg
+                      class="w-3 h-3 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      ></path>
+                    </svg>
+                    Mark as Joined
+                  </button>
+
+                  <button
+                    class="btn-action remove px-3 py-1.5 bg-darkblue-800 hover:bg-darkblue-900 text-status-rejected text-xs rounded-lg border border-status-rejected flex items-center"
+                  >
+                    <svg
+                      class="w-3 h-3 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      ></path>
+                    </svg>
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Table View (Initially Hidden) -->
+        <div id="tableView" class="hidden overflow-x-auto mb-8">
+          <table class="min-w-full bg-darkblue-800 rounded-xl overflow-hidden">
+            <thead class="bg-darkblue-900 text-gray-300 text-sm">
+              <tr>
+                <th class="py-3 px-4 text-left">Name</th>
+                <th class="py-3 px-4 text-left">Email</th>
+                <th class="py-3 px-4 text-left">Role</th>
+                <th class="py-3 px-4 text-left">Status</th>
+                <th class="py-3 px-4 text-left">Finalised Date</th>
+                <th class="py-3 px-4 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-darkblue-700">
+              <tr class="table-row hover:bg-darkblue-700">
+                <td class="py-3 px-4">
+                  <div class="font-medium text-white">John Doe</div>
+                </td>
+                <td class="py-3 px-4 text-gray-400">john.doe@example.com</td>
+                <td class="py-3 px-4">
+                  <span
+                    class="px-2 py-0.5 bg-darkblue-700 text-white text-xs rounded-lg"
+                    >Junior Developer</span
+                  >
+                </td>
+                <td class="py-3 px-4">
+                  <span
+                    class="px-2.5 py-0.5 bg-darkblue-700 text-status-finalised text-xs rounded-full border border-status-finalised status-badge"
+                    >Finalised</span
+                  >
+                </td>
+                <td class="py-3 px-4 text-gray-400">15-06-2023</td>
+                <td class="py-3 px-4">
+                  <div class="flex items-center justify-center space-x-3">
+                    <a
+                      href="#"
+                      class="text-accent-green hover:text-green-300 text-sm"
+                    >
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        ></path>
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        ></path>
+                      </svg>
+                    </a>
+                    <button class="text-accent-green hover:text-green-300">
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M5 13l4 4L19 7"
+                        ></path>
+                      </svg>
+                    </button>
+                    <button class="text-status-rejected hover:text-red-400">
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        ></path>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr class="table-row hover:bg-darkblue-700">
+                <td class="py-3 px-4">
+                  <div class="font-medium text-white">Jane Smith</div>
+                </td>
+                <td class="py-3 px-4 text-gray-400">jane.smith@example.com</td>
+                <td class="py-3 px-4">
+                  <span
+                    class="px-2 py-0.5 bg-darkblue-700 text-white text-xs rounded-lg"
+                    >Senior Developer</span
+                  >
+                </td>
+                <td class="py-3 px-4">
+                  <span
+                    class="px-2.5 py-0.5 bg-darkblue-700 text-status-offer text-xs rounded-full border border-status-offer status-badge"
+                    >Offer Sent</span
+                  >
+                </td>
+                <td class="py-3 px-4 text-gray-400">12-06-2023</td>
+                <td class="py-3 px-4">
+                  <div class="flex items-center justify-center space-x-3">
+                    <a
+                      href="#"
+                      class="text-accent-green hover:text-green-300 text-sm"
+                    >
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        ></path>
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        ></path>
+                      </svg>
+                    </a>
+                    <button class="text-accent-green hover:text-green-300">
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M5 13l4 4L19 7"
+                        ></path>
+                      </svg>
+                    </button>
+                    <button class="text-status-rejected hover:text-red-400">
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        ></path>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr class="table-row hover:bg-darkblue-700">
+                <td class="py-3 px-4">
+                  <div class="font-medium text-white">Michael Johnson</div>
+                </td>
+                <td class="py-3 px-4 text-gray-400">michael.j@example.com</td>
+                <td class="py-3 px-4">
+                  <span
+                    class="px-2 py-0.5 bg-darkblue-700 text-white text-xs rounded-lg"
+                    >UI Designer</span
+                  >
+                </td>
+                <td class="py-3 px-4">
+                  <span
+                    class="px-2.5 py-0.5 bg-darkblue-700 text-status-joined text-xs rounded-full border border-status-joined status-badge"
+                    >Joined</span
+                  >
+                </td>
+                <td class="py-3 px-4 text-gray-400">05-06-2023</td>
+                <td class="py-3 px-4">
+                  <div class="flex items-center justify-center space-x-3">
+                    <a
+                      href="#"
+                      class="text-accent-green hover:text-green-300 text-sm"
+                    >
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        ></path>
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        ></path>
+                      </svg>
+                    </a>
+                    <button class="text-accent-green" disabled>
+                      <svg
+                        class="w-4 h-4"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clip-rule="evenodd"
+                        ></path>
+                      </svg>
+                    </button>
+                    <button class="text-status-rejected hover:text-red-400">
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        ></path>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr class="table-row hover:bg-darkblue-700">
+                <td class="py-3 px-4">
+                  <div class="font-medium text-white">Emily Wilson</div>
+                </td>
+                <td class="py-3 px-4 text-gray-400">emily.w@example.com</td>
+                <td class="py-3 px-4">
+                  <span
+                    class="px-2 py-0.5 bg-darkblue-700 text-white text-xs rounded-lg"
+                    >Junior Developer</span
+                  >
+                </td>
+                <td class="py-3 px-4">
+                  <span
+                    class="px-2.5 py-0.5 bg-darkblue-700 text-status-finalised text-xs rounded-full border border-status-finalised status-badge"
+                    >Finalised</span
+                  >
+                </td>
+                <td class="py-3 px-4 text-gray-400">10-06-2023</td>
+                <td class="py-3 px-4">
+                  <div class="flex items-center justify-center space-x-3">
+                    <a
+                      href="#"
+                      class="text-accent-green hover:text-green-300 text-sm"
+                    >
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        ></path>
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        ></path>
+                      </svg>
+                    </a>
+                    <button class="text-accent-green hover:text-green-300">
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M5 13l4 4L19 7"
+                        ></path>
+                      </svg>
+                    </button>
+                    <button class="text-status-rejected hover:text-red-400">
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        ></path>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr class="table-row hover:bg-darkblue-700">
+                <td class="py-3 px-4">
+                  <div class="font-medium text-white">Robert Brown</div>
+                </td>
+                <td class="py-3 px-4 text-gray-400">robert.b@example.com</td>
+                <td class="py-3 px-4">
+                  <span
+                    class="px-2 py-0.5 bg-darkblue-700 text-white text-xs rounded-lg"
+                    >Product Manager</span
+                  >
+                </td>
+                <td class="py-3 px-4">
+                  <span
+                    class="px-2.5 py-0.5 bg-darkblue-700 text-status-offer text-xs rounded-full border border-status-offer status-badge"
+                    >Offer Sent</span
+                  >
+                </td>
+                <td class="py-3 px-4 text-gray-400">08-06-2023</td>
+                <td class="py-3 px-4">
+                  <div class="flex items-center justify-center space-x-3">
+                    <a
+                      href="#"
+                      class="text-accent-green hover:text-green-300 text-sm"
+                    >
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        ></path>
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        ></path>
+                      </svg>
+                    </a>
+                    <button class="text-accent-green hover:text-green-300">
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M5 13l4 4L19 7"
+                        ></path>
+                      </svg>
+                    </button>
+                    <button class="text-status-rejected hover:text-red-400">
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        ></path>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex flex-col md:flex-row items-center justify-between">
+          <div class="text-sm text-gray-400 mb-4 md:mb-0">
+            Showing <span class="font-medium text-white">1</span> to
+            <span class="font-medium text-white">5</span> of
+            <span class="font-medium text-white">30</span> candidates
+          </div>
+
+          <div class="flex space-x-2">
+            <button
+              class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg bg-darkblue-800 text-gray-400 hover:text-accent-green disabled:opacity-50"
+              disabled
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 19l-7-7 7-7"
+                ></path>
+              </svg>
+            </button>
+            <button
+              class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg active"
+            >
+              1
+            </button>
+            <button
+              class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg bg-darkblue-800 text-gray-300"
+            >
+              2
+            </button>
+            <button
+              class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg bg-darkblue-800 text-gray-300"
+            >
+              3
+            </button>
+            <button
+              class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg bg-darkblue-800 text-gray-300"
+            >
+              4
+            </button>
+            <button
+              class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg bg-darkblue-800 text-gray-300"
+            >
+              5
+            </button>
+            <button
+              class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg bg-darkblue-800 text-gray-400 hover:text-accent-green"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Notification System -->
+    <div
+      id="notificationContainer"
+      class="fixed bottom-4 right-4 z-50 space-y-4"
+    ></div>
+
+    <script>
+      // Sidebar submenu toggle
+      const menuButtons = document.querySelectorAll(".sidebar-menu button");
+      menuButtons.forEach((button) => {
+        button.addEventListener("click", function () {
+          const submenu = this.nextElementSibling;
+          const icon = this.querySelector(".icon-rotate");
+
+          submenu.classList.toggle("open");
+          icon.style.transform = submenu.classList.contains("open")
+            ? "rotate(180deg)"
+            : "rotate(0)";
+
+          // Close other submenus
+          document.querySelectorAll(".submenu.open").forEach((menu) => {
+            if (menu !== submenu) {
+              menu.classList.remove("open");
+              menu.previousElementSibling.querySelector(
+                ".icon-rotate"
+              ).style.transform = "rotate(0)";
+            }
+          });
+        });
+      });
+
+      // View toggle functionality
+      const cardViewBtn = document.getElementById("cardViewBtn");
+      const tableViewBtn = document.getElementById("tableViewBtn");
+      const cardView = document.getElementById("cardView");
+      const tableView = document.getElementById("tableView");
+
+      cardViewBtn.addEventListener("click", function () {
+        cardView.classList.remove("hidden");
+        tableView.classList.add("hidden");
+        cardViewBtn.classList.add("active");
+        tableViewBtn.classList.remove("active");
+      });
+
+      tableViewBtn.addEventListener("click", function () {
+        cardView.classList.add("hidden");
+        tableView.classList.remove("hidden");
+        cardViewBtn.classList.remove("active");
+        tableViewBtn.classList.add("active");
+      });
+
+      // Mark as Joined functionality
+      const joinButtons = document.querySelectorAll(
+        ".btn-action.joined:not([disabled])"
+      );
+      joinButtons.forEach((button) => {
+        button.addEventListener("click", function () {
+          // Get the candidate name
+          const candidateCard = this.closest(".candidate-card");
+          const candidateName = candidateCard
+            ? candidateCard.querySelector("h4").textContent
+            : "Candidate";
+
+          // Update the button to show joined state
+          this.innerHTML = `
+                  <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  Joined
+              `;
+          this.classList.add("bg-accent-green", "text-black");
+          this.classList.remove(
+            "bg-darkblue-800",
+            "hover:bg-darkblue-900",
+            "text-accent-green",
+            "border",
+            "border-accent-green"
+          );
+          this.disabled = true;
+
+          // Update the status badge
+          if (candidateCard) {
+            const statusBadge = candidateCard.querySelector(".status-badge");
+            statusBadge.textContent = "Joined";
+            statusBadge.classList.remove(
+              "text-status-finalised",
+              "border-status-finalised",
+              "text-status-offer",
+              "border-status-offer"
+            );
+            statusBadge.classList.add(
+              "text-status-joined",
+              "border-status-joined"
+            );
+
+            // Update the card border
+            candidateCard.classList.remove(
+              "border-status-finalised",
+              "border-status-offer"
+            );
+            candidateCard.classList.add("border-status-joined");
+          }
+
+          // Show notification
+          showNotification(
+            `${candidateName} marked as joined successfully!`,
+            "success"
+          );
+        });
+      });
+
+      // Remove candidate functionality
+      const removeButtons = document.querySelectorAll(".btn-action.remove");
+      removeButtons.forEach((button) => {
+        button.addEventListener("click", function () {
+          // Get the candidate name
+          const candidateCard =
+            this.closest(".candidate-card") || this.closest("tr");
+          const candidateName = candidateCard.querySelector("h4")
+            ? candidateCard.querySelector("h4").textContent
+            : candidateCard.querySelector("td:first-child div").textContent;
+
+          // Show confirmation dialog
+          if (
+            confirm(
+              `Are you sure you want to remove ${candidateName} from the finalised candidates?`
+            )
+          ) {
+            // Remove the candidate card or row with animation
+            candidateCard.style.opacity = "0";
+            candidateCard.style.transform = "translateY(20px)";
+
+            setTimeout(() => {
+              candidateCard.remove();
+
+              // Show notification
+              showNotification(
+                `${candidateName} has been removed from finalised candidates.`,
+                "warning"
+              );
+            }, 300);
+          }
+        });
+      });
+
+      // Filter functionality
+      const roleFilter = document.getElementById("role-filter");
+      const statusFilter = document.getElementById("status-filter");
+
+      roleFilter.addEventListener("change", applyFilters);
+      statusFilter.addEventListener("change", applyFilters);
+
+      function applyFilters() {
+        const roleValue = roleFilter.value;
+        const statusValue = statusFilter.value;
+
+        // Show notification
+        showNotification(
+          `Filters applied: ${
+            roleValue !== "all"
+              ? roleFilter.options[roleFilter.selectedIndex].text
+              : "All Roles"
+          }, ${
+            statusValue !== "all"
+              ? statusFilter.options[statusFilter.selectedIndex].text
+              : "All Status"
+          }`,
+          "info"
+        );
+
+        // In a real application, this would filter the candidates
+        // For this demo, we'll just show the notification
+      }
+
+      // Notification system
+      function showNotification(message, type = "info") {
+        const container = document.getElementById("notificationContainer");
+
+        // Create notification element
+        const notification = document.createElement("div");
+        notification.className = `transform transition-opacity duration-300 bg-${
+          type === "info" ? "blue" : type === "success" ? "green" : "red"
+        }-500 text-white p-4 rounded-lg shadow-md`;
+        notification.textContent = message;
+
+        container.appendChild(notification);
+        setTimeout(() => {
+          notification.classList.add("opacity-0");
+          setTimeout(() => {
+            notification.remove();
+          }, 300);
+        }, 3000);
+      }
+    </script>
+  </body>
+</html>
