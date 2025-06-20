@@ -795,7 +795,7 @@
                     <input
                       type="text"
                       id="first-name"
-                      class="form-input w-full px-3 py-2 rounded-md focus:outline-none"
+                      class="form-input w-full px-3 py-2 bg-gray-800 rounded-md focus:outline-none"
                       placeholder=" "
                     />
                     <label for="first-name">First Name</label>
@@ -805,7 +805,7 @@
                     <input
                       type="text"
                       id="last-name"
-                      class="form-input w-full px-3 py-2 rounded-md focus:outline-none"
+                      class="form-input w-full px-3 py-2 bg-gray-800 rounded-md focus:outline-none"
                       placeholder=" "
                     />
                     <label for="last-name">Last Name</label>
@@ -815,7 +815,7 @@
                     <input
                       type="email"
                       id="email"
-                      class="form-input w-full px-3 py-2 rounded-md focus:outline-none"
+                      class="form-input w-full px-3 py-2 bg-gray-800 rounded-md focus:outline-none"
                       placeholder=" "
                       required
                     />
@@ -827,7 +827,7 @@
                     <input
                       type="tel"
                       id="phone"
-                      class="form-input w-full px-3 py-2 bg-gray-800 text-white  hover:text-white rounded-md focus:outline-none"
+                      class="form-input w-full px-3 py-2 bg-gray-800 text-white hover:text-white rounded-md focus:outline-none"
                       placeholder=" "
                     />
                     <label for="phone">Phone Number</label>
@@ -836,31 +836,31 @@
                   <div class="form-group">
                     <select
                       id="department"
-                      class="form-select w-full px-3 py-2 rounded-md focus:outline-none"
+                      class="form-select w-full px-3 py-2 bg-gray-800 text-white hover:text-white rounded-md focus:outline-none"
                     >
                       <option value="" selected disabled>
                         Select Department
                       </option>
                       <option
-                        class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white"
+                        class="bg-gray-800 text-green-400 hover:bg-gray-600 hover:text-white"
                         value="hr"
                       >
                         Human Resources
                       </option>
                       <option
-                        class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white"
+                        class="bg-gray-800 text-green-400 hover:bg-gray-600 hover:text-white"
                         value="it"
                       >
                         Information Technology
                       </option>
                       <option
-                        class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white"
+                        class="bg-gray-800 text-green-400 hover:bg-gray-600 hover:text-white"
                         value="marketing"
                       >
                         Marketing
                       </option>
                       <option
-                        class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white"
+                        class="bg-gray-800 text-green-400 hover:bg-gray-600 hover:text-white"
                         value="finance"
                       >
                         Finance
@@ -874,110 +874,10 @@
                     </select>
                   </div>
 
-                  <div class="form-group">
-                    <select
-                      id="position"
-                      class="form-select w-full px-3 py-2 rounded-md focus:outline-none"
-                    >
-                      <option value="" selected disabled>
-                        Select Position
-                      </option>
-                      <option
-                        class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white"
-                        value="manager"
-                      >
-                        Manager
-                      </option>
-                      <option
-                        class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white"
-                        value="team-lead"
-                      >
-                        Team Lead
-                      </option>
-                      <option
-                        class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white"
-                        value="senior"
-                      >
-                        Senior
-                      </option>
-                      <option
-                        class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white"
-                        value="junior"
-                      >
-                        Junior
-                      </option>
-                      <option
-                        class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white"
-                        value="intern"
-                      >
-                        Intern
-                      </option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="bg-gray-800 rounded-lg shadow-lg p-6 mb-6 hover-glow">
-              <h2 class="text-xl font-semibold mb-6 text-white">
-                Account Settings
-              </h2>
-
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="form-group">
-                  <input
-                    type="text"
-                    id="username"
-                    class="form-input w-full px-3 py-2 rounded-md focus:outline-none"
-                    placeholder=" "
-                  />
-                  <label for="username">Username</label>
-                </div>
-
-                <div class="form-group">
-                  <select
-                    id="status"
-                    class="form-select w-full px-3 py-2 rounded-md focus:outline-none"
-                  >
-                    <option value="" selected disabled>Select Status</option>
-                    <option
-                      class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white"
-                      value="active"
-                    >
-                      Active
-                    </option>
-                    <option
-                      class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white"
-                      value="inactive"
-                    >
-                      Inactive
-                    </option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <input
-                    type="password"
-                    id="password"
-                    class="form-input w-full px-3 py-2 rounded-md focus:outline-none"
-                    placeholder=" "
-                  />
-                  <label for="password">Password</label>
-                </div>
-
-                <div class="form-group">
-                  <input
-                    type="password"
-                    id="confirm-password"
-                    class="form-input w-full px-3 py-2 rounded-md focus:outline-none"
-                    placeholder=" "
-                  />
-                  <label for="confirm-password">Confirm Password</label>
-                </div>
-                <div class="form-group">
+                 <div class="form-group">
                   <select
                     id="role"
-                    class="form-select w-full px-3 py-2 rounded-md focus:outline-none"
+                    class="form-select w-full px-3 py-2 bg-gray-800 text-white rounded-md focus:outline-none"
                   >
                     <option value="" selected disabled>Select Role</option>
                     <option
@@ -1006,6 +906,66 @@
                     </option>
                   </select>
                 </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-gray-800 rounded-lg shadow-lg p-6 mb-6 hover-glow">
+              <h2 class="text-xl font-semibold mb-6 text-white">
+                Account Settings
+              </h2>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="form-group">
+                  <input
+                    type="text"
+                    id="username"
+                    class="form-input w-full px-3 py-2 bg-gray-800 rounded-md focus:outline-none"
+                    placeholder=" "
+                  />
+                  <label for="username">Username</label>
+                </div>
+
+                <div class="form-group">
+                  <select
+                    id="status"
+                    class="form-select w-full px-3 py-2 bg-gray-800 rounded-md focus:outline-none"
+                  >
+                    <option value="" selected disabled>Select Status</option>
+                    <option
+                      class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white"
+                      value="active"
+                    >
+                      Active
+                    </option>
+                    <option
+                      class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white"
+                      value="inactive"
+                    >
+                      Inactive
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <input
+                    type="password"
+                    id="password"
+                    class="form-input w-full px-3 py-2 bg-gray-800 rounded-md focus:outline-none"
+                    placeholder=" "
+                  />
+                  <label for="password">Password</label>
+                </div>
+
+                <div class="form-group">
+                  <input
+                    type="password"
+                    id="confirm-password"
+                    class="form-input w-full px-3 py-2 bg-gray-800 rounded-md focus:outline-none"
+                    placeholder=" "
+                  />
+                  <label for="confirm-password">Confirm Password</label>
+                </div>                
               </div>
 
               <div class="mt-6">

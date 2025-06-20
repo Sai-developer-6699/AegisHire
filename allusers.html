@@ -284,7 +284,37 @@
         cursor: not-allowed;
       }
 
-      .action-btn {
+      .action-button {
+        transition: all 0.3s ease;
+        position: relative;
+        z-index: 1;
+      }
+
+      .action-button::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: all 0.4s ease;
+        z-index: -1;
+      }
+
+      .action-button:hover {
+        transform: translateY(-3px);
+      }
+
+      .action-button:hover::before {
+        width: 35px;
+        height: 35px;
+      }
+
+
+       .action-btn {
         transition: all 0.3s ease;
         position: relative;
         z-index: 1;
@@ -1050,7 +1080,7 @@
                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                 </svg>
                             </button>
-                            <button id="delete-btn" class="action-btn text-red-400 hover:text-red-300" data-userid="${
+                            <button id="delete-btn" class="action-button text-red-400 hover:text-red-300" data-userid="${
                               user.id
                             }">
                                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -1153,8 +1183,8 @@
 
       // Add event listeners for delete buttons
       document.addEventListener("click", function (e) {
-        if (e.target.closest(".action-btn")) {
-          const button = e.target.closest(".action-btn");
+        if (e.target.closest(".action-button")) {
+          const button = e.target.closest(".action-button");
           const userid = button.getAttribute("data-userid");
 
           // Use your custom modal dialog
