@@ -32,9 +32,9 @@ def login_api(request):
 def get_role_id(role_name):
     role_map = {
         "admin": 1,
-        "Manager": 2,
-        "HR": 3,
-        "Candidate": 4
+        "Manager": 3,
+        "HR": 2,
+        "Candidate": 4,
     }
     return role_map.get(role_name, 4)  # Default to Candidate
 
