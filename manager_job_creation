@@ -1,0 +1,451 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeNet - Job Creation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1b2a;
+            color: #ffffff;
+        }
+        
+        .sidebar-item {
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-item:hover:not(.active) {
+            background-color: rgba(46, 213, 115, 0.1);
+        }
+        
+        .sidebar-item.active {
+            border-left: 4px solid #2ed573;
+            color: #2ed573;
+            background-color: rgba(46, 213, 115, 0.05);
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2ed573;
+            box-shadow: 0 0 0 1px #2ed573;
+        }
+        
+        .btn-primary {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 0 15px rgba(46, 213, 115, 0.4);
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+        
+        .skill-pill {
+            transition: all 0.2s ease;
+        }
+        
+        .skill-pill:hover {
+            transform: translateY(-2px);
+        }
+        
+        .skill-pill.active {
+            background-color: #2ed573;
+            color: #0d1b2a;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #0a1727;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #2ed573;
+            border-radius: 4px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .sidebar-content {
+                flex-direction: row;
+                overflow-x: auto;
+                padding: 1rem;
+            }
+            
+            .sidebar-item {
+                border-left: none;
+                border-bottom: 2px solid transparent;
+                padding: 0.5rem 1rem;
+                margin-right: 1rem;
+            }
+            
+            .sidebar-item.active {
+                border-left: none;
+                border-bottom: 2px solid #2ed573;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="dashboard-container flex">
+        <!-- Sidebar -->
+        <div class="sidebar bg-[#0a1727] w-64 min-h-screen fixed left-0 top-0 z-10 shadow-lg md:block hidden">
+            <div class="sidebar-content flex flex-col h-full">
+                <div class="p-6">
+                    <h2 class="text-2xl font-bold text-white">SafeNet</h2>
+                    <p class="text-[#9ca3af] text-sm mt-1">Recruitment Manager</p>
+                </div>
+                
+                <nav class="flex-1 mt-6">
+                    <a href="#" class="sidebar-item flex items-center px-6 py-3 text-[#9ca3af]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        Dashboard
+                    </a>
+                    <a href="#" class="sidebar-item active flex items-center px-6 py-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Job Creation
+                    </a>
+                    <a href="#" class="sidebar-item flex items-center px-6 py-3 text-[#9ca3af]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        Shortlist Candidates
+                    </a>
+                    <a href="#" class="sidebar-item flex items-center px-6 py-3 text-[#9ca3af]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        Candidate Performance
+                    </a>
+                </nav>
+                
+                <div class="mt-auto p-6">
+                    <a href="#" class="flex items-center text-[#9ca3af] hover:text-[#2ed573] transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Sidebar Toggle -->
+        <div class="md:hidden fixed top-4 left-4 z-20">
+            <button id="sidebar-toggle" class="bg-[#112240] p-2 rounded-md">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Mobile Sidebar -->
+        <div id="mobile-sidebar" class="md:hidden fixed inset-0 bg-black bg-opacity-50 z-10 hidden">
+            <div class="bg-[#0a1727] w-64 h-full overflow-y-auto">
+                <div class="flex justify-between items-center p-4 border-b border-gray-700">
+                    <h2 class="text-xl font-bold text-white">SafeNet</h2>
+                    <button id="close-sidebar" class="text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <nav class="mt-4">
+                    <a href="#" class="sidebar-item flex items-center px-6 py-3 text-[#9ca3af]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        Dashboard
+                    </a>
+                    <a href="#" class="sidebar-item active flex items-center px-6 py-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Job Creation
+                    </a>
+                    <a href="#" class="sidebar-item flex items-center px-6 py-3 text-[#9ca3af]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        Shortlist Candidates
+                    </a>
+                    <a href="#" class="sidebar-item flex items-center px-6 py-3 text-[#9ca3af]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        Candidate Performance
+                    </a>
+                </nav>
+                <div class="mt-auto p-6">
+                    <a href="#" class="flex items-center text-[#9ca3af] hover:text-[#2ed573] transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1 ml-0 md:ml-64 p-6">
+            <div class="max-w-4xl mx-auto">
+                <h1 class="text-3xl font-bold text-[#2ed573] mb-8">Create Job Post</h1>
+                
+                <div class="bg-[#112240] rounded-lg shadow-lg p-6 mb-8">
+                    <form id="jobForm">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Job Title -->
+                            <div class="col-span-2">
+                                <label for="jobTitle" class="block text-[#2ed573] mb-2 font-medium">Job Title</label>
+                                <input type="text" id="jobTitle" class="w-full bg-[#0d1b2a] border border-gray-700 rounded-md px-4 py-3 text-white placeholder-[#9ca3af] transition-all focus:border-[#2ed573]" placeholder="Enter job title">
+                            </div>
+                            
+                            <!-- Job Category -->
+                            <div>
+                                <label for="jobCategory" class="block text-[#2ed573] mb-2 font-medium">Job Category</label>
+                                <select id="jobCategory" class="w-full bg-[#0d1b2a] border border-gray-700 rounded-md px-4 py-3 text-white placeholder-[#9ca3af] transition-all focus:border-[#2ed573]">
+                                    <option value="" disabled selected>Select category</option>
+                                    <option value="frontend">Frontend</option>
+                                    <option value="backend">Backend</option>
+                                    <option value="datascience">Data Science</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Experience -->
+                            <div>
+                                <label for="experience" class="block text-[#2ed573] mb-2 font-medium">Experience Required</label>
+                                <select id="experience" class="w-full bg-[#0d1b2a] border border-gray-700 rounded-md px-4 py-3 text-white placeholder-[#9ca3af] transition-all focus:border-[#2ed573]">
+                                    <option value="" disabled selected>Select experience</option>
+                                    <option value="fresher">Fresher</option>
+                                    <option value="0-1">0-1 Year</option>
+                                    <option value="1-3">1-3 Years</option>
+                                    <option value="3+">3+ Years</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Education -->
+                            <div>
+                                <label for="education" class="block text-[#2ed573] mb-2 font-medium">Education</label>
+                                <select id="education" class="w-full bg-[#0d1b2a] border border-gray-700 rounded-md px-4 py-3 text-white placeholder-[#9ca3af] transition-all focus:border-[#2ed573]">
+                                    <option value="" disabled selected>Select education</option>
+                                    <option value="be">B.E.</option>
+                                    <option value="btech">B.Tech</option>
+                                    <option value="mca">MCA</option>
+                                    <option value="bsc">B.Sc</option>
+                                    <option value="any">Any Graduate</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Location -->
+                            <div>
+                                <label for="location" class="block text-[#2ed573] mb-2 font-medium">Location</label>
+                                <input type="text" id="location" class="w-full bg-[#0d1b2a] border border-gray-700 rounded-md px-4 py-3 text-white placeholder-[#9ca3af] transition-all focus:border-[#2ed573]" placeholder="Enter job location">
+                            </div>
+                            
+                            <!-- Technical Skills -->
+                            <div class="col-span-2" id="technicalSkillsContainer">
+                                <label class="block text-[#2ed573] mb-2 font-medium">Technical Skills</label>
+                                <div id="technicalSkills" class="flex flex-wrap gap-2">
+                                    <p class="text-[#9ca3af] italic">Select a job category to see relevant skills</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Soft Skills -->
+                            <div class="col-span-2" id="softSkillsContainer">
+                                <label class="block text-[#2ed573] mb-2 font-medium">Soft Skills</label>
+                                <div id="softSkills" class="flex flex-wrap gap-2">
+                                    <p class="text-[#9ca3af] italic">Select a job category to see relevant skills</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Job Description -->
+                            <div class="col-span-2">
+                                <label for="jobDescription" class="block text-[#2ed573] mb-2 font-medium">Job Description</label>
+                                <textarea id="jobDescription" rows="4" class="w-full bg-[#0d1b2a] border border-gray-700 rounded-md px-4 py-3 text-white placeholder-[#9ca3af] transition-all focus:border-[#2ed573]" placeholder="Enter detailed job description"></textarea>
+                            </div>
+                            
+                            <!-- Other Requirements -->
+                            <div class="col-span-2">
+                                <label for="otherRequirements" class="block text-[#2ed573] mb-2 font-medium">Other Requirements</label>
+                                <textarea id="otherRequirements" rows="3" class="w-full bg-[#0d1b2a] border border-gray-700 rounded-md px-4 py-3 text-white placeholder-[#9ca3af] transition-all focus:border-[#2ed573]" placeholder="Enter any additional requirements or qualifications"></textarea>
+                            </div>
+                            
+                            <!-- Buttons -->
+                            <div class="col-span-2 flex flex-col sm:flex-row gap-4 mt-4">
+                                <button type="submit" class="btn-primary bg-[#2ed573] text-black font-medium py-3 px-6 rounded-md hover:bg-opacity-90 flex-1">
+                                    <span class="flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                        </svg>
+                                        Send to HR for Evaluation
+                                    </span>
+                                </button>
+                                <button type="reset" class="btn-secondary bg-[#374151] text-white font-medium py-3 px-6 rounded-md hover:bg-[#4b5563] flex-1 sm:flex-none">
+                                    <span class="flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                        Reset Form
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile sidebar toggle
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const closeSidebar = document.getElementById('close-sidebar');
+        const mobileSidebar = document.getElementById('mobile-sidebar');
+        
+        sidebarToggle.addEventListener('click', () => {
+            mobileSidebar.classList.toggle('hidden');
+        });
+        
+        closeSidebar.addEventListener('click', () => {
+            mobileSidebar.classList.add('hidden');
+        });
+        
+        // Job category selection and skills display
+        const jobCategory = document.getElementById('jobCategory');
+        const technicalSkills = document.getElementById('technicalSkills');
+        const softSkills = document.getElementById('softSkills');
+        
+        const skillsData = {
+            frontend: {
+                technical: ['HTML', 'CSS', 'JavaScript', 'React', 'Vue', 'Angular'],
+                soft: ['Communication', 'Attention to Detail', 'Teamwork']
+            },
+            backend: {
+                technical: ['Node.js', 'Python', 'Java', 'SQL', 'MongoDB', 'Express'],
+                soft: ['Problem Solving', 'Time Management', 'Critical Thinking']
+            },
+            datascience: {
+                technical: ['Python', 'R', 'SQL', 'Machine Learning', 'Data Visualization', 'Statistics'],
+                soft: ['Analytical Thinking', 'Communication', 'Research']
+            }
+        };
+        
+        function createSkillPill(skill, type) {
+            const pill = document.createElement('div');
+            pill.className = 'skill-pill cursor-pointer px-4 py-2 rounded-full border border-[#2ed573] text-[#9ca3af] text-sm transition-all';
+            pill.textContent = skill;
+            pill.dataset.selected = 'false';
+            
+            pill.addEventListener('click', () => {
+                if (pill.dataset.selected === 'false') {
+                    pill.dataset.selected = 'true';
+                    pill.classList.add('active');
+                } else {
+                    pill.dataset.selected = 'false';
+                    pill.classList.remove('active');
+                }
+            });
+            
+            return pill;
+        }
+        
+        jobCategory.addEventListener('change', () => {
+            const category = jobCategory.value;
+            
+            if (skillsData[category]) {
+                // Clear existing skills
+                technicalSkills.innerHTML = '';
+                softSkills.innerHTML = '';
+                
+                // Add technical skills
+                skillsData[category].technical.forEach(skill => {
+                    const pill = createSkillPill(skill, 'technical');
+                    technicalSkills.appendChild(pill);
+                    
+                    // Auto-select first three skills for frontend
+                    if (category === 'frontend' && ['HTML', 'CSS', 'JavaScript'].includes(skill)) {
+                        pill.click();
+                    }
+                });
+                
+                // Add soft skills
+                skillsData[category].soft.forEach(skill => {
+                    const pill = createSkillPill(skill, 'soft');
+                    softSkills.appendChild(pill);
+                    
+                    // Auto-select all soft skills for frontend
+                    if (category === 'frontend') {
+                        pill.click();
+                    }
+                });
+            }
+        });
+        
+        // Form submission
+        const jobForm = document.getElementById('jobForm');
+        
+        jobForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Get selected skills
+            const selectedTechnicalSkills = Array.from(document.querySelectorAll('#technicalSkills .skill-pill[data-selected="true"]'))
+                .map(pill => pill.textContent);
+            
+            const selectedSoftSkills = Array.from(document.querySelectorAll('#softSkills .skill-pill[data-selected="true"]'))
+                .map(pill => pill.textContent);
+            
+            // Create job data object
+            const jobData = {
+                title: document.getElementById('jobTitle').value,
+                category: document.getElementById('jobCategory').value,
+                experience: document.getElementById('experience').value,
+                education: document.getElementById('education').value,
+                location: document.getElementById('location').value,
+                technicalSkills: selectedTechnicalSkills,
+                softSkills: selectedSoftSkills,
+                description: document.getElementById('jobDescription').value,
+                otherRequirements: document.getElementById('otherRequirements').value
+            };
+            
+            // In a real app, you would send this data to your backend
+            console.log('Job data submitted:', jobData);
+            
+            // Show success message
+            alert('Job post sent to HR for evaluation!');
+        });
+        
+        // Reset form
+        const resetButton = document.querySelector('button[type="reset"]');
+        resetButton.addEventListener('click', () => {
+            // Clear skills containers
+            technicalSkills.innerHTML = '<p class="text-[#9ca3af] italic">Select a job category to see relevant skills</p>';
+            softSkills.innerHTML = '<p class="text-[#9ca3af] italic">Select a job category to see relevant skills</p>';
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'952fa01b9776801c',t:'MTc1MDQ2ODIxOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
