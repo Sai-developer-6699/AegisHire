@@ -1,927 +1,1664 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SafeNet HR - Filter Resume</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        darkblue: {
-                            950: '#0a1727',
-                            900: '#0d1b2a',
-                            800: '#112240',
-                            700: '#1b2c3f',
-                        },
-                        accent: {
-                            green: '#2ed573',
-                        }
-                    },
-                    boxShadow: {
-                        'glow': '0 0 15px rgba(46, 213, 115, 0.3)',
-                        'glow-lg': '0 0 25px rgba(46, 213, 115, 0.4)',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' },
-                        },
-                        pulse: {
-                            '0%, 100%': { opacity: 1 },
-                            '50%': { opacity: 0.7 },
-                        },
-                        headerSlideDown: {
-                            '0%': { transform: 'translateY(-20px)', opacity: 0 },
-                            '100%': { transform: 'translateY(0)', opacity: 1 },
-                        },
-                        sidebarSlideIn: {
-                            '0%': { transform: 'translateX(-20px)', opacity: 0 },
-                            '100%': { transform: 'translateX(0)', opacity: 1 },
-                        },
-                        contentFadeIn: {
-                            '0%': { opacity: 0 },
-                            '100%': { opacity: 1 },
-                        },
-                        cardSlideUp: {
-                            '0%': { transform: 'translateY(20px)', opacity: 0 },
-                            '100%': { transform: 'translateY(0)', opacity: 1 },
-                        }
-                    },
-                    animation: {
-                        float: 'float 3s ease-in-out infinite',
-                        pulse: 'pulse 2s ease-in-out infinite',
-                        headerSlideDown: 'headerSlideDown 0.5s ease-out forwards',
-                        sidebarSlideIn: 'sidebarSlideIn 0.5s ease-out forwards',
-                        contentFadeIn: 'contentFadeIn 0.8s ease-out forwards',
-                        cardSlideUp: 'cardSlideUp 0.5s ease-out forwards',
-                    }
-                }
-            }
-        }
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              darkblue: {
+                950: "#0a1727",
+                900: "#0d1b2a",
+                800: "#112240",
+                700: "#1b2c3f",
+              },
+              accent: {
+                green: "#2ed573",
+              },
+            },
+            boxShadow: {
+              glow: "0 0 15px rgba(46, 213, 115, 0.3)",
+              "glow-lg": "0 0 25px rgba(46, 213, 115, 0.4)",
+            },
+            keyframes: {
+              float: {
+                "0%, 100%": { transform: "translateY(0)" },
+                "50%": { transform: "translateY(-10px)" },
+              },
+              pulse: {
+                "0%, 100%": { opacity: 1 },
+                "50%": { opacity: 0.7 },
+              },
+              headerSlideDown: {
+                "0%": { transform: "translateY(-20px)", opacity: 0 },
+                "100%": { transform: "translateY(0)", opacity: 1 },
+              },
+              sidebarSlideIn: {
+                "0%": { transform: "translateX(-20px)", opacity: 0 },
+                "100%": { transform: "translateX(0)", opacity: 1 },
+              },
+              contentFadeIn: {
+                "0%": { opacity: 0 },
+                "100%": { opacity: 1 },
+              },
+              cardSlideUp: {
+                "0%": { transform: "translateY(20px)", opacity: 0 },
+                "100%": { transform: "translateY(0)", opacity: 1 },
+              },
+            },
+            animation: {
+              float: "float 3s ease-in-out infinite",
+              pulse: "pulse 2s ease-in-out infinite",
+              headerSlideDown: "headerSlideDown 0.5s ease-out forwards",
+              sidebarSlideIn: "sidebarSlideIn 0.5s ease-out forwards",
+              contentFadeIn: "contentFadeIn 0.8s ease-out forwards",
+              cardSlideUp: "cardSlideUp 0.5s ease-out forwards",
+            },
+          },
+        },
+      };
     </script>
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #0a1727;
-        }
-        
-        .sidebar-item {
-            transition: all 0.3s ease;
-        }
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #0a1727;
+      }
 
-        .sidebar-item:hover {
-            background-color: rgba(46, 213, 115, 0.15);
-            transform: translateX(5px);
-        }
+      .sidebar-item {
+        transition: all 0.3s ease;
+      }
 
-        .sidebar-item.active {
-            background-color: rgba(46, 213, 115, 0.2);
-            border-left: 3px solid #2ed573;
-        }
+      .sidebar-item:hover {
+        background-color: rgba(46, 213, 115, 0.15);
+        transform: translateX(5px);
+      }
 
-        .submenu {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+      .sidebar-item.active {
+        background-color: rgba(46, 213, 115, 0.2);
+        border-left: 3px solid #2ed573;
+      }
 
-        .submenu.open {
-            max-height: 500px;
-        }
+      .submenu {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
 
-        .submenu a {
-            transform: translateX(0);
-            transition: all 0.3s ease;
-        }
+      .submenu.open {
+        max-height: 500px;
+      }
 
-        .submenu a:hover {
-            transform: translateX(5px);
-        }
+      .submenu a {
+        transform: translateX(0);
+        transition: all 0.3s ease;
+      }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #2ed573 0%, #10ac84 100%);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
+      .submenu a:hover {
+        transform: translateX(5px);
+      }
 
-        .btn-primary::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(255, 255, 255, 0.2),
-                transparent
-            );
-            transition: all 0.6s ease;
-        }
+      .btn-primary {
+        background: linear-gradient(135deg, #2ed573 0%, #10ac84 100%);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
 
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-        }
+      .btn-primary::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: all 0.6s ease;
+      }
 
-        .btn-primary:hover::after {
-            left: 100%;
-        }
+      .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      }
 
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .form-input {
-            transition: all 0.3s ease;
-        }
-        
-        .form-input:focus {
-            box-shadow: 0 0 0 2px rgba(46, 213, 115, 0.4);
-            transform: translateY(-2px);
-        }
-        
-        .resume-card {
-            transition: all 0.3s ease;
-            border-left: 3px solid transparent;
-        }
-        
-        .resume-card:hover {
-            background-color: rgba(46, 213, 115, 0.1);
-            border-left: 3px solid #2ed573;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-        
-        .particle {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(46, 213, 115, 0.1);
-            pointer-events: none;
-            z-index: 0;
-        }
-        
-        .shield-pulse {
-            animation: pulse 2s infinite;
-        }
-        
-        .delay-100 {
-            animation-delay: 0.1s;
-        }
-        
-        .delay-200 {
-            animation-delay: 0.2s;
-        }
-        
-        .delay-300 {
-            animation-delay: 0.3s;
-        }
-        
-        .delay-400 {
-            animation-delay: 0.4s;
-        }
-        
-        .delay-500 {
-            animation-delay: 0.5s;
-        }
-        
-        .custom-checkbox {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 22px;
-            height: 22px;
-            border: 2px solid #2ed573;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .custom-checkbox.checked {
-            background-color: #2ed573;
-        }
-        
-        .custom-checkbox.checked svg {
-            display: block;
-        }
-        
-        .custom-checkbox svg {
-            display: none;
-            color: #0d1b2a;
-        }
-        
-        .skill-badge {
-            transition: all 0.3s ease;
-        }
-        
-        .skill-badge:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-        }
-        
-        .pagination-btn {
-            transition: all 0.3s ease;
-        }
-        
-        .pagination-btn:hover:not(.active) {
-            background-color: rgba(46, 213, 115, 0.2);
-            transform: translateY(-2px);
-        }
-        
-        .pagination-btn.active {
-            background-color: #2ed573;
-            color: #0d1b2a;
-        }
+      .btn-primary:hover::after {
+        left: 100%;
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .form-input {
+        transition: all 0.3s ease;
+      }
+
+      .form-input:focus {
+        box-shadow: 0 0 0 2px rgba(46, 213, 115, 0.4);
+        transform: translateY(-2px);
+      }
+
+      .resume-card {
+        transition: all 0.3s ease;
+        border-left: 3px solid transparent;
+      }
+
+      .resume-card:hover {
+        background-color: rgba(46, 213, 115, 0.1);
+        border-left: 3px solid #2ed573;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(46, 213, 115, 0.1);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .shield-pulse {
+        animation: pulse 2s infinite;
+      }
+
+      .delay-100 {
+        animation-delay: 0.1s;
+      }
+
+      .delay-200 {
+        animation-delay: 0.2s;
+      }
+
+      .delay-300 {
+        animation-delay: 0.3s;
+      }
+
+      .delay-400 {
+        animation-delay: 0.4s;
+      }
+
+      .delay-500 {
+        animation-delay: 0.5s;
+      }
+
+      .custom-checkbox {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 22px;
+        height: 22px;
+        border: 2px solid #2ed573;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .custom-checkbox.checked {
+        background-color: #2ed573;
+      }
+
+      .custom-checkbox.checked svg {
+        display: block;
+      }
+
+      .custom-checkbox svg {
+        display: none;
+        color: #0d1b2a;
+      }
+
+      .skill-badge {
+        transition: all 0.3s ease;
+      }
+
+      .skill-badge:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .pagination-btn {
+        transition: all 0.3s ease;
+      }
+
+      .pagination-btn:hover:not(.active) {
+        background-color: rgba(46, 213, 115, 0.2);
+        transform: translateY(-2px);
+      }
+
+      .pagination-btn.active {
+        background-color: #2ed573;
+        color: #0d1b2a;
+      }
     </style>
-</head>
-<body class="bg-darkblue-950 text-white min-h-screen flex">
+  </head>
+  <body class="bg-darkblue-950 text-white min-h-screen flex">
     <!-- Background Particles -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none">
-        <div class="particle w-2 h-2 top-[10%] left-[5%] animate-float delay-100"></div>
-        <div class="particle w-3 h-3 top-[20%] left-[15%] animate-float delay-200"></div>
-        <div class="particle w-2 h-2 top-[30%] left-[25%] animate-float delay-300"></div>
-        <div class="particle w-4 h-4 top-[40%] left-[35%] animate-float delay-400"></div>
-        <div class="particle w-2 h-2 top-[50%] left-[45%] animate-float delay-500"></div>
-        <div class="particle w-3 h-3 top-[60%] left-[55%] animate-float delay-100"></div>
-        <div class="particle w-2 h-2 top-[70%] left-[65%] animate-float delay-200"></div>
-        <div class="particle w-4 h-4 top-[80%] left-[75%] animate-float delay-300"></div>
-        <div class="particle w-2 h-2 top-[90%] left-[85%] animate-float delay-400"></div>
-        <div class="particle w-3 h-3 top-[15%] left-[95%] animate-float delay-500"></div>
+      <div
+        class="particle w-2 h-2 top-[10%] left-[5%] animate-float delay-100"
+      ></div>
+      <div
+        class="particle w-3 h-3 top-[20%] left-[15%] animate-float delay-200"
+      ></div>
+      <div
+        class="particle w-2 h-2 top-[30%] left-[25%] animate-float delay-300"
+      ></div>
+      <div
+        class="particle w-4 h-4 top-[40%] left-[35%] animate-float delay-400"
+      ></div>
+      <div
+        class="particle w-2 h-2 top-[50%] left-[45%] animate-float delay-500"
+      ></div>
+      <div
+        class="particle w-3 h-3 top-[60%] left-[55%] animate-float delay-100"
+      ></div>
+      <div
+        class="particle w-2 h-2 top-[70%] left-[65%] animate-float delay-200"
+      ></div>
+      <div
+        class="particle w-4 h-4 top-[80%] left-[75%] animate-float delay-300"
+      ></div>
+      <div
+        class="particle w-2 h-2 top-[90%] left-[85%] animate-float delay-400"
+      ></div>
+      <div
+        class="particle w-3 h-3 top-[15%] left-[95%] animate-float delay-500"
+      ></div>
     </div>
 
     <!-- Sidebar -->
-    <div class="w-64 bg-darkblue-900 min-h-screen shadow-lg border-r border-gray-800 fixed animate-sidebarSlideIn z-10">
-        <!-- Logo -->
-        <div class="p-6 border-b border-gray-800">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-lg bg-accent-green bg-opacity-20 flex items-center justify-center shield-pulse">
-                    <svg class="w-6 h-6 text-accent-green" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                    </svg>
-                </div>
-                <h1 class="text-xl font-semibold text-white">SafeNet</h1>
-            </div>
+    <div
+      class="w-64 bg-darkblue-900 min-h-screen shadow-lg border-r border-gray-800 fixed animate-sidebarSlideIn z-10"
+    >
+      <!-- Logo -->
+      <div class="p-6 border-b border-gray-800">
+        <div class="flex items-center space-x-3">
+          <div
+            class="w-10 h-10 rounded-lg bg-accent-green bg-opacity-20 flex items-center justify-center shield-pulse"
+          >
+            <svg
+              class="w-6 h-6 text-accent-green"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+          </div>
+          <h1 class="text-xl font-semibold text-white">SafeNet</h1>
         </div>
-        
-        <!-- Navigation -->
-        <nav class="mt-8 px-4">
-            <div class="space-y-2">
-                <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg">
-                    <svg class="w-5 h-5 mr-3 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                    </svg>
-                    <span>Upload Resume</span>
-                </a>
-                
-                <div class="sidebar-menu">
-                    <button class="sidebar-item active w-full flex items-center justify-between px-4 py-3 text-white rounded-lg">
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-3 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
-                            </svg>
-                            <span>Filter Resume</span>
-                        </div>
-                    </button>
-                </div>
-                
-                <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg">
-                    <svg class="w-5 h-5 mr-3 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <span>Finalised Candidate</span>
-                </a>
-                
-                <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg">
-                    <svg class="w-5 h-5 mr-3 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                    </svg>
-                    <span>Interview Scheduling</span>
-                </a>
-                
-                <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg">
-                    <svg class="w-5 h-5 mr-3 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                    <span>Reports</span>
-                </a>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="mt-8 px-4">
+        <div class="space-y-2">
+          <a
+            href="#"
+            class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg"
+          >
+            <svg
+              class="w-5 h-5 mr-3 text-accent-green"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+              ></path>
+            </svg>
+            <span>Upload Resume</span>
+          </a>
+
+          <div class="sidebar-menu">
+            <button
+              class="sidebar-item active w-full flex items-center justify-between px-4 py-3 text-white rounded-lg"
+            >
+              <div class="flex items-center">
+                <svg
+                  class="w-5 h-5 mr-3 text-accent-green"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+                  ></path>
+                </svg>
+                <span>Filter Resume</span>
+              </div>
+              <svg
+                class="w-4 h-4 icon-rotate"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                ></path>
+              </svg>
+            </button>
+            <div class="submenu pl-12 pr-4 open">
+              <a
+                href="#"
+                class="block py-2 text-sm text-accent-green hover:text-accent-green"
+                >By Skills</a
+              >
+              <a
+                href="#"
+                class="block py-2 text-sm text-gray-400 hover:text-accent-green"
+                >By Experience</a
+              >
+              <a
+                href="#"
+                class="block py-2 text-sm text-gray-400 hover:text-accent-green"
+                >By Education</a
+              >
             </div>
-        </nav>
-        
-        <!-- User Profile -->
-        <div class="absolute bottom-0 left-0 w-64 p-4 border-t border-gray-800">
-            <div class="flex items-center">
-                <div class="w-10 h-10 rounded-full bg-darkblue-700 flex items-center justify-center text-accent-green font-semibold">
-                    HR
-                </div>
-                <div class="ml-3">
-                    <p class="text-sm font-medium text-white">Alex Morgan</p>
-                    <p class="text-xs text-gray-400">HR Manager</p>
-                </div>
-                <button class="ml-auto text-gray-400 hover:text-accent-green">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    </svg>
-                </button>
-            </div>
+          </div>
+
+          <a
+            href="#"
+            class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg"
+          >
+            <svg
+              class="w-5 h-5 mr-3 text-accent-green"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
+            </svg>
+            <span>Finalised Candidate</span>
+          </a>
+
+          <a
+            href="#"
+            class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg"
+          >
+            <svg
+              class="w-5 h-5 mr-3 text-accent-green"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              ></path>
+            </svg>
+            <span>Interview Scheduling</span>
+          </a>
+
+          <a
+            href="#"
+            class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg"
+          >
+            <svg
+              class="w-5 h-5 mr-3 text-accent-green"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              ></path>
+            </svg>
+            <span>Reports</span>
+          </a>
         </div>
+      </nav>
+
+      <!-- User Profile -->
+      <div class="absolute bottom-0 left-0 w-64 p-4 border-t border-gray-800">
+        <div class="flex items-center">
+          <div
+            class="w-10 h-10 rounded-full bg-darkblue-700 flex items-center justify-center text-accent-green font-semibold"
+          >
+            HR
+          </div>
+          <div class="ml-3">
+            <p class="text-sm font-medium text-white">Alex Morgan</p>
+            <p class="text-xs text-gray-400">HR Manager</p>
+          </div>
+          <button class="ml-auto text-gray-400 hover:text-accent-green">
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+              ></path>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              ></path>
+            </svg>
+          </button>
+        </div>
+      </div>
     </div>
-    
+
     <!-- Main Content -->
     <div class="ml-64 flex-1 animate-contentFadeIn">
-        <!-- Header -->
-        <header class="bg-darkblue-900 shadow-md animate-headerSlideDown sticky top-0 z-10">
-            <div class="px-6 py-4 flex items-center justify-between">
-                <h2 class="text-xl font-semibold text-white">Filter Resume</h2>
-                
-                <div class="flex items-center space-x-4">
-                    <div class="relative">
-                        <button class="p-1 rounded-full text-gray-400 hover:text-accent-green focus:outline-none">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
-                            </svg>
-                        </button>
-                        <span class="absolute top-0 right-0 w-2 h-2 bg-accent-green rounded-full"></span>
-                    </div>
-                    
-                    <div class="relative">
-                        <input type="text" placeholder="Search..." class="form-input py-2 pl-10 pr-4 w-64 rounded-lg bg-darkblue-800 border border-gray-700 focus:outline-none focus:ring-1 focus:ring-accent-green text-sm">
-                        <div class="absolute left-3 top-2.5">
-                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
+      <!-- Header -->
+      <header
+        class="bg-darkblue-900 shadow-md animate-headerSlideDown sticky top-0 z-10"
+      >
+        <div class="px-6 py-4 flex items-center justify-between">
+          <h2 class="text-xl font-semibold text-white">Filter Resume</h2>
+
+          <div class="flex items-center space-x-4">
+            <div class="relative">
+              <input
+                type="text"
+                placeholder="Search..."
+                class="form-input py-2 pl-10 pr-4 w-64 rounded-lg bg-darkblue-800 border border-gray-700 focus:outline-none focus:ring-1 focus:ring-accent-green text-sm"
+              />
+              <div class="absolute left-3 top-2.5">
+                <svg
+                  class="w-4 h-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  ></path>
+                </svg>
+              </div>
             </div>
-        </header>
-        
-        <!-- Dashboard Content -->
-        <main class="p-6">
-            <!-- Page Title -->
-            <div class="mb-8">
-                <h1 class="text-3xl font-bold text-accent-green">Filter Resume</h1>
-                <p class="text-gray-400 mt-2">Evaluate and filter AI-screened resumes based on manager's requirements</p>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard Content -->
+      <main class="p-6">
+        <!-- Page Title -->
+        <div class="mb-8">
+          <h1 class="text-3xl font-bold text-accent-green">Filter Resume</h1>
+          <p class="text-gray-400 mt-2">
+            Evaluate and filter AI-screened resumes based on manager's
+            requirements
+          </p>
+        </div>
+
+        <!-- Manager's Requirements Section -->
+        <div
+          class="bg-darkblue-800 rounded-xl shadow-lg p-6 mb-8 border border-gray-700 hover:shadow-glow transition-all duration-300"
+        >
+          <div
+            class="flex flex-col md:flex-row md:items-center justify-between mb-4"
+          >
+            <h3 class="text-xl font-semibold text-white flex items-center">
+              <svg
+                class="w-5 h-5 mr-2 text-accent-green"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                ></path>
+              </svg>
+              Requirements: Junior Developer
+            </h3>
+
+            <div class="mt-4 md:mt-0">
+              <select
+                class="form-input py-2 px-4 rounded-lg bg-darkblue-900 border border-gray-700 text-white focus:outline-none focus:ring-1 focus:ring-accent-green text-sm"
+              >
+                <option value="junior-dev">Junior Developer</option>
+                <option value="senior-dev">Senior Developer</option>
+                <option value="ui-designer">UI Designer</option>
+                <option value="product-manager">Product Manager</option>
+              </select>
             </div>
-            
-            <!-- Manager's Requirements Section -->
-            <div class="bg-darkblue-800 rounded-xl shadow-lg p-6 mb-8 border border-gray-700 hover:shadow-glow transition-all duration-300">
-                <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
-                    <h3 class="text-xl font-semibold text-white flex items-center">
-                        <svg class="w-5 h-5 mr-2 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                        </svg>
-                        Requirements: Junior Developer
-                    </h3>
-                    
-                    <div class="mt-4 md:mt-0">
-                        <select class="form-input py-2 px-4 rounded-lg bg-darkblue-900 border border-gray-700 text-white focus:outline-none focus:ring-1 focus:ring-accent-green text-sm">
-                            <option value="junior-dev">Junior Developer</option>
-                            <option value="senior-dev">Senior Developer</option>
-                            <option value="ui-designer">UI Designer</option>
-                            <option value="product-manager">Product Manager</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="border-t border-gray-700 pt-4">
-                    <div class="mb-4">
-                        <h4 class="text-sm font-medium text-gray-400 mb-2">Required Skills:</h4>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="skill-badge px-3 py-1 bg-darkblue-700 text-accent-green text-sm rounded-full border border-accent-green">JavaScript</span>
-                            <span class="skill-badge px-3 py-1 bg-darkblue-700 text-accent-green text-sm rounded-full border border-accent-green">React.js</span>
-                            <span class="skill-badge px-3 py-1 bg-darkblue-700 text-accent-green text-sm rounded-full border border-accent-green">HTML/CSS</span>
-                            <span class="skill-badge px-3 py-1 bg-darkblue-700 text-accent-green text-sm rounded-full border border-accent-green">Git</span>
-                            <span class="skill-badge px-3 py-1 bg-darkblue-700 text-accent-green text-sm rounded-full border border-accent-green">RESTful APIs</span>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <h4 class="text-sm font-medium text-gray-400 mb-2">Experience Level:</h4>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="skill-badge px-3 py-1 bg-darkblue-700 text-white text-sm rounded-full">1-2 years</span>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <h4 class="text-sm font-medium text-gray-400 mb-2">Education:</h4>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="skill-badge px-3 py-1 bg-darkblue-700 text-white text-sm rounded-full">Bachelor's in Computer Science or related field</span>
-                        </div>
-                    </div>
-                </div>
+          </div>
+
+          <div class="border-t border-gray-700 pt-4">
+            <div class="mb-4">
+              <h4 class="text-sm font-medium text-gray-400 mb-2">
+                Required Skills:
+              </h4>
+              <div class="flex flex-wrap gap-2">
+                <span
+                  class="skill-badge px-3 py-1 bg-darkblue-700 text-accent-green text-sm rounded-full border border-accent-green"
+                  >JavaScript</span
+                >
+                <span
+                  class="skill-badge px-3 py-1 bg-darkblue-700 text-accent-green text-sm rounded-full border border-accent-green"
+                  >React.js</span
+                >
+                <span
+                  class="skill-badge px-3 py-1 bg-darkblue-700 text-accent-green text-sm rounded-full border border-accent-green"
+                  >HTML/CSS</span
+                >
+                <span
+                  class="skill-badge px-3 py-1 bg-darkblue-700 text-accent-green text-sm rounded-full border border-accent-green"
+                  >Git</span
+                >
+                <span
+                  class="skill-badge px-3 py-1 bg-darkblue-700 text-accent-green text-sm rounded-full border border-accent-green"
+                  >RESTful APIs</span
+                >
+              </div>
             </div>
-            
-            <!-- Evaluate Button -->
-            <div class="flex justify-center mb-8">
-                <button id="evaluateBtn" class="btn-primary px-8 py-3 text-black bg-accent-green font-medium rounded-lg shadow-md hover:scale-105 hover:shadow-glow-lg flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+
+            <div class="mb-4">
+              <h4 class="text-sm font-medium text-gray-400 mb-2">
+                Experience Level:
+              </h4>
+              <div class="flex flex-wrap gap-2">
+                <span
+                  class="skill-badge px-3 py-1 bg-darkblue-700 text-white text-sm rounded-full"
+                  >1-2 years</span
+                >
+              </div>
+            </div>
+
+            <div>
+              <h4 class="text-sm font-medium text-gray-400 mb-2">Education:</h4>
+              <div class="flex flex-wrap gap-2">
+                <span
+                  class="skill-badge px-3 py-1 bg-darkblue-700 text-white text-sm rounded-full"
+                  >Bachelor's in Computer Science or related field</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Evaluate Button -->
+        <div class="flex justify-center mb-8">
+          <button
+            id="evaluateBtn"
+            class="btn-primary px-8 py-3 text-black bg-accent-green font-medium rounded-lg shadow-md hover:scale-105 hover:shadow-glow-lg flex items-center"
+          >
+            <svg
+              class="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"
+              ></path>
+            </svg>
+            Evaluate with AI
+          </button>
+        </div>
+
+        <!-- Results Section (Initially Hidden) -->
+        <div id="resultsSection" class="hidden">
+          <!-- Top Resumes List -->
+          <div class="mb-6 flex items-center justify-between">
+            <h3 class="text-xl font-semibold text-white flex items-center">
+              <svg
+                class="w-5 h-5 mr-2 text-accent-green"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                ></path>
+              </svg>
+              Top Matching Resumes
+            </h3>
+
+            <div class="flex items-center">
+              <span class="text-sm text-gray-400 mr-3">Sort by:</span>
+              <select
+                class="form-input py-1.5 px-3 rounded-lg bg-darkblue-900 border border-gray-700 text-white focus:outline-none focus:ring-1 focus:ring-accent-green text-sm"
+              >
+                <option value="score-desc">Score (High to Low)</option>
+                <option value="score-asc">Score (Low to High)</option>
+                <option value="name-asc">Name (A-Z)</option>
+                <option value="name-desc">Name (Z-A)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Resume Cards -->
+          <div class="space-y-4 mb-8">
+            <!-- Resume Card 1 -->
+            <div
+              class="resume-card bg-darkblue-700 rounded-xl p-4 shadow-md animate-cardSlideUp"
+              style="animation-delay: 0.1s"
+            >
+              <div
+                class="flex flex-col md:flex-row items-start md:items-center justify-between"
+              >
+                <div class="flex items-center mb-4 md:mb-0">
+                  <div class="custom-checkbox mr-4" data-id="1">
+                    <svg
+                      class="w-4 h-4"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clip-rule="evenodd"
+                      ></path>
                     </svg>
-                    Evaluate with AI
-                </button>
-            </div>
-            
-            <!-- Results Section (Initially Hidden) -->
-            <div id="resultsSection" class="hidden">
-                <!-- Top Resumes List -->
-                <div class="mb-6 flex items-center justify-between">
-                    <h3 class="text-xl font-semibold text-white flex items-center">
-                        <svg class="w-5 h-5 mr-2 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                        </svg>
-                        Top Matching Resumes
-                    </h3>
-                    
-                    <div class="flex items-center">
-                        <span class="text-sm text-gray-400 mr-3">Sort by:</span>
-                        <select class="form-input py-1.5 px-3 rounded-lg bg-darkblue-900 border border-gray-700 text-white focus:outline-none focus:ring-1 focus:ring-accent-green text-sm">
-                            <option value="score-desc">Score (High to Low)</option>
-                            <option value="score-asc">Score (Low to High)</option>
-                            <option value="name-asc">Name (A-Z)</option>
-                            <option value="name-desc">Name (Z-A)</option>
-                        </select>
-                    </div>
+                  </div>
+                  <div>
+                    <h4 class="text-lg font-semibold text-white">John Doe</h4>
+                    <p class="text-gray-400 text-sm">john.doe@example.com</p>
+                  </div>
                 </div>
-                
-                <!-- Resume Cards -->
-                <div class="space-y-4 mb-8">
-                    <!-- Resume Card 1 -->
-                    <div class="resume-card bg-darkblue-700 rounded-xl p-4 shadow-md animate-cardSlideUp" style="animation-delay: 0.1s;">
-                        <div class="flex flex-col md:flex-row items-start md:items-center justify-between">
-                            <div class="flex items-center mb-4 md:mb-0">
-                                <div class="custom-checkbox mr-4" data-id="1">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h4 class="text-lg font-semibold text-white">John Doe</h4>
-                                    <p class="text-gray-400 text-sm">john.doe@example.com</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex flex-col md:flex-row items-start md:items-center space-y-3 md:space-y-0 md:space-x-6 w-full md:w-auto">
-                                <div class="bg-darkblue-800 rounded-lg px-4 py-2 flex items-center">
-                                    <svg class="w-5 h-5 text-accent-green mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                    </svg>
-                                    <span class="text-accent-green font-semibold">Score: 98%</span>
-                                </div>
-                                
-                                <div class="flex space-x-3">
-                                    <a href="#" class="text-accent-green hover:text-green-300 underline flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                        </svg>
-                                        View Resume
-                                    </a>
-                                    
-                                    <button class="text-gray-400 hover:text-accent-green">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-4 pl-10">
-                            <div class="flex flex-wrap gap-2 mb-3">
-                                <span class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full">JavaScript</span>
-                                <span class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full">React.js</span>
-                                <span class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full">HTML/CSS</span>
-                                <span class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full">Git</span>
-                                <span class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full">RESTful APIs</span>
-                                <span class="px-2 py-1 bg-darkblue-800 text-white text-xs rounded-full">Node.js</span>
-                            </div>
-                            <p class="text-sm text-gray-400">Experience: <span class="text-white">2 years</span> | Education: <span class="text-white">B.S. Computer Science</span></p>
-                        </div>
-                    </div>
-                    
-                    <!-- Resume Card 2 -->
-                    <div class="resume-card bg-darkblue-700 rounded-xl p-4 shadow-md animate-cardSlideUp" style="animation-delay: 0.2s;">
-                        <div class="flex flex-col md:flex-row items-start md:items-center justify-between">
-                            <div class="flex items-center mb-4 md:mb-0">
-                                <div class="custom-checkbox mr-4" data-id="2">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h4 class="text-lg font-semibold text-white">Jane Smith</h4>
-                                    <p class="text-gray-400 text-sm">jane.smith@example.com</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex flex-col md:flex-row items-start md:items-center space-y-3 md:space-y-0 md:space-x-6 w-full md:w-auto">
-                                <div class="bg-darkblue-800 rounded-lg px-4 py-2 flex items-center">
-                                    <svg class="w-5 h-5 text-accent-green mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                    </svg>
-                                    <span class="text-accent-green font-semibold">Score: 95%</span>
-                                </div>
-                                
-                                <div class="flex space-x-3">
-                                    <a href="#" class="text-accent-green hover:text-green-300 underline flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                        </svg>
-                                        View Resume
-                                    </a>
-                                    
-                                    <button class="text-gray-400 hover:text-accent-green">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-4 pl-10">
-                            <div class="flex flex-wrap gap-2 mb-3">
-                                <span class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full">JavaScript</span>
-                                <span class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full">React.js</span>
-                                <span class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full">HTML/CSS</span>
-                                <span class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full">Git</span>
-                                <span class="px-2 py-1 bg-darkblue-800 text-white text-xs rounded-full">TypeScript</span>
-                                <span class="px-2 py-1 bg-darkblue-800 text-white text-xs rounded-full">Jest</span>
-                            </div>
-                            <p class="text-sm text-gray-400">Experience: <span class="text-white">1.5 years</span> | Education: <span class="text-white">B.S. Software Engineering</span></p>
-                        </div>
-                    </div>
-                    
-                    <!-- Resume Card 3 -->
-                    <div class="resume-card bg-darkblue-700 rounded-xl p-4 shadow-md animate-cardSlideUp" style="animation-delay: 0.3s;">
-                        <div class="flex flex-col md:flex-row items-start md:items-center justify-between">
-                            <div class="flex items-center mb-4 md:mb-0">
-                                <div class="custom-checkbox mr-4" data-id="3">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h4 class="text-lg font-semibold text-white">Michael Johnson</h4>
-                                    <p class="text-gray-400 text-sm">michael.j@example.com</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex flex-col md:flex-row items-start md:items-center space-y-3 md:space-y-0 md:space-x-6 w-full md:w-auto">
-                                <div class="bg-darkblue-800 rounded-lg px-4 py-2 flex items-center">
-                                    <svg class="w-5 h-5 text-accent-green mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                    </svg>
-                                    <span class="text-accent-green font-semibold">Score: 92%</span>
-                                </div>
-                                
-                                <div class="flex space-x-3">
-                                    <a href="#" class="text-accent-green hover:text-green-300 underline flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                        </svg>
-                                        View Resume
-                                    </a>
-                                    
-                                    <button class="text-gray-400 hover:text-accent-green">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-4 pl-10">
-                            <div class="flex flex-wrap gap-2 mb-3">
-                                <span class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full">JavaScript</span>
-                                <span class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full">React.js</span>
-                                <span class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full">HTML/CSS</span>
-                                <span class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full">Git</span>
-                                <span class="px-2 py-1 bg-darkblue-800 text-white text-xs rounded-full">Vue.js</span>
-                            </div>
-                            <p class="text-sm text-gray-400">Experience: <span class="text-white">1 year</span> | Education: <span class="text-white">B.S. Information Technology</span></p>
-                        </div>
-                    </div>
-                    
-                    <!-- Resume Card 4 -->
-                    <div class="resume-card bg-darkblue-700 rounded-xl p-4 shadow-md animate-cardSlideUp" style="animation-delay: 0.4s;">
-                        <div class="flex flex-col md:flex-row items-start md:items-center justify-between">
-                            <div class="flex items-center mb-4 md:mb-0">
-                                <div class="custom-checkbox mr-4" data-id="4">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h4 class="text-lg font-semibold text-white">Emily Wilson</h4>
-                                    <p class="text-gray-400 text-sm">emily.w@example.com</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex flex-col md:flex-row items-start md:items-center space-y-3 md:space-y-0 md:space-x-6 w-full md:w-auto">
-                                <div class="bg-darkblue-800 rounded-lg px-4 py-2 flex items-center">
-                                    <svg class="w-5 h-5 text-accent-green mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                    </svg>
-                                    <span class="text-accent-green font-semibold">Score: 89%</span>
-                                </div>
-                                
-                                <div class="flex space-x-3">
-                                    <a href="#" class="text-accent-green hover:text-green-300 underline flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                        </svg>
-                                        View Resume
-                                    </a>
-                                    
-                                    <button class="text-gray-400 hover:text-accent-green">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-4 pl-10">
-                            <div class="flex flex-wrap gap-2 mb-3">
-                                <span class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full">JavaScript</span>
-                                <span class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full">React.js</span>
-                                <span class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full">HTML/CSS</span>
-                                <span class="px-2 py-1 bg-darkblue-800 text-white text-xs rounded-full">SASS</span>
-                                <span class="px-2 py-1 bg-darkblue-800 text-white text-xs rounded-full">Figma</span>
-                            </div>
-                            <p class="text-sm text-gray-400">Experience: <span class="text-white">1.5 years</span> | Education: <span class="text-white">B.A. Web Design</span></p>
-                        </div>
-                    </div>
-                    
-                    <!-- Resume Card 5 -->
-                    <div class="resume-card bg-darkblue-700 rounded-xl p-4 shadow-md animate-cardSlideUp" style="animation-delay: 0.5s;">
-                        <div class="flex flex-col md:flex-row items-start md:items-center justify-between">
-                            <div class="flex items-center mb-4 md:mb-0">
-                                <div class="custom-checkbox mr-4" data-id="5">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h4 class="text-lg font-semibold text-white">Robert Brown</h4>
-                                    <p class="text-gray-400 text-sm">robert.b@example.com</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex flex-col md:flex-row items-start md:items-center space-y-3 md:space-y-0 md:space-x-6 w-full md:w-auto">
-                                <div class="bg-darkblue-800 rounded-lg px-4 py-2 flex items-center">
-                                    <svg class="w-5 h-5 text-accent-green mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                    </svg>
-                                    <span class="text-accent-green font-semibold">Score: 85%</span>
-                                </div>
-                                
-                                <div class="flex space-x-3">
-                                    <a href="#" class="text-accent-green hover:text-green-300 underline flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                        </svg>
-                                        View Resume
-                                    </a>
-                                    
-                                    <button class="text-gray-400 hover:text-accent-green">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-4 pl-10">
-                            <div class="flex flex-wrap gap-2 mb-3">
-                                <span class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full">JavaScript</span>
-                                <span class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full">HTML/CSS</span>
-                                <span class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full">Git</span>
-                                <span class="px-2 py-1 bg-darkblue-800 text-white text-xs rounded-full">Angular</span>
-                                <span class="px-2 py-1 bg-darkblue-800 text-white text-xs rounded-full">Firebase</span>
-                            </div>
-                            <p class="text-sm text-gray-400">Experience: <span class="text-white">2 years</span> | Education: <span class="text-white">B.S. Computer Engineering</span></p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Send to Manager Button -->
-                <div class="flex justify-end mb-8">
-                    <button id="sendToManagerBtn" class="btn-primary px-6 py-3 text-black bg-accent-green font-medium rounded-lg shadow-md hover:scale-105 hover:shadow-glow-lg flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                        </svg>
-                        Send Selected to Manager
+
+                <div
+                  class="flex flex-col md:flex-row items-start md:items-center space-y-3 md:space-y-0 md:space-x-6 w-full md:w-auto"
+                >
+                  <div
+                    class="bg-darkblue-800 rounded-lg px-4 py-2 flex items-center"
+                  >
+                    <svg
+                      class="w-5 h-5 text-accent-green mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                      ></path>
+                    </svg>
+                    <span class="text-accent-green font-semibold"
+                      >Score: 98%</span
+                    >
+                  </div>
+
+                  <div class="flex space-x-3">
+                    <a
+                      href="#"
+                      class="text-accent-green hover:text-green-300 underline flex items-center"
+                    >
+                      <svg
+                        class="w-4 h-4 mr-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        ></path>
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        ></path>
+                      </svg>
+                      View Resume
+                    </a>
+
+                    <button class="text-gray-400 hover:text-accent-green">
+                      <svg
+                        class="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                        ></path>
+                      </svg>
                     </button>
+                  </div>
                 </div>
-                
-                <!-- Pagination -->
-                <div class="flex flex-col md:flex-row items-center justify-between">
-                    <div class="text-sm text-gray-400 mb-4 md:mb-0">
-                        Showing <span class="font-medium text-white">1</span> to <span class="font-medium text-white">5</span> of <span class="font-medium text-white">24</span> resumes
-                    </div>
-                    
-                    <div class="flex space-x-2">
-                        <button class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg bg-darkblue-800 text-gray-400 hover:text-accent-green disabled:opacity-50" disabled>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                            </svg>
-                        </button>
-                        <button class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg active">1</button>
-                        <button class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg bg-darkblue-800 text-gray-300">2</button>
-                        <button class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg bg-darkblue-800 text-gray-300">3</button>
-                        <button class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg bg-darkblue-800 text-gray-300">4</button>
-                        <button class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg bg-darkblue-800 text-gray-300">5</button>
-                        <button class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg bg-darkblue-800 text-gray-400 hover:text-accent-green">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                            </svg>
-                        </button>
-                    </div>
+              </div>
+
+              <div class="mt-4 pl-10">
+                <div class="flex flex-wrap gap-2 mb-3">
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full"
+                    >JavaScript</span
+                  >
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full"
+                    >React.js</span
+                  >
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full"
+                    >HTML/CSS</span
+                  >
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full"
+                    >Git</span
+                  >
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full"
+                    >RESTful APIs</span
+                  >
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-white text-xs rounded-full"
+                    >Node.js</span
+                  >
                 </div>
+                <p class="text-sm text-gray-400">
+                  Experience: <span class="text-white">2 years</span> |
+                  Education:
+                  <span class="text-white">B.S. Computer Science</span>
+                </p>
+              </div>
             </div>
-        </main>
+
+            <!-- Resume Card 2 -->
+            <div
+              class="resume-card bg-darkblue-700 rounded-xl p-4 shadow-md animate-cardSlideUp"
+              style="animation-delay: 0.2s"
+            >
+              <div
+                class="flex flex-col md:flex-row items-start md:items-center justify-between"
+              >
+                <div class="flex items-center mb-4 md:mb-0">
+                  <div class="custom-checkbox mr-4" data-id="2">
+                    <svg
+                      class="w-4 h-4"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clip-rule="evenodd"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="text-lg font-semibold text-white">Jane Smith</h4>
+                    <p class="text-gray-400 text-sm">jane.smith@example.com</p>
+                  </div>
+                </div>
+
+                <div
+                  class="flex flex-col md:flex-row items-start md:items-center space-y-3 md:space-y-0 md:space-x-6 w-full md:w-auto"
+                >
+                  <div
+                    class="bg-darkblue-800 rounded-lg px-4 py-2 flex items-center"
+                  >
+                    <svg
+                      class="w-5 h-5 text-accent-green mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                      ></path>
+                    </svg>
+                    <span class="text-accent-green font-semibold"
+                      >Score: 95%</span
+                    >
+                  </div>
+
+                  <div class="flex space-x-3">
+                    <a
+                      href="#"
+                      class="text-accent-green hover:text-green-300 underline flex items-center"
+                    >
+                      <svg
+                        class="w-4 h-4 mr-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        ></path>
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        ></path>
+                      </svg>
+                      View Resume
+                    </a>
+
+                    <button class="text-gray-400 hover:text-accent-green">
+                      <svg
+                        class="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                        ></path>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4 pl-10">
+                <div class="flex flex-wrap gap-2 mb-3">
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full"
+                    >JavaScript</span
+                  >
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full"
+                    >React.js</span
+                  >
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full"
+                    >HTML/CSS</span
+                  >
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full"
+                    >Git</span
+                  >
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-white text-xs rounded-full"
+                    >TypeScript</span
+                  >
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-white text-xs rounded-full"
+                    >Jest</span
+                  >
+                </div>
+                <p class="text-sm text-gray-400">
+                  Experience: <span class="text-white">1.5 years</span> |
+                  Education:
+                  <span class="text-white">B.S. Software Engineering</span>
+                </p>
+              </div>
+            </div>
+
+            <!-- Resume Card 3 -->
+            <div
+              class="resume-card bg-darkblue-700 rounded-xl p-4 shadow-md animate-cardSlideUp"
+              style="animation-delay: 0.3s"
+            >
+              <div
+                class="flex flex-col md:flex-row items-start md:items-center justify-between"
+              >
+                <div class="flex items-center mb-4 md:mb-0">
+                  <div class="custom-checkbox mr-4" data-id="3">
+                    <svg
+                      class="w-4 h-4"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clip-rule="evenodd"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="text-lg font-semibold text-white">
+                      Michael Johnson
+                    </h4>
+                    <p class="text-gray-400 text-sm">michael.j@example.com</p>
+                  </div>
+                </div>
+
+                <div
+                  class="flex flex-col md:flex-row items-start md:items-center space-y-3 md:space-y-0 md:space-x-6 w-full md:w-auto"
+                >
+                  <div
+                    class="bg-darkblue-800 rounded-lg px-4 py-2 flex items-center"
+                  >
+                    <svg
+                      class="w-5 h-5 text-accent-green mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                      ></path>
+                    </svg>
+                    <span class="text-accent-green font-semibold"
+                      >Score: 92%</span
+                    >
+                  </div>
+
+                  <div class="flex space-x-3">
+                    <a
+                      href="#"
+                      class="text-accent-green hover:text-green-300 underline flex items-center"
+                    >
+                      <svg
+                        class="w-4 h-4 mr-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        ></path>
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        ></path>
+                      </svg>
+                      View Resume
+                    </a>
+
+                    <button class="text-gray-400 hover:text-accent-green">
+                      <svg
+                        class="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                        ></path>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4 pl-10">
+                <div class="flex flex-wrap gap-2 mb-3">
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full"
+                    >JavaScript</span
+                  >
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full"
+                    >React.js</span
+                  >
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full"
+                    >HTML/CSS</span
+                  >
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full"
+                    >Git</span
+                  >
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-white text-xs rounded-full"
+                    >Vue.js</span
+                  >
+                </div>
+                <p class="text-sm text-gray-400">
+                  Experience: <span class="text-white">1 year</span> |
+                  Education:
+                  <span class="text-white">B.S. Information Technology</span>
+                </p>
+              </div>
+            </div>
+
+            <!-- Resume Card 4 -->
+            <div
+              class="resume-card bg-darkblue-700 rounded-xl p-4 shadow-md animate-cardSlideUp"
+              style="animation-delay: 0.4s"
+            >
+              <div
+                class="flex flex-col md:flex-row items-start md:items-center justify-between"
+              >
+                <div class="flex items-center mb-4 md:mb-0">
+                  <div class="custom-checkbox mr-4" data-id="4">
+                    <svg
+                      class="w-4 h-4"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clip-rule="evenodd"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="text-lg font-semibold text-white">
+                      Emily Wilson
+                    </h4>
+                    <p class="text-gray-400 text-sm">emily.w@example.com</p>
+                  </div>
+                </div>
+
+                <div
+                  class="flex flex-col md:flex-row items-start md:items-center space-y-3 md:space-y-0 md:space-x-6 w-full md:w-auto"
+                >
+                  <div
+                    class="bg-darkblue-800 rounded-lg px-4 py-2 flex items-center"
+                  >
+                    <svg
+                      class="w-5 h-5 text-accent-green mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                      ></path>
+                    </svg>
+                    <span class="text-accent-green font-semibold"
+                      >Score: 89%</span
+                    >
+                  </div>
+
+                  <div class="flex space-x-3">
+                    <a
+                      href="#"
+                      class="text-accent-green hover:text-green-300 underline flex items-center"
+                    >
+                      <svg
+                        class="w-4 h-4 mr-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        ></path>
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        ></path>
+                      </svg>
+                      View Resume
+                    </a>
+
+                    <button class="text-gray-400 hover:text-accent-green">
+                      <svg
+                        class="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                        ></path>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4 pl-10">
+                <div class="flex flex-wrap gap-2 mb-3">
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full"
+                    >JavaScript</span
+                  >
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full"
+                    >React.js</span
+                  >
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full"
+                    >HTML/CSS</span
+                  >
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-white text-xs rounded-full"
+                    >SASS</span
+                  >
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-white text-xs rounded-full"
+                    >Figma</span
+                  >
+                </div>
+                <p class="text-sm text-gray-400">
+                  Experience: <span class="text-white">1.5 years</span> |
+                  Education: <span class="text-white">B.A. Web Design</span>
+                </p>
+              </div>
+            </div>
+
+            <!-- Resume Card 5 -->
+            <div
+              class="resume-card bg-darkblue-700 rounded-xl p-4 shadow-md animate-cardSlideUp"
+              style="animation-delay: 0.5s"
+            >
+              <div
+                class="flex flex-col md:flex-row items-start md:items-center justify-between"
+              >
+                <div class="flex items-center mb-4 md:mb-0">
+                  <div class="custom-checkbox mr-4" data-id="5">
+                    <svg
+                      class="w-4 h-4"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clip-rule="evenodd"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="text-lg font-semibold text-white">
+                      Robert Brown
+                    </h4>
+                    <p class="text-gray-400 text-sm">robert.b@example.com</p>
+                  </div>
+                </div>
+
+                <div
+                  class="flex flex-col md:flex-row items-start md:items-center space-y-3 md:space-y-0 md:space-x-6 w-full md:w-auto"
+                >
+                  <div
+                    class="bg-darkblue-800 rounded-lg px-4 py-2 flex items-center"
+                  >
+                    <svg
+                      class="w-5 h-5 text-accent-green mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                      ></path>
+                    </svg>
+                    <span class="text-accent-green font-semibold"
+                      >Score: 85%</span
+                    >
+                  </div>
+
+                  <div class="flex space-x-3">
+                    <a
+                      href="#"
+                      class="text-accent-green hover:text-green-300 underline flex items-center"
+                    >
+                      <svg
+                        class="w-4 h-4 mr-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        ></path>
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        ></path>
+                      </svg>
+                      View Resume
+                    </a>
+
+                    <button class="text-gray-400 hover:text-accent-green">
+                      <svg
+                        class="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                        ></path>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4 pl-10">
+                <div class="flex flex-wrap gap-2 mb-3">
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full"
+                    >JavaScript</span
+                  >
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full"
+                    >HTML/CSS</span
+                  >
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full"
+                    >Git</span
+                  >
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-white text-xs rounded-full"
+                    >Angular</span
+                  >
+                  <span
+                    class="px-2 py-1 bg-darkblue-800 text-white text-xs rounded-full"
+                    >Firebase</span
+                  >
+                </div>
+                <p class="text-sm text-gray-400">
+                  Experience: <span class="text-white">2 years</span> |
+                  Education:
+                  <span class="text-white">B.S. Computer Engineering</span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Send to Manager Button -->
+          <div class="flex justify-end mb-8">
+            <button
+              id="sendToManagerBtn"
+              class="btn-primary px-6 py-3 text-black bg-accent-green font-medium rounded-lg shadow-md hover:scale-105 hover:shadow-glow-lg flex items-center"
+            >
+              <svg
+                class="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                ></path>
+              </svg>
+              Send Selected to Manager
+            </button>
+          </div>
+
+          <!-- Pagination -->
+          <div class="flex flex-col md:flex-row items-center justify-between">
+            <div class="text-sm text-gray-400 mb-4 md:mb-0">
+              Showing <span class="font-medium text-white">1</span> to
+              <span class="font-medium text-white">5</span> of
+              <span class="font-medium text-white">24</span> resumes
+            </div>
+
+            <div class="flex space-x-2">
+              <button
+                class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg bg-darkblue-800 text-gray-400 hover:text-accent-green disabled:opacity-50"
+                disabled
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 19l-7-7 7-7"
+                  ></path>
+                </svg>
+              </button>
+              <button
+                class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg active"
+              >
+                1
+              </button>
+              <button
+                class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg bg-darkblue-800 text-gray-300"
+              >
+                2
+              </button>
+              <button
+                class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg bg-darkblue-800 text-gray-300"
+              >
+                3
+              </button>
+              <button
+                class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg bg-darkblue-800 text-gray-300"
+              >
+                4
+              </button>
+              <button
+                class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg bg-darkblue-800 text-gray-300"
+              >
+                5
+              </button>
+              <button
+                class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg bg-darkblue-800 text-gray-400 hover:text-accent-green"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                  ></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
-    
+
     <script>
-        // Sidebar submenu toggle
-        const menuButtons = document.querySelectorAll('.sidebar-menu button');
-        menuButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const submenu = this.nextElementSibling;
-                const icon = this.querySelector('.icon-rotate');
-                
-                submenu.classList.toggle('open');
-                icon.style.transform = submenu.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0)';
-                
-                // Close other submenus
-                document.querySelectorAll('.submenu.open').forEach(menu => {
-                    if (menu !== submenu) {
-                        menu.classList.remove('open');
-                        menu.previousElementSibling.querySelector('.icon-rotate').style.transform = 'rotate(0)';
-                    }
-                });
-            });
+      // Sidebar submenu toggle
+      const menuButtons = document.querySelectorAll(".sidebar-menu button");
+      menuButtons.forEach((button) => {
+        button.addEventListener("click", function () {
+          const submenu = this.nextElementSibling;
+          const icon = this.querySelector(".icon-rotate");
+
+          submenu.classList.toggle("open");
+          icon.style.transform = submenu.classList.contains("open")
+            ? "rotate(180deg)"
+            : "rotate(0)";
+
+          // Close other submenus
+          document.querySelectorAll(".submenu.open").forEach((menu) => {
+            if (menu !== submenu) {
+              menu.classList.remove("open");
+              menu.previousElementSibling.querySelector(
+                ".icon-rotate"
+              ).style.transform = "rotate(0)";
+            }
+          });
         });
-        
-        // Evaluate button click
-        const evaluateBtn = document.getElementById('evaluateBtn');
-        const resultsSection = document.getElementById('resultsSection');
-        
-        evaluateBtn.addEventListener('click', function() {
-            // Show loading state
-            evaluateBtn.disabled = true;
-            evaluateBtn.innerHTML = `
+      });
+
+      // Evaluate button click
+      const evaluateBtn = document.getElementById("evaluateBtn");
+      const resultsSection = document.getElementById("resultsSection");
+
+      evaluateBtn.addEventListener("click", function () {
+        // Show loading state
+        evaluateBtn.disabled = true;
+        evaluateBtn.innerHTML = `
                 <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
                 Evaluating...
             `;
-            
-            // Simulate AI processing
-            setTimeout(() => {
-                // Reset button
-                evaluateBtn.disabled = false;
-                evaluateBtn.innerHTML = `
+
+        // Simulate AI processing
+        setTimeout(() => {
+          // Reset button
+          evaluateBtn.disabled = false;
+          evaluateBtn.innerHTML = `
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
                     </svg>
                     Evaluate with AI
                 `;
-                
-                // Show results
-                resultsSection.classList.remove('hidden');
-                
-                // Scroll to results
-                resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                
-                // Show success notification
-                const notification = document.createElement('div');
-                notification.className = 'fixed bottom-4 right-4 bg-accent-green text-black px-4 py-3 rounded-lg shadow-lg flex items-center transform transition-all duration-500 z-50';
-                notification.innerHTML = `
+
+          // Show results
+          resultsSection.classList.remove("hidden");
+
+          // Scroll to results
+          resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+
+          // Show success notification
+          const notification = document.createElement("div");
+          notification.className =
+            "fixed bottom-4 right-4 bg-accent-green text-black px-4 py-3 rounded-lg shadow-lg flex items-center transform transition-all duration-500 z-50";
+          notification.innerHTML = `
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
                     AI evaluation complete! Found 24 matching resumes.
                 `;
-                document.body.appendChild(notification);
-                
-                // Remove notification after 3 seconds
-                setTimeout(() => {
-                    notification.style.opacity = '0';
-                    notification.style.transform = 'translateY(20px)';
-                    setTimeout(() => {
-                        notification.remove();
-                    }, 300);
-                }, 3000);
-            }, 2000);
+          document.body.appendChild(notification);
+
+          // Remove notification after 3 seconds
+          setTimeout(() => {
+            notification.style.opacity = "0";
+            notification.style.transform = "translateY(20px)";
+            setTimeout(() => {
+              notification.remove();
+            }, 300);
+          }, 3000);
+        }, 2000);
+      });
+
+      // Custom checkbox functionality
+      const checkboxes = document.querySelectorAll(".custom-checkbox");
+      checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener("click", function () {
+          this.classList.toggle("checked");
         });
-        
-        // Custom checkbox functionality
-        const checkboxes = document.querySelectorAll('.custom-checkbox');
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('click', function() {
-                this.classList.toggle('checked');
-            });
-        });
-        
-        // Send to Manager button click
-        const sendToManagerBtn = document.getElementById('sendToManagerBtn');
-        if (sendToManagerBtn) {
-            sendToManagerBtn.addEventListener('click', function() {
-                const checkedBoxes = document.querySelectorAll('.custom-checkbox.checked');
-                
-                if (checkedBoxes.length === 0) {
-                    // Show warning notification
-                    const notification = document.createElement('div');
-                    notification.className = 'fixed bottom-4 right-4 bg-amber-500 text-black px-4 py-3 rounded-lg shadow-lg flex items-center transform transition-all duration-500 z-50';
-                    notification.innerHTML = `
+      });
+
+      // Send to Manager button click
+      const sendToManagerBtn = document.getElementById("sendToManagerBtn");
+      if (sendToManagerBtn) {
+        sendToManagerBtn.addEventListener("click", function () {
+          const checkedBoxes = document.querySelectorAll(
+            ".custom-checkbox.checked"
+          );
+
+          if (checkedBoxes.length === 0) {
+            // Show warning notification
+            const notification = document.createElement("div");
+            notification.className =
+              "fixed bottom-4 right-4 bg-amber-500 text-black px-4 py-3 rounded-lg shadow-lg flex items-center transform transition-all duration-500 z-50";
+            notification.innerHTML = `
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                         </svg>
                         Please select at least one resume to send.
                     `;
-                    document.body.appendChild(notification);
-                    
-                    // Remove notification after 3 seconds
-                    setTimeout(() => {
-                        notification.style.opacity = '0';
-                        notification.style.transform = 'translateY(20px)';
-                        setTimeout(() => {
-                            notification.remove();
-                        }, 300);
-                    }, 3000);
-                    
-                    return;
-                }
-                
-                // Show loading state
-                sendToManagerBtn.disabled = true;
-                sendToManagerBtn.innerHTML = `
+            document.body.appendChild(notification);
+
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+              notification.style.opacity = "0";
+              notification.style.transform = "translateY(20px)";
+              setTimeout(() => {
+                notification.remove();
+              }, 300);
+            }, 3000);
+
+            return;
+          }
+
+          // Show loading state
+          sendToManagerBtn.disabled = true;
+          sendToManagerBtn.innerHTML = `
                     <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
                     Sending...
                 `;
-                
-                // Simulate sending
-                setTimeout(() => {
-                    // Reset button
-                    sendToManagerBtn.disabled = false;
-                    sendToManagerBtn.innerHTML = `
+
+          // Simulate sending
+          setTimeout(() => {
+            // Reset button
+            sendToManagerBtn.disabled = false;
+            sendToManagerBtn.innerHTML = `
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                         </svg>
                         Send Selected to Manager
                     `;
-                    
-                    // Show success notification
-                    const notification = document.createElement('div');
-                    notification.className = 'fixed bottom-4 right-4 bg-accent-green text-black px-4 py-3 rounded-lg shadow-lg flex items-center transform transition-all duration-500 z-50';
-                    notification.innerHTML = `
+
+            // Show success notification
+            const notification = document.createElement("div");
+            notification.className =
+              "fixed bottom-4 right-4 bg-accent-green text-black px-4 py-3 rounded-lg shadow-lg flex items-center transform transition-all duration-500 z-50";
+            notification.innerHTML = `
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                         </svg>
-                        ${checkedBoxes.length} resume${checkedBoxes.length > 1 ? 's' : ''} sent to manager successfully!
+                        ${checkedBoxes.length} resume${
+              checkedBoxes.length > 1 ? "s" : ""
+            } sent to manager successfully!
                     `;
-                    document.body.appendChild(notification);
-                    
-                    // Remove notification after 3 seconds
-                    setTimeout(() => {
-                        notification.style.opacity = '0';
-                        notification.style.transform = 'translateY(20px)';
-                        setTimeout(() => {
-                            notification.remove();
-                        }, 300);
-                    }, 3000);
-                    
-                    // Uncheck all checkboxes
-                    checkedBoxes.forEach(checkbox => {
-                        checkbox.classList.remove('checked');
-                    });
-                }, 1500);
+            document.body.appendChild(notification);
+
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+              notification.style.opacity = "0";
+              notification.style.transform = "translateY(20px)";
+              setTimeout(() => {
+                notification.remove();
+              }, 300);
+            }, 3000);
+
+            // Uncheck all checkboxes
+            checkedBoxes.forEach((checkbox) => {
+              checkbox.classList.remove("checked");
             });
+          }, 1500);
+        });
+      }
+
+      // Name Search Filter
+      const searchInput = document.querySelector(
+        'input[placeholder="Search..."]'
+      );
+      const resumeCards = document.querySelectorAll(".resume-card");
+
+      searchInput.addEventListener("input", function () {
+        const query = this.value.toLowerCase();
+
+        resumeCards.forEach((card) => {
+          const name = card.querySelector("h4").textContent.toLowerCase();
+          if (name.includes(query)) {
+            card.style.display = "block";
+          } else {
+            card.style.display = "none";
+          }
+        });
+      });
+      
+      (function () {
+        function c() {
+          var b = a.contentDocument || a.contentWindow.document;
+          if (b) {
+            var d = b.createElement("script");
+            d.innerHTML =
+              "window.__CF$cv$params={r:'952243c457ab9373',t:'MTc1MDMyODEyMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+            b.getElementsByTagName("head")[0].appendChild(d);
+          }
         }
+        if (document.body) {
+          var a = document.createElement("iframe");
+          a.height = 1;
+          a.width = 1;
+          a.style.position = "absolute";
+          a.style.top = 0;
+          a.style.left = 0;
+          a.style.border = "none";
+          a.style.visibility = "hidden";
+          document.body.appendChild(a);
+          if ("loading" !== document.readyState) c();
+          else if (window.addEventListener)
+            document.addEventListener("DOMContentLoaded", c);
+          else {
+            var e = document.onreadystatechange || function () {};
+            document.onreadystatechange = function (b) {
+              e(b);
+              "loading" !== document.readyState &&
+                ((document.onreadystatechange = e), c());
+            };
+          }
+        }
+      })();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'952243c457ab9373',t:'MTc1MDMyODEyMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+  </body>
 </html>
