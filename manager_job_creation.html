@@ -221,31 +221,40 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Job Title -->
                             <div class="col-span-2">
-                                <label for="jobTitle" class="block text-[#2ed573] mb-2 font-medium">Job Title</label>
-                                <input type="text" id="jobTitle" class="w-full bg-[#0d1b2a] border border-gray-700 rounded-md px-4 py-3 text-white placeholder-[#9ca3af] transition-all focus:border-[#2ed573]" placeholder="Enter job title">
-                            </div>
-                            
-                            <!-- Job Category -->
-                            <div>
                                 <label for="jobCategory" class="block text-[#2ed573] mb-2 font-medium">Job Category</label>
-                                <select id="jobCategory" class="w-full bg-[#0d1b2a] border border-gray-700 rounded-md px-4 py-3 text-white placeholder-[#9ca3af] transition-all focus:border-[#2ed573]">
-                                    <option value="" disabled selected>Select category</option>
-                                    <option value="frontend">Frontend</option>
-                                    <option value="backend">Backend</option>
-                                    <option value="datascience">Data Science</option>
-                                </select>
-                            </div>
+                                <div class="relative">
+                                    <select id="jobCategory" class="appearance-none w-full bg-[#0d1b2a] border border-gray-700 rounded-md px-4 py-3 pr-10 text-white placeholder-[#9ca3af] transition-all focus:border-[#2ed573]">
+                                        <option value="" disabled selected>Select category</option>
+                                        <option value="frontend">Frontend</option>
+                                        <option value="backend">Backend</option>
+                                        <option value="datascience">Data Science</option>
+                                    </select>
+                                    <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+                                        <svg class="h-5 w-5 text-[#9ca3af]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>    
+    
                             
                             <!-- Experience -->
                             <div>
                                 <label for="experience" class="block text-[#2ed573] mb-2 font-medium">Experience Required</label>
-                                <select id="experience" class="w-full bg-[#0d1b2a] border border-gray-700 rounded-md px-4 py-3 text-white placeholder-[#9ca3af] transition-all focus:border-[#2ed573]">
-                                    <option value="" disabled selected>Select experience</option>
-                                    <option value="fresher">Fresher</option>
-                                    <option value="0-1">0-1 Year</option>
-                                    <option value="1-3">1-3 Years</option>
-                                    <option value="3+">3+ Years</option>
-                                </select>
+                                <div class="relative">
+                                    <select id="experience" class="appearance-none w-full bg-[#0d1b2a] border border-gray-700 rounded-md px-4 py-3 text-white placeholder-[#9ca3af] transition-all focus:border-[#2ed573]">
+                                        <option value="" disabled selected>Select experience</option>
+                                        <option value="fresher">Fresher</option>
+                                        <option value="0-1">0-1 Year</option>
+                                        <option value="1-3">1-3 Years</option>
+                                        <option value="3+">3+ Years</option>
+                                    </select>
+                                    <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+                                        <svg class="h-5 w-5 text-[#9ca3af]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                                        </svg>
+                                    </span>
+                                </div>
                             </div>
                             
                             <!-- Education -->
@@ -259,13 +268,7 @@
                                     <option value="bsc">B.Sc</option>
                                     <option value="any">Any Graduate</option>
                                 </select>
-                            </div>
-                            
-                            <!-- Location -->
-                            <div>
-                                <label for="location" class="block text-[#2ed573] mb-2 font-medium">Location</label>
-                                <input type="text" id="location" class="w-full bg-[#0d1b2a] border border-gray-700 rounded-md px-4 py-3 text-white placeholder-[#9ca3af] transition-all focus:border-[#2ed573]" placeholder="Enter job location">
-                            </div>
+                            </div>                            
                             
                             <!-- Technical Skills -->
                             <div class="col-span-2" id="technicalSkillsContainer">
@@ -281,18 +284,6 @@
                                 <div id="softSkills" class="flex flex-wrap gap-2">
                                     <p class="text-[#9ca3af] italic">Select a job category to see relevant skills</p>
                                 </div>
-                            </div>
-                            
-                            <!-- Job Description -->
-                            <div class="col-span-2">
-                                <label for="jobDescription" class="block text-[#2ed573] mb-2 font-medium">Job Description</label>
-                                <textarea id="jobDescription" rows="4" class="w-full bg-[#0d1b2a] border border-gray-700 rounded-md px-4 py-3 text-white placeholder-[#9ca3af] transition-all focus:border-[#2ed573]" placeholder="Enter detailed job description"></textarea>
-                            </div>
-                            
-                            <!-- Other Requirements -->
-                            <div class="col-span-2">
-                                <label for="otherRequirements" class="block text-[#2ed573] mb-2 font-medium">Other Requirements</label>
-                                <textarea id="otherRequirements" rows="3" class="w-full bg-[#0d1b2a] border border-gray-700 rounded-md px-4 py-3 text-white placeholder-[#9ca3af] transition-all focus:border-[#2ed573]" placeholder="Enter any additional requirements or qualifications"></textarea>
                             </div>
                             
                             <!-- Buttons -->

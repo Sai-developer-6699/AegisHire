@@ -1006,16 +1006,25 @@
     <script>
       // Sample user data
       let users = [];
-
       function fetchAndRenderUsers() {
+        const search = document.getElementById("search-input").value.trim();
         const role = document.getElementById("role-filter").value;
         const status = document.getElementById("status-filter").value;
 
         const params = new URLSearchParams();
         if (role) params.append("role", role);
         if (status) params.append("status", status);
+        if (search) params.append("search", search);
 
-        fetch(`http://127.0.0.1:8000/api/get-users/?${params.toString()}`)
+        const apiKey = "your-api-key"; // Or get it from a secure place
+
+        fetch(`http://127.0.0.1:8000/api/get-users/?${params.toString()}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}` // or "Token" if your backend uses token auth
+          }
+        })
           .then((res) => res.json())
           .then((data) => {
             users = data;
@@ -1025,6 +1034,8 @@
             console.error("Error fetching users:", err);
           });
       }
+
+      
 
       // Function to render users with animation
       function renderUsers(userList) {
@@ -1078,7 +1089,7 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                         <div class="flex justify-center space-x-2">
-                            <button id="edit-btn" class="action-btn text-blue-400 hover:text-blue-300" userid="(${user.id})">
+                            <button id="edit-btn" class="action-btn text-blue-400 hover:text-blue-600" data-userid="(${user.id})">
                                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                 </svg>
@@ -1128,8 +1139,9 @@
 
       // Add user button functionality
       document.addEventListener("click", function (e) {
-        if (e.target.classList.contains("edit-btn")) {
-          const username = e.target.dataset.username;
+        if (e.target.id === "edit-btn" || e.target.closest("#edit-btn")) {
+          const button = e.target.closest("#edit-btn");
+          const userid = button.getAttribute("data-userid").replace(/[()]/g, "");
           // Redirect to form (edit mode)
           window.location.href = `addinfo.html?userid=${userid}`;
         }
@@ -1170,27 +1182,7 @@
 
       // Role filter functionality
 
-      // Combined filter function
-      function fetchAndRenderUsers() {
-        const search = document.getElementById("search-input").value.trim();
-        const role = document.getElementById("role-filter").value;
-        const status = document.getElementById("status-filter").value;
-
-        const params = new URLSearchParams();
-        if (role) params.append("role", role);
-        if (status) params.append("status", status);
-        if (search) params.append("search", search); // optional if supported in backend
-
-        fetch(`http://127.0.0.1:8000/api/get-users/?${params.toString()}`)
-          .then((res) => res.json())
-          .then((data) => {
-            users = data;
-            renderUsers(users);
-          })
-          .catch((err) => {
-            console.error("Error fetching users:", err);
-          });
-      }
+      
 
       // Add event listeners for delete buttons
       document.addEventListener("click", function (e) {

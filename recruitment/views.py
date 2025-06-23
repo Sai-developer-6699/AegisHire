@@ -7,6 +7,11 @@ from django.db import connection
 from django.contrib.auth.hashers import make_password, check_password
 from django.views.decorators.csrf import csrf_exempt
 import json
+import logging
+
+# Configure logging
+logger = logging.getLogger(__name__)
+
 
 def home(request):
     return HttpResponse("Welcome to the AI Recruitment Tool Backend")
@@ -29,14 +34,28 @@ def login_api(request):
 
 
 
-def get_role_id(role_name):
-    role_map = {
-        "admin": 1,
-        "Manager": 3,
-        "HR": 2,
-        "Candidate": 4,
-    }
-    return role_map.get(role_name, 4)  # Default to Candidate
+def get_role_id(role_name, default_role_id=4):
+    try:
+        cursor = connection.cursor()
+        cursor.execute("""
+            SELECT role_id 
+            FROM rolemaster 
+            WHERE LOWER(role) = LOWER(%s)
+        """, [role_name])  # 'role' is the column name in your table
+
+        result = cursor.fetchone()
+
+        if result:
+            return result[0]
+        else:
+            return default_role_id
+    except Exception as e:
+        logger.error(f"Error fetching role ID for '{role_name}': {str(e)}")
+        return default_role_id
+    finally:
+        if cursor:
+            cursor.close()
+
 
 
 @csrf_exempt
@@ -121,4 +140,38 @@ def delete_user(request, userid):
 
 
 
+
+@api_view(['GET'])
+def get_user_by_id(request, userid):
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT 
+            u.first_name, 
+            u.last_name, 
+            u.username, 
+            u.email, 
+            u.phone_number, 
+            u.status, 
+            u.department,
+            r.role
+        FROM users u
+        JOIN rolemaster r ON u.roleid = r.role_id
+        WHERE u.userid = %s
+    """, [userid])
+    
+    row = cursor.fetchone()
+
+    if not row:
+        return Response({"error": "User not found"}, status=404)
+
+    return Response({
+        "first_name": row[0],
+        "last_name": row[1],
+        "username": row[2],
+        "email": row[3],
+        "phone_number": row[4],
+        "status": row[5],
+        "department": row[6],        
+        "role": row[7] 
+    })
 

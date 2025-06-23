@@ -1027,6 +1027,37 @@
           container.appendChild(particle);
         }
       }
+      createParticles();
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get("userid");
+
+        if (userId) {
+          const passwordField = document.getElementById("password");
+          const confirmPasswordField = document.getElementById("confirm-password");
+
+          if (passwordField) passwordField.style.display = "none";
+          if (confirmPasswordField) confirmPasswordField.style.display = "none";
+
+          fetch(`http://127.0.0.1:8000/api/get-user-by-id/${userId}/`)
+            .then((res) => res.json())
+            .then((data) => {
+              document.getElementById("first-name").value = data.first_name;
+              document.getElementById("last-name").value = data.last_name;
+              document.getElementById("username").value = data.username;
+              document.getElementById("email").value = data.email;
+              document.getElementById("phone").value = data.phone_number;
+              document.getElementById("department").value = data.department;
+              document.getElementById("status").value = data.status;
+              document.getElementById("role").value = data.role;
+              
+            });
+        }
+      });
+
+
+
 
       // Toggle submenu functionality with animation
       document
@@ -1047,6 +1078,24 @@
           arrow.classList.toggle("rotate-180");
         });
 
+
+        function validateEmail() {
+        const email = document.getElementById("email").value;
+        const emailError = document.getElementById("email-error");
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailPattern.test(email)) {
+          emailError.textContent = "Please enter a valid email address.";
+          return false;
+        } else {
+          emailError.textContent = "";
+          return true;
+        }
+      }
+      document.addEventListener("DOMContentLoaded", function () {
+        const emailInput = document.getElementById("email");
+        emailInput.addEventListener("blur", validateEmail);
+      });
 
 
       
@@ -1164,24 +1213,9 @@
         .getElementById("save-user-btn-bottom")
         .addEventListener("click", function (e) {
           createRippleEffect(e);
-          validateAndSubmitForm();
         });
 
-      function validateAndSubmitForm() {
-        // Get form values
-        const firstName = document.getElementById("first-name").value;
-        const lastName = document.getElementById("last-name").value;
-        const email = document.getElementById("email").value;
-        const username = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
-        const confirmPassword =
-          document.getElementById("confirm-password").value;
-
-        // Simple validation
-        if (!firstName || !lastName || !email || !username || !password) {
-          alert("Please fill in all required fields");
-          return;
-        }
+      
 
 
 
@@ -1194,7 +1228,7 @@
 
         // Redirect to users list (in a real implementation)
         // window.location.href = 'users.html';
-      }
+      
 
         // Cancel button functionality
       document
