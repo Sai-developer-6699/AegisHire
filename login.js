@@ -22,6 +22,7 @@ document.getElementById('login-form').addEventListener('submit', function (e) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify({ username, password }),
   })
     .then(response => {

@@ -22,6 +22,25 @@
                         accent: {
                             green: "#2ed573",
                         },
+                        status: {
+                            finalised: "#2ed573",
+                            offer: "#ffa502",
+                            joined: "#70a1ff",
+                            rejected: "#ff4757",
+                        },
+                        green: {
+                            500: "#2ed573",
+                            600: "#1c9f4e",
+                            700: "#15803d",
+                            800: "#166534",
+                            900: "#14532d",
+                        }
+                        darkgreen:{
+                            700: "#14532d",
+                            800: "#166534",
+                            900: "#15803d",
+                            1000: "#1c9f4e",
+                        }
                     },
                     boxShadow: {
                         glow: "0 0 15px rgba(46, 213, 115, 0.3)",
@@ -608,12 +627,56 @@
                         </form>
                         <!-- Recent Job Posts -->
                         <div id="recentJobs" class="mt-10 bg-[#0d1b2a] p-6 rounded-lg shadow-md">
-                            <h2 class="text-xl font-semibold text-[#2ed573] mb-4">Recent Job Posts</h2>
-                            <ul id="jobList" class="space-y-4 text-white">
-                                <li class="italic text-[#9ca3af]">No job posts yet.</li>
-                            </ul>
-                        </div>
+                            <!-- Header and Tabs -->
+                            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                                <h2 class="text-xl font-semibold text-[#2ed573]">Recent Job Posts</h2>
 
+                                <!-- View Tabs -->
+                                <div class="flex space-x-2">
+                                    <button class="btn text-[#cbd5e1] border border-[#2ed573] hover:bg-[#2ed573] hover:text-white transistion-all px-4 py-1.5 rounded-md" id="my-jobs-btn">My Jobs</button>
+                                    <button class="btn text-[#cbd5e1] border border-[#2ed573] hover:bg-[#2ed573] hover:text-white transistion-all px-4 py-1.5 rounded-md" id="all-jobs-btn">All Jobs</button>
+                                </div>
+                            </div>
+
+                            <!-- Search and Sort Controls -->
+                            <div class="bg-[#0d1b2a] p-4 rounded-md mb-6 hover:bg-[#1b2c3b]">
+                                <div class="flex flex-col md:flex-row gap-4">
+                                    <!-- Search Bar -->
+                                    <div class="relative flex-grow">
+                                        <input
+                                            type="text"
+                                            id="search-jobs"
+                                            class="form-input bg-[#0d1b2a] border border-gray-600 text-white pl-10 pr-4 py-2 rounded-md w-full md:w-90 placeholder-gray-400"
+                                            placeholder="Search job titles, departments, or locations..."
+                                        >
+                                        <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+
+                                    <!-- Sort Controls -->
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-sm text-gray-300 whitespace-nowrap">Sort by:</span>
+                                        <button id="sort-by-id" class="btn px-3 py-1.5 text-sm border border-gray-500 text-white rounded-md hover:bg-[#2ed573]">ID</button>
+                                        <button id="sort-by-recent" class="btn px-3 py-1.5 text-sm border border-gray-500 text-white rounded-md hover:bg-[#2ed573]">Recent</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Job Listings -->
+                            <div class="bg-[#0d1b2a] p-4 rounded-md mb-6 hover:bg-darkgreen-900">
+                            <ul id="jobList" class="text-white">
+                                <!-- Sample card or fallback -->
+                                <li class="p-4 bg-[#112233] rounded-md shadow">
+                                    <h3 class="text-lg font-semibold text-[#2ed573]">No job posts yet.</h3>
+                                    <p class="text-sm text-gray-400 italic">Please check back later.</p>
+                                </li>
+                            </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -665,7 +728,7 @@
 
                 async function renderRecentJobs() {
                     const jobList = document.getElementById('jobList');
-                    jobList.innerHTML = '<li class="italic text-[#9ca3af]">Loading...</li>';
+                    jobList.innerHTML = '<li class="italic text-[#9ca3af] animate-pulse">Loading...</li>';
 
                     try {
                        const res = await fetch('http://127.0.0.1:8000/api/get-recent-jobs/?limit=5');  // Optionally add user_id if needed
@@ -681,9 +744,9 @@
 
                         jobs.forEach((job, index) => {
                             const li = document.createElement('li');
-                            li.className = 'bg-darkblue-800 p-4 rounded shadow border border-darkblue-700';
+                            li.className = 'bg-darkblue-900 p-4 rounded-lg shadow outline:none  hover:bg-green-900 transistion-all ease-in-out duration-300';
                             li.innerHTML = `
-                                <div class="text-accent-green font-semibold mb-1">${index + 1}. ${job.position} Job</div>
+                                <h3 class="text-lg font-semibold text-[#2ed573]">${job.position}</h3>
                                 <div><strong>Experience:</strong> ${job.experience}</div>
                                 <div><strong>Created By:</strong> ${job.created_by}</div>
                                 <div><strong>Posted On:</strong> ${new Date(job.created_at).toLocaleString()}</div>
@@ -713,6 +776,9 @@
                     return pill;
                 }
 
+                
+
+
                 if (jobCategory) {
                     jobCategory.addEventListener('change', async () => {
                         const position = jobCategory.value;
@@ -720,6 +786,14 @@
                         if (!position) return;
 
                         try {
+
+                            const res = await fetch('http://127.0.0.1:8000/api/check_session/', {
+                            method: 'GET',
+                            credentials: 'include'
+                            });
+                            const data = await res.json();
+                            console.log('Session test:', data);
+
                             const response = await fetch('http://127.0.0.1:8000/api/get_recommendations_for_position/', {
                                 method: 'POST',
                                 headers: {
@@ -766,6 +840,8 @@
                     });
                 }
 
+                
+
                 if (jobForm) {
                     jobForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
@@ -774,9 +850,9 @@
                     const selectedSoftSkills = Array.from(softSkills.querySelectorAll('.skill-pill[data-selected="true"]')).map(p => p.textContent);
 
                     const jobData = {
-                        category: jobCategory.value,
+                        position: jobCategory.value,
                         experience: document.getElementById('experience').value,
-                        education: document.getElementById('education').value,
+                        education: [document.getElementById('education').value],
                         technical_skills: selectedTechnicalSkills,
                         soft_skills: selectedSoftSkills
                     };
@@ -787,6 +863,7 @@
                             headers: {
                                 'Content-Type': 'application/json',
                             },
+                            credentials: 'include',
                             body: JSON.stringify(jobData)
                         });
 

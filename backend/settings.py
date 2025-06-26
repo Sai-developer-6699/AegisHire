@@ -87,7 +87,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'recruitment',
         'USER': 'root',
-        'PASSWORD': '12345',
+        'PASSWORD': 'Mysql@2004',
         'HOST': 'localhost',
         'PORT': '3306',
     }
@@ -162,6 +162,10 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
 }
+
+
+# Session configuration
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 
 # STATIC_URL = '/static/'

@@ -1,5 +1,20 @@
 from django.urls import path
-from .views import login_api, home , register_api , get_all_users , get_user_by_username, update_user_by_username , delete_user ,get_user_by_id, get_recommendations_for_position, submit_job, get_recent_jobs
+from .views import (
+    login_api,
+    home,
+    register_api,
+    get_all_users,
+    get_user_by_username,
+    update_user_by_username,
+    delete_user,
+    get_user_by_id,
+    get_recommendations_for_position,
+    submit_job,
+    get_recent_jobs,
+    check_session,
+    logout_api,
+    dashboard,
+)
 from django.urls import include
 # recruitment/urls.py
 
@@ -16,4 +31,7 @@ urlpatterns = [
     path('api/get_recommendations_for_position/', get_recommendations_for_position, name='get_recommendations_for_position'),
     path('api/submit_job/', submit_job, name='submit_job'),
     path('api/get-recent-jobs/', get_recent_jobs, name='get-recent-jobs'),
+    path('api/check_session/', check_session, name='check_session'),
+    path('api/logout/', logout_api, name='logout'),
+    path('api/dashboard/', dashboard, name='dashboard'),
 ]

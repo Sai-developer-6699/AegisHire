@@ -17,13 +17,14 @@ def home(request):
     return HttpResponse("Welcome to the AI Recruitment Tool Backend")
 
 
+@csrf_exempt
 @api_view(['POST'])
 def login_api(request):
     username = request.data.get('username')
     password = request.data.get('password')
 
     with connection.cursor() as cursor:
-        # Fetch userid, hashed password, and roleid
+        # Fetch userid, hashed password, and roleid from users table
         cursor.execute("SELECT userid, password, roleid FROM users WHERE username = %s", [username])
         user = cursor.fetchone()
 
@@ -31,17 +32,47 @@ def login_api(request):
         userid = user[0]
         roleid = user[2]
 
-        # ✅ Send userid back in response so frontend can save it
+        # Store userid and roleid in the session
+        request.session['userid'] = userid
+        request.session['roleid'] = roleid
+        print("Session after login:", request.session.items())
+        # Optionally, send the session data to the client
         return Response({
             'message': 'Login successful!',
             'roleid': roleid,
-            'userid': userid  # Send this to associate job posts
+            'userid': userid  # Frontend can save this in localStorage or sessionStorage
         })
     else:
         return Response({'message': 'Invalid username or password'}, status=401)
 
 
+# View for the dashboard
+@csrf_exempt
+@api_view(['GET'])
+def dashboard(request):
+    userid = request.session.get('userid')
+    roleid = request.session.get('roleid')
 
+    if not userid:
+        return Response({'message': 'Unauthorized'}, status=401)
+
+    # Proceed with logic
+    return Response({'message': f'Welcome user {userid} with role {roleid}'})
+
+
+# View for logout
+@csrf_exempt
+@api_view(['POST'])
+def logout_api(request):
+    request.session.flush()  # Clears session data
+    return Response({'message': 'Logged out successfully'})
+
+
+# View for checking session
+
+
+
+# View for getting role_id
 def get_role_id(role_name, default_role_id=4):
     try:
         cursor = connection.cursor()
@@ -65,7 +96,7 @@ def get_role_id(role_name, default_role_id=4):
             cursor.close()
 
 
-
+# View for registering a new user
 @csrf_exempt
 @api_view(['POST'])
 def register_api(request):
@@ -85,6 +116,9 @@ def register_api(request):
 
     return Response({'message': 'User created successfully'})
 
+
+# view for getting all users
+@csrf_exempt
 @api_view(['GET'])
 def get_all_users(request):
     role = request.GET.get('role') or None
@@ -108,6 +142,9 @@ def get_all_users(request):
 
     return Response(users)
 
+
+# View for getting user by username
+@csrf_exempt
 @api_view(['GET'])
 def get_user_by_username(request, username):
     cursor = connection.cursor()
@@ -120,6 +157,8 @@ def get_user_by_username(request, username):
         return Response({"userid": None})  # Not found
 
 
+# View for updating a user
+@csrf_exempt
 @api_view(['PUT'])
 def update_user_by_username(request, username):
     data = request.data
@@ -140,6 +179,8 @@ def update_user_by_username(request, username):
     return Response({"message": "User updated successfully"})
 
 
+# View for deleting a user
+@csrf_exempt
 @api_view(['DELETE'])
 def delete_user(request, userid):
     cursor = connection.cursor()
@@ -147,8 +188,8 @@ def delete_user(request, userid):
     return Response({"message": "User deleted successfully"})
 
 
-
-
+# View for getting user by id
+@csrf_exempt
 @api_view(['GET'])
 def get_user_by_id(request, userid):
     cursor = connection.cursor()
@@ -184,14 +225,13 @@ def get_user_by_id(request, userid):
     })
 
 
-
 # Manager Section
 
 ## Job Creation
 
-###Get options
+### Get options
 
-
+@csrf_exempt
 @api_view(['POST'])
 def get_recommendations_for_position(request):
     try:
@@ -250,13 +290,19 @@ def get_recommendations_for_position(request):
 
 ### Submit Job
 
+@csrf_exempt
 @api_view(['POST'])
 def submit_job(request):
     try:
-        user_id = request.data.get('user_id')
-        if not user_id:
-            return Response({'error': 'User not logged in'}, status=403)
+        userid = request.session.get('userid')
+        roleid = request.session.get('roleid')
 
+        if not userid or not roleid:
+            return Response({'error': 'Unauthorized'}, status=401)
+        
+        if roleid != 2:
+            return Response({'error': 'Unauthorized'}, status=401)
+        
         position_name = request.data.get('position')
         experience_range = request.data.get('experience')
         selected_skills = request.data.get('skills', [])
@@ -282,33 +328,11 @@ def submit_job(request):
             cursor.execute("""
                 INSERT INTO job_requirement (position_id, experience_range, created_by)
                 VALUES (%s, %s, %s)
-            """, [position_id, experience_range, user_id])
+            """, [position_id, experience_range, userid])
             cursor.execute("SELECT LAST_INSERT_ID()")
             requirement_id = cursor.fetchone()[0]
 
-            # Insert skill mappings
-            for skill_name in selected_skills:
-                cursor.execute("SELECT skill_id FROM skill_master WHERE skill_name=%s", [skill_name])
-                skill_row = cursor.fetchone()
-                if skill_row:
-                    skill_id = skill_row[0]
-                    cursor.execute("INSERT INTO job_requirement_skills (requirement_id, skill_id) VALUES (%s, %s)", [requirement_id, skill_id])
-
-            # Insert education
-            for edu_name in selected_education:
-                cursor.execute("SELECT education_id FROM education_master WHERE education_name=%s", [edu_name])
-                edu_row = cursor.fetchone()
-                if edu_row:
-                    edu_id = edu_row[0]
-                    cursor.execute("INSERT INTO job_requirement_education (requirement_id, education_id) VALUES (%s, %s)", [requirement_id, edu_id])
-
-            # Insert soft skills
-            for soft_name in selected_soft_skills:
-                cursor.execute("SELECT soft_skill_id FROM soft_skill_master WHERE soft_skill_name=%s", [soft_name])
-                soft_row = cursor.fetchone()
-                if soft_row:
-                    soft_id = soft_row[0]
-                    cursor.execute("INSERT INTO job_requirement_softskills (requirement_id, soft_skill_id) VALUES (%s, %s)", [requirement_id, soft_id])
+           
 
         return Response({'status': 'Job created successfully', 'requirement_id': requirement_id})
 
@@ -317,7 +341,7 @@ def submit_job(request):
 
 ### Recent Uploads of Job Posts
 
-
+@csrf_exempt
 @api_view(['GET'])
 def get_recent_jobs(request):
     try:
@@ -341,7 +365,7 @@ def get_recent_jobs(request):
                     FROM job_requirement jr
                     JOIN position_master pm ON jr.position_id = pm.position_id
                     JOIN users u ON jr.created_by = u.userid
-                    ORDER BY jr.created_at DESC
+                    ORDER BY jr.created_at DESC 
                     LIMIT %s
                 """, [limit])
 
@@ -360,3 +384,11 @@ def get_recent_jobs(request):
     except Exception as e:
         return Response({'error': str(e)}, status=500)
 
+
+# Temporary 
+@api_view(['GET'])
+def check_session(request):
+    return Response({
+        'userid': request.session.get('userid'),
+        'roleid': request.session.get('roleid')
+    })
