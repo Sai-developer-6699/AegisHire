@@ -65,7 +65,7 @@ def dashboard(request):
 @api_view(['POST'])
 def logout_api(request):
     request.session.flush()  # Clears session data
-    return Response({'message': 'Logged out successfully'})
+    return Response({'message': 'Logged out successfully', 'redirect': '/login.html'})
 
 
 # View for checking session
@@ -231,11 +231,20 @@ def get_user_by_id(request, userid):
 
 ### Get options
 
+
+@csrf_exempt
+@api_view(['GET'])
+def get_positions(request):
+    cursor = connection.cursor()
+    cursor.execute("SELECT position_name FROM position_master")
+    positions = [row[0] for row in cursor.fetchall()]
+    return Response(positions)
+
 @csrf_exempt
 @api_view(['POST'])
 def get_recommendations_for_position(request):
     try:
-        position_name = request.data.get('position', '').strip().lower()
+        position_name = request.data.get('position', '').strip()
 
         if not position_name:
             return Response({'error': 'Position name is required'}, status=400)

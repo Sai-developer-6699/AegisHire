@@ -14,6 +14,7 @@ from .views import (
     check_session,
     logout_api,
     dashboard,
+    get_positions
 )
 from django.urls import include
 # recruitment/urls.py
@@ -34,4 +35,5 @@ urlpatterns = [
     path('api/check_session/', check_session, name='check_session'),
     path('api/logout/', logout_api, name='logout'),
     path('api/dashboard/', dashboard, name='dashboard'),
+    path('api/get_positions/', get_positions, name='get_positions')
 ]
