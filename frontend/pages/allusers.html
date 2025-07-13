@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Management Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background-color: #0a0a0a;
+      color: #e0e0e0;
+    }
+
+    .gradient-bg {
+      background: linear-gradient(135deg, #0a2e1f 0%, #0f3d29 100%);
+    }
+
+    .floating {
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-20px);
+      }
+
+      100% {
+        transform: translateY(0px);
+      }
+    }
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(46, 213, 115, 0.2);
+      animation: particle-animation 15s infinite;
+    }
+
+    @keyframes particle-animation {
+      0% {
+        transform: translate(0, 0);
+      }
+
+      25% {
+        transform: translate(100px, -50px);
+      }
+
+      50% {
+        transform: translate(50px, 100px);
+      }
+
+      75% {
+        transform: translate(-50px, 50px);
+      }
+
+      100% {
+        transform: translate(0, 0);
+      }
+    }
+
+    .glow {
+      box-shadow: 0 0 15px rgba(46, 213, 115, 0.3);
+    }
+
+    .shield-icon {
+      animation: shield-pulse 3s infinite;
+    }
+
+    @keyframes shield-pulse {
+      0% {
+        filter: drop-shadow(0 0 2px rgba(46, 213, 115, 0.4));
+      }
+
+      50% {
+        filter: drop-shadow(0 0 8px rgba(46, 213, 115, 0.6));
+      }
+
+      100% {
+        filter: drop-shadow(0 0 2px rgba(46, 213, 115, 0.4));
+      }
+    }
+
+    .sidebar-item {
+      transition: all 0.3s ease;
+    }
+
+    .sidebar-item:hover {
+      background-color: rgba(46, 213, 115, 0.15);
+      transform: translateX(5px);
+    }
+
+    .sidebar-item.active {
+      background-color: rgba(46, 213, 115, 0.2);
+      border-left: 3px solid #2ed573;
+    }
+
+    .submenu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .submenu.open {
+      max-height: 500px;
+    }
+
+    .submenu a {
+      transform: translateX(0);
+      transition: all 0.3s ease;
+    }
+
+    .submenu a:hover {
+      transform: translateX(5px);
+    }
+
+    .table-row {
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+
+    .table-row:hover {
+      background-color: rgba(46, 213, 115, 0.08);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      z-index: 2;
+    }
+
+    .status-active {
+      background-color: rgba(46, 213, 115, 0.2);
+      color: #2ed573;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .status-active::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent);
+      animation: status-shine 3s infinite;
+    }
+
+    @keyframes status-shine {
+      0% {
+        left: -100%;
+      }
+
+      50% {
+        left: 100%;
+      }
+
+      100% {
+        left: 100%;
+      }
+    }
+
+    .status-inactive {
+      background-color: rgba(255, 107, 107, 0.2);
+      color: #ff6b6b;
+    }
+
+    .status-pending {
+      background-color: rgba(255, 159, 67, 0.2);
+      color: #ff9f43;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .status-pending::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent);
+      animation: status-shine 3s infinite;
+      animation-delay: 1s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2ed573 0%, #10ac84 100%);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent);
+      transition: all 0.6s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-primary:hover::after {
+      left: 100%;
+    }
+
+    .search-input {
+      background-color: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+      background-color: rgba(255, 255, 255, 0.12);
+      border-color: #2ed573;
+      box-shadow: 0 0 0 3px rgba(46, 213, 115, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .pagination-btn {
+      transition: all 0.3s ease;
+    }
+
+    .pagination-btn:hover:not(.disabled) {
+      background-color: rgba(46, 213, 115, 0.2);
+      color: #2ed573;
+      transform: translateY(-2px);
+    }
+
+    .pagination-btn.active {
+      background-color: rgba(46, 213, 115, 0.2);
+      color: #2ed573;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pagination-btn.active::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: #2ed573;
+      animation: pagination-active 2s infinite;
+    }
+
+    @keyframes pagination-active {
+      0% {
+        transform: scaleX(0.3);
+        opacity: 0.3;
+      }
+
+      50% {
+        transform: scaleX(1);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scaleX(0.3);
+        opacity: 0.3;
+      }
+    }
+
+    .pagination-btn.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .action-button {
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+
+    .action-button::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: all 0.4s ease;
+      z-index: -1;
+    }
+
+    .action-button:hover {
+      transform: translateY(-3px);
+    }
+
+    .action-button:hover::before {
+      width: 35px;
+      height: 35px;
+    }
+
+    .action-btn {
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+
+    .action-btn::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: all 0.4s ease;
+      z-index: -1;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-3px);
+    }
+
+    .action-btn:hover::before {
+      width: 35px;
+      height: 35px;
+    }
+
+    .user-avatar {
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .user-avatar::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .table-row:hover .user-avatar::before {
+      border-color: #2ed573;
+      transform: scale(1.1);
+    }
+
+    .checkbox-custom {
+      position: relative;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #4a5568;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .checkbox-custom.checked {
+      background-color: #2ed573;
+      border-color: #2ed573;
+    }
+
+    .checkbox-custom.checked::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 5px;
+      width: 4px;
+      height: 8px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .checkbox-custom:hover {
+      border-color: #2ed573;
+    }
+
+    .header-animation {
+      animation: header-slide-down 0.6s ease-out;
+    }
+
+    @keyframes header-slide-down {
+      0% {
+        transform: translateY(-20px);
+        opacity: 0;
+      }
+
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .content-animation {
+      animation: content-fade-in 0.8s ease-out;
+    }
+
+    @keyframes content-fade-in {
+      0% {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .sidebar-animation {
+      animation: sidebar-slide-in 0.7s ease-out;
+    }
+
+    @keyframes sidebar-slide-in {
+      0% {
+        transform: translateX(-30px);
+        opacity: 0;
+      }
+
+      100% {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .pulse-effect {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.05);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(46, 213, 115, 0.4);
+      transform: scale(0);
+      animation: ripple 0.8s linear;
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(2.5);
+        opacity: 0;
+      }
+    }
+
+    .hover-glow:hover {
+      box-shadow: 0 0 15px rgba(46, 213, 115, 0.5);
+    }
+  </style>
+    <script src="../config/config.js"></script>
+</head>
+
+<body>
+  <!-- Background Particles -->
+  <div class="fixed inset-0 z-0 overflow-hidden">
+    <div class="particle w-4 h-4 top-[10%] left-[10%]"></div>
+    <div class="particle w-6 h-6 top-[20%] left-[80%]"></div>
+    <div class="particle w-3 h-3 top-[60%] left-[5%]"></div>
+    <div class="particle w-5 h-5 top-[70%] left-[70%]"></div>
+    <div class="particle w-4 h-4 top-[40%] left-[30%]"></div>
+    <div class="particle w-2 h-2 top-[30%] left-[50%]"></div>
+    <div class="particle w-3 h-3 top-[80%] left-[40%]"></div>
+  </div>
+
+  <div id="error-dialog" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.3);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:#fff;padding:24px 32px;border-radius:8px;box-shadow:0 2px 16px rgba(0,0,0,0.2);min-width:300px;max-width:90vw;text-align:center;position:relative;">
+      <span id="error-dialog-message" style="color:#b91c1c;font-size:1.1em;"></span>
+      <br><br>
+      <button onclick="closeErrorDialog()" style="background:#b91c1c;color:#fff;padding:8px 20px;border:none;border-radius:4px;cursor:pointer;">OK</button>
+    </div>
+  </div>
+
+  <div class="min-h-screen flex relative z-10">
+    <!-- Sidebar -->
+    <div class="w-64 bg-gray-900 border-r border-gray-800 flex flex-col sidebar-animation">
+      <!-- Logo -->
+      <div class="p-4 border-b border-gray-800">
+        <div class="flex items-center">
+          <svg class="w-8 h-8 text-green-400 shield-icon" viewBox="0 0 24 24" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+          <h1 class="text-xl font-bold ml-3 text-white">SafeNet</h1>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="flex-1 overflow-y-auto py-4">
+        <nav class="px-2 space-y-1">
+          <div class="sidebar-item px-3 py-3 rounded-md">
+            <div class="flex items-center">
+              <svg class="w-5 h-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                fill="currentColor">
+                <path
+                  d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+              </svg>
+              <span class="ml-3 text-sm font-medium text-white"><a href="dashboard.html">Dashboard</a></span>
+            </div>
+          </div>
+
+          <div class="sidebar-item active px-3 py-3 rounded-md">
+            <div class="flex items-center justify-between cursor-pointer" id="user-management-menu">
+              <div class="flex items-center">
+                <svg class="w-5 h-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                  fill="currentColor">
+                  <path
+                    d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                </svg>
+                <span class="ml-3 text-sm font-medium text-white">User Management</span>
+              </div>
+              <svg class="w-4 h-4 text-gray-400 transform transition-transform rotate-180" id="user-management-arrow"
+                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                  clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="submenu open mt-1 pl-6 space-y-1" id="user-management-submenu">
+              <a href="allusers.html"
+                class="block py-2 px-3 text-sm text-green-400 bg-gray-800 bg-opacity-50 rounded-md">All Users</a>
+              <a href="addinfo.html" class="block py-2 px-3 text-sm text-gray-300 rounded-md hover:bg-gray-800">Add New
+                User</a>
+              <a href="#" class="block py-2 px-3 text-sm text-gray-300 rounded-md hover:bg-gray-800">User Groups</a>
+            </div>
+          </div>
+
+          <div class="sidebar-item px-3 py-3 rounded-md">
+            <div class="flex items-center justify-between cursor-pointer" id="role-assignment-menu">
+              <div class="flex items-center">
+                <svg class="w-5 h-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                  fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd" />
+                </svg>
+                <span class="ml-3 text-sm font-medium text-white">Role Assignment</span>
+              </div>
+              <svg class="w-4 h-4 text-gray-400 transform transition-transform" id="role-assignment-arrow"
+                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                  clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="submenu mt-1 pl-6 space-y-1" id="role-assignment-submenu">
+              <a href="#" class="block py-2 px-3 text-sm text-gray-300 rounded-md hover:bg-gray-800">Manage Roles</a>
+              <a href="#" class="block py-2 px-3 text-sm text-gray-300 rounded-md hover:bg-gray-800">Assign Roles</a>
+              <a href="#" class="block py-2 px-3 text-sm text-gray-300 rounded-md hover:bg-gray-800">Role
+                Permissions</a>
+            </div>
+          </div>
+
+          <div class="sidebar-item active px-3 py-3 rounded-md">
+            <div class="flex items-center">
+              <svg class="w-5 h-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                fill="currentColor">
+                <path
+                  d="M16.862 3.487a2.25 2.25 0 1 1 3.182 3.182l-.586.586-3.182-3.182.586-.586zM15.448 4.901l-9.9 9.9a2.25 2.25 0 0 0-.586 1.01l-.858 3.432a.75.75 0 0 0 .91.91l3.432-.858a2.25 2.25 0 0 0 1.01-.586l9.9-9.9-3.182-3.182z" />
+              </svg>
+              <span class="ml-3 text-sm font-medium text-white">
+                <a href="addedit_job.html">Add/Edit Job</a>
+              </span>
+            </div>
+          </div>
+
+
+        </nav>
+      </div>
+
+      <!-- User Profile -->
+      <div class="p-4 border-t border-gray-800">
+        <div class="flex items-center hover-glow rounded-lg p-2 transition-all duration-300 cursor-pointer">
+          <div class="bg-gray-800 rounded-full w-8 h-8 flex items-center justify-center pulse-effect">
+            <svg class="w-5 h-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+              fill="currentColor">
+              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm font-medium text-white">Admin User</p>
+            <p class="text-xs text-gray-400">Administrator</p>
+          </div>
+          <button id="logout-btn" class="ml-10 text-gray-300 hover:text-white">
+            <div class="flex items-center">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+              </svg>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col bg-gray-900">
+      <!-- Header -->
+      <header class="bg-blue border-b border-gray-800 shadow-lg header-animation">
+        <div class="px-6 py-4">
+          <div class="flex items-center justify-between">
+            <h1 class="text-2xl font-bold text-white">User Management</h1>
+            <div class="flex items-center space-x-4">
+              <button
+                class="bg-gray-800 text-white px-4 py-2 rounded-md flex items-center hover:bg-gray-700 transition-colors hover-glow"
+                id="export-btn">
+                <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                    clip-rule="evenodd" />
+                </svg>
+                Export
+              </button>
+              <button class="btn-primary text-white px-4 py-2 rounded-md flex items-center" id="add-user-btn">
+                <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                    clip-rule="evenodd" />
+                </svg><a href="addinfo.html"> Add New User</a>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <main class="flex-1 overflow-auto p-6 content-animation">
+        <!-- Filters and Search -->
+        <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+          <div class="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4">
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                  fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                    clip-rule="evenodd" />
+                </svg>
+              </div>
+              <input type="text" id="search-input"
+                class="search-input pl-10 pr-4 py-2 rounded-md w-full md:w-64 focus:outline-none"
+                placeholder="Search users..." />
+            </div>
+
+            <div class="flex space-x-4">
+              <select id="role-filter" class="search-input px-4 py-2 rounded-md focus:outline-none">
+                <option value="">All Roles</option>
+                <option value="admin">Admin</option>
+                <option value="manager">Manager</option>
+                <option value="hr">Hr</option>
+                <option value="candidate">Candidate</option>
+              </select>
+
+              <select id="status-filter" class="search-input px-4 py-2 rounded-md focus:outline-none">
+                <option value="">All Status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-2">
+            <span class="text-sm text-gray-400">Show:</span>
+            <select class="search-input px-2 py-1 rounded-md focus:outline-none">
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden hover-glow">
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-700">
+              <thead class="bg-gray-900">
+                <tr>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <div class="flex items-center">
+                      <div class="checkbox-custom" id="select-all"></div>
+                    </div>
+                  </th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <div class="flex items-center cursor-pointer" id="sort-by-name">
+                      User
+                      <svg class="w-4 h-4 ml-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path fill-rule="evenodd"
+                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                          clip-rule="evenodd" />
+                      </svg>
+                    </div>
+                  </th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <div class="flex items-center cursor-pointer" id="sort-by-role">
+                      Role
+                      <svg class="w-4 h-4 ml-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path fill-rule="evenodd"
+                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                          clip-rule="evenodd" />
+                      </svg>
+                    </div>
+                  </th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <div class="flex items-center cursor-pointer" id="sort-by-status">
+                      Status
+                      <svg class="w-4 h-4 ml-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path fill-rule="evenodd"
+                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                          clip-rule="evenodd" />
+                      </svg>
+                    </div>
+                  </th>
+                  <th scope="col"
+                    class="px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    Edit
+                  </th>
+                  <th scope="col"
+                    class="px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    Delete
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-700" id="users-table-body">
+                <!-- User rows will be dynamically generated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="mt-6 flex items-center justify-between">
+          <div class="text-sm text-gray-400">
+            Showing <span class="font-medium">1</span> to
+            <span class="font-medium">10</span> of
+            <span class="font-medium">24</span> results
+          </div>
+          <div class="flex space-x-1">
+            <button class="pagination-btn disabled px-3 py-1 rounded-md">
+              <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                  clip-rule="evenodd" />
+              </svg>
+            </button>
+            <button class="pagination-btn active px-3 py-1 rounded-md">
+              1
+            </button>
+            <button class="pagination-btn px-3 py-1 rounded-md">2</button>
+            <button class="pagination-btn px-3 py-1 rounded-md">3</button>
+            <button class="pagination-btn px-3 py-1 rounded-md">
+              <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                  clip-rule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div id="dialog-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white p-6 rounded shadow-md w-80">
+      <p id="dialog-message" class="mb-4 text-gray-800"></p>
+      <div class="flex justify-end gap-4">
+        <button id="dialog-cancel" class="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded text-gray-800">
+          Cancel
+        </button>
+        <button id="dialog-confirm" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Sample user data
+    let users = [];
+    function fetchAndRenderUsers() {
+      const search = document.getElementById("search-input").value.trim();
+      const role = document.getElementById("role-filter").value;
+      const status = document.getElementById("status-filter").value;
+
+      const params = new URLSearchParams();
+      if (role) params.append("role", role);
+      if (status) params.append("status", status);
+      if (search) params.append("search", search);
+
+      const apiKey = "your-api-key"; // Or get it from a secure place
+
+      fetch(apiConfig.getURL(`api/get-users/?${params.toString()}`), {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}` // or "Token" if your backend uses token auth
+        }
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          users = data;
+          // If there's a search term, sort results by best match
+          // Filter to match search by name only
+          if (search) {
+            const loweredSearch = search.toLowerCase();
+            users = users.filter(user =>
+              user.name.toLowerCase().includes(loweredSearch)
+            );
+
+            // Sort matching ones (e.g. startsWith first)
+            users.sort((a, b) => {
+              const aName = a.name.toLowerCase();
+              const bName = b.name.toLowerCase();
+              const aStarts = aName.startsWith(loweredSearch) ? 0 : 1;
+              const bStarts = bName.startsWith(loweredSearch) ? 0 : 1;
+              return aStarts - bStarts || aName.localeCompare(bName);
+            });
+          }
+
+          renderUsers(users);
+        })
+        .catch((err) => {
+          console.error("Error fetching users:", err);
+        });
+    }
+
+
+
+    // Function to render users with animation
+    function renderUsers(userList) {
+      const tableBody = document.getElementById("users-table-body");
+      tableBody.innerHTML = "";
+
+      userList.forEach((user, index) => {
+        const statusClass =
+          user.status === "active"
+            ? "status-active"
+            : user.status === "inactive"
+              ? "status-inactive"
+              : "status-pending";
+
+        const row = document.createElement("tr");
+        row.className = "table-row";
+        row.style.animationDelay = `${index * 0.05}s`;
+        row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="checkbox-custom user-checkbox" data-id="${user.id
+          }"></div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10">
+                                <div class="user-avatar h-10 w-10 rounded-full bg-gray-700 flex items-center justify-center ${user.color
+          } font-medium">${user.initials}</div>
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-white">${user.name
+          }</div>
+                                <div class="text-sm text-gray-400">${user.email
+          }</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-white">${user.role}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
+                            ${user.status.charAt(0).toUpperCase() +
+          user.status.slice(1)
+          }
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                        <div class="flex justify-center space-x-2">
+                            <button id="edit-btn" class="action-btn text-blue-400 hover:text-blue-600" data-userid="(${user.id})">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                </svg>
+                            </button>                            
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                      <div class="flex justify-center space-x-2">
+                       <button id="delete-btn" class="action-button text-red-400 hover:text-red-300" data-userid="${user.id
+          }">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                `;
+        tableBody.appendChild(row);
+      });
+
+      // Initialize checkboxes
+      initCheckboxes();
+    }
+
+    // Initial render
+    renderUsers(users);
+
+    // Toggle submenu functionality with animation
+    document
+      .getElementById("user-management-menu")
+      .addEventListener("click", function () {
+        const submenu = document.getElementById("user-management-submenu");
+        const arrow = document.getElementById("user-management-arrow");
+        submenu.classList.toggle("open");
+        arrow.classList.toggle("rotate-180");
+      });
+
+    document
+      .getElementById("role-assignment-menu")
+      .addEventListener("click", function () {
+        const submenu = document.getElementById("role-assignment-submenu");
+        const arrow = document.getElementById("role-assignment-arrow");
+        submenu.classList.toggle("open");
+        arrow.classList.toggle("rotate-180");
+      });
+
+    // Add user button functionality
+    document.addEventListener("click", function (e) {
+      if (e.target.id === "edit-btn" || e.target.closest("#edit-btn")) {
+        const button = e.target.closest("#edit-btn");
+        const userid = button.getAttribute("data-userid").replace(/[()]/g, "");
+        // Redirect to form (edit mode)
+        window.location.href = `addinfo.html?userid=${userid}`;
+      }
+    });
+
+    // dialogue box for delete confirmation
+    function showDialog(message, onConfirm) {
+      const modal = document.getElementById("dialog-modal");
+      const msg = document.getElementById("dialog-message");
+      const confirmBtn = document.getElementById("dialog-confirm");
+      const cancelBtn = document.getElementById("dialog-cancel");
+
+      msg.textContent = message;
+      modal.classList.remove("hidden");
+
+      // Clean previous listeners
+      const newConfirmBtn = confirmBtn.cloneNode(true);
+      confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+      newConfirmBtn.addEventListener("click", () => {
+        modal.classList.add("hidden");
+        onConfirm();
+      });
+
+      cancelBtn.onclick = () => modal.classList.add("hidden");
+    }
+
+    // Search functionality
+    document
+      .getElementById("search-input")
+      .addEventListener("input", fetchAndRenderUsers);
+    document
+      .getElementById("role-filter")
+      .addEventListener("change", fetchAndRenderUsers);
+    document
+      .getElementById("status-filter")
+      .addEventListener("change", fetchAndRenderUsers);
+
+    // Role filter functionality
+
+
+
+    // Add event listeners for delete buttons
+    document.addEventListener("click", function (e) {
+      if (e.target.closest(".action-button")) {
+        const button = e.target.closest(".action-button");
+        const userid = button.getAttribute("data-userid");
+
+        // Use your custom modal dialog
+        showDialog("Are you sure you want to delete this user?", () => {
+          fetch(`${apiConfig.getURL("api/delete-user/${userid}/")}`, {
+            method: "DELETE",
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              showError(data.message || "User deleted");
+              fetchAndRenderUsers(); // Refresh your table
+            })
+            .catch((err) => {
+              console.error("Error deleting user:", err);
+              showError("Something went wrong.");
+            });
+        });
+      }
+    });
+
+    // Create animated background effect
+    function createParticles() {
+      const container = document.querySelector(".fixed");
+      for (let i = 0; i < 20; i++) {
+        const size = Math.random() * 5 + 2;
+        const particle = document.createElement("div");
+        particle.classList.add("particle");
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.top = `${Math.random() * 100}%`;
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.opacity = Math.random() * 0.5 + 0.1;
+        particle.style.animationDuration = `${Math.random() * 20 + 10}s`;
+        particle.style.animationDelay = `${Math.random() * 5}s`;
+        container.appendChild(particle);
+      }
+    }
+
+    // Initialize custom checkboxes
+    function initCheckboxes() {
+      // Select all checkbox
+      const selectAll = document.getElementById("select-all");
+      selectAll.addEventListener("click", function () {
+        this.classList.toggle("checked");
+        const isChecked = this.classList.contains("checked");
+
+        document.querySelectorAll(".user-checkbox").forEach((checkbox) => {
+          if (isChecked) {
+            checkbox.classList.add("checked");
+          } else {
+            checkbox.classList.remove("checked");
+          }
+        });
+      });
+
+      // Individual checkboxes
+      document.querySelectorAll(".user-checkbox").forEach((checkbox) => {
+        checkbox.addEventListener("click", function () {
+          this.classList.toggle("checked");
+
+          // Check if all checkboxes are checked
+          const allChecked = Array.from(
+            document.querySelectorAll(".user-checkbox")
+          ).every((cb) => cb.classList.contains("checked"));
+
+          if (allChecked) {
+            selectAll.classList.add("checked");
+          } else {
+            selectAll.classList.remove("checked");
+          }
+        });
+      });
+    }
+
+    // Create ripple effect
+    function createRippleEffect(event) {
+      const button = event.currentTarget;
+      const ripple = document.createElement("span");
+
+      const rect = button.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+
+      const x = event.clientX - rect.left - size / 2;
+      const y = event.clientY - rect.top - size / 2;
+
+      ripple.className = "ripple";
+      ripple.style.width = ripple.style.height = `${size}px`;
+      ripple.style.left = `${x}px`;
+      ripple.style.top = `${y}px`;
+
+      button.appendChild(ripple);
+
+      setTimeout(() => {
+        ripple.remove();
+      }, 800);
+    }
+
+    // Add ripple effect to buttons
+    document
+      .getElementById("export-btn")
+      .addEventListener("click", createRippleEffect);
+    document
+      .getElementById("add-user-btn")
+      .addEventListener("click", createRippleEffect);
+
+    document.querySelectorAll(".pagination-btn").forEach((btn) => {
+      btn.addEventListener("click", function (e) {
+        if (!this.classList.contains("disabled")) {
+          createRippleEffect(e);
+
+          // Remove active class from all pagination buttons
+          document.querySelectorAll(".pagination-btn").forEach((b) => {
+            b.classList.remove("active");
+          });
+
+          // Add active class to clicked button
+          if (!this.querySelector("svg")) {
+            this.classList.add("active");
+          }
+        }
+      });
+    });
+
+    // Add sorting functionality
+    document
+      .getElementById("sort-by-name")
+      .addEventListener("click", function () {
+        users.sort((a, b) => a.name.localeCompare(b.name));
+        renderUsers(users);
+      });
+
+    document
+      .getElementById("sort-by-role")
+      .addEventListener("click", function () {
+        users.sort((a, b) => a.role.localeCompare(b.role));
+        renderUsers(users);
+      });
+
+    document
+      .getElementById("sort-by-status")
+      .addEventListener("click", function () {
+        users.sort((a, b) => a.status.localeCompare(b.status));
+        renderUsers(users);
+      });
+
+
+    document.getElementById("logout-btn").addEventListener("click", async function () {
+      try {
+        const res = await fetch(`${apiConfig.getURL("api/logout/")}`, {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+
+        let data = {};
+        try {
+          data = await res.json(); // attempt to parse JSON
+        } catch (err) {
+          console.warn("No JSON response received", err);
+        }
+
+        console.log("Logout response:", data);
+
+        if (res.ok) {
+          window.location.href = data.redirect || "/login.html";
+        } else {
+          showError("Logout failed: " + (data.message || "Unknown error"));
+        }
+
+      } catch (error) {
+        console.error("Logout error:", error);
+        showError("Network error during logout.");
+      }
+    });
+
+    function showError(message) {
+      var dialog = document.getElementById('error-dialog');
+      var msgSpan = document.getElementById('error-dialog-message');
+      if (dialog && msgSpan) {
+        msgSpan.textContent = message;
+        dialog.style.display = 'flex';
+      }
+    }
+
+    function closeErrorDialog() {
+      var dialog = document.getElementById('error-dialog');
+      if (dialog) dialog.style.display = 'none';
+    }
+
+    createParticles();
+
+    window.onload = fetchAndRenderUsers;
+  </script>
+</body>
+
+</html>

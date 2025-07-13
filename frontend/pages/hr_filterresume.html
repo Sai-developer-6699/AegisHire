@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SafeNet HR - Filter Resume</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            darkblue: {
+              950: "#0a1727",
+              900: "#0d1b2a",
+              800: "#112240",
+              700: "#1b2c3f",
+            },
+            accent: {
+              green: "#2ed573",
+            },
+          },
+          boxShadow: {
+            glow: "0 0 15px rgba(46, 213, 115, 0.3)",
+            "glow-lg": "0 0 25px rgba(46, 213, 115, 0.4)",
+          },
+          keyframes: {
+            float: {
+              "0%, 100%": { transform: "translateY(0)" },
+              "50%": { transform: "translateY(-10px)" },
+            },
+            pulse: {
+              "0%, 100%": { opacity: 1 },
+              "50%": { opacity: 0.7 },
+            },
+            headerSlideDown: {
+              "0%": { transform: "translateY(-20px)", opacity: 0 },
+              "100%": { transform: "translateY(0)", opacity: 1 },
+            },
+            sidebarSlideIn: {
+              "0%": { transform: "translateX(-20px)", opacity: 0 },
+              "100%": { transform: "translateX(0)", opacity: 1 },
+            },
+            contentFadeIn: {
+              "0%": { opacity: 0 },
+              "100%": { opacity: 1 },
+            },
+            cardSlideUp: {
+              "0%": { transform: "translateY(20px)", opacity: 0 },
+              "100%": { transform: "translateY(0)", opacity: 1 },
+            },
+          },
+          animation: {
+            float: "float 3s ease-in-out infinite",
+            pulse: "pulse 2s ease-in-out infinite",
+            headerSlideDown: "headerSlideDown 0.5s ease-out forwards",
+            sidebarSlideIn: "sidebarSlideIn 0.5s ease-out forwards",
+            contentFadeIn: "contentFadeIn 0.8s ease-out forwards",
+            cardSlideUp: "cardSlideUp 0.5s ease-out forwards",
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background-color: #0a1727;
+    }
+
+    .sidebar-item {
+      transition: all 0.3s ease;
+    }
+
+    .sidebar-item:hover {
+      background-color: rgba(46, 213, 115, 0.15);
+      transform: translateX(5px);
+    }
+
+    .sidebar-item.active {
+      background-color: rgba(46, 213, 115, 0.2);
+      border-left: 3px solid #2ed573;
+    }
+
+    .submenu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .submenu.open {
+      max-height: 500px;
+    }
+
+    .submenu a {
+      transform: translateX(0);
+      transition: all 0.3s ease;
+    }
+
+    .submenu a:hover {
+      transform: translateX(5px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2ed573 0%, #10ac84 100%);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent);
+      transition: all 0.6s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-primary:hover::after {
+      left: 100%;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-input {
+      transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+      box-shadow: 0 0 0 2px rgba(46, 213, 115, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .resume-card {
+      transition: all 0.3s ease;
+      border-left: 3px solid transparent;
+    }
+
+    .resume-card:hover {
+      background-color: rgba(46, 213, 115, 0.1);
+      border-left: 3px solid #2ed573;
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(46, 213, 115, 0.1);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .shield-pulse {
+      animation: pulse 2s infinite;
+    }
+
+    .delay-100 {
+      animation-delay: 0.1s;
+    }
+
+    .delay-200 {
+      animation-delay: 0.2s;
+    }
+
+    .delay-300 {
+      animation-delay: 0.3s;
+    }
+
+    .delay-400 {
+      animation-delay: 0.4s;
+    }
+
+    .delay-500 {
+      animation-delay: 0.5s;
+    }
+
+    .custom-checkbox {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border: 2px solid #2ed573;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .custom-checkbox.checked {
+      background-color: #2ed573;
+    }
+
+    .custom-checkbox.checked svg {
+      display: block;
+    }
+
+    .custom-checkbox svg {
+      display: none;
+      color: #0d1b2a;
+    }
+
+    .skill-badge {
+      transition: all 0.3s ease;
+    }
+
+    .skill-badge:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .pagination-btn {
+      transition: all 0.3s ease;
+    }
+
+    .pagination-btn:hover:not(.active) {
+      background-color: rgba(46, 213, 115, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .pagination-btn.active {
+      background-color: #2ed573;
+      color: #0d1b2a;
+    }
+  </style>
+    <script src="../config/config.js"></script>
+</head>
+
+<body class="bg-darkblue-950 text-white min-h-screen flex">
+  <!-- Background Particles -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none">
+    <div class="particle w-2 h-2 top-[10%] left-[5%] animate-float delay-100"></div>
+    <div class="particle w-3 h-3 top-[20%] left-[15%] animate-float delay-200"></div>
+    <div class="particle w-2 h-2 top-[30%] left-[25%] animate-float delay-300"></div>
+    <div class="particle w-4 h-4 top-[40%] left-[35%] animate-float delay-400"></div>
+    <div class="particle w-2 h-2 top-[50%] left-[45%] animate-float delay-500"></div>
+    <div class="particle w-3 h-3 top-[60%] left-[55%] animate-float delay-100"></div>
+    <div class="particle w-2 h-2 top-[70%] left-[65%] animate-float delay-200"></div>
+    <div class="particle w-4 h-4 top-[80%] left-[75%] animate-float delay-300"></div>
+    <div class="particle w-2 h-2 top-[90%] left-[85%] animate-float delay-400"></div>
+    <div class="particle w-3 h-3 top-[15%] left-[95%] animate-float delay-500"></div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="w-64 bg-darkblue-900 min-h-screen shadow-lg border-r border-gray-800 fixed animate-sidebarSlideIn z-10">
+    <!-- Logo -->
+    <div class="p-6 border-b border-gray-800">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-lg bg-accent-green bg-opacity-20 flex items-center justify-center shield-pulse">
+          <svg class="w-6 h-6 text-accent-green" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd"
+              d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd"></path>
+          </svg>
+        </div>
+        <h1 class="text-xl font-semibold text-white">SafeNet</h1>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="mt-8 px-4">
+      <div class="space-y-2">
+        <a href="./hr_resumeupload.html" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg">
+          <svg class="w-5 h-5 mr-3 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+          </svg>
+          <span>Upload Resume</span>
+        </a>
+
+        <div class="sidebar-menu">
+          <button class="sidebar-item active w-full flex items-center justify-between px-4 py-3 text-white rounded-lg">
+            <div class="flex items-center">
+              <svg class="w-5 h-5 mr-3 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
+                </path>
+              </svg>
+              <span>Filter Resume</span>
+            </div>
+          </button>
+        </div>
+
+        <a href="./hr_finalised_candidate.html"
+          class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg">
+          <svg class="w-5 h-5 mr-3 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span>Finalised Candidate</span>
+        </a>
+
+        <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg">
+          <svg class="w-5 h-5 mr-3 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          <span>Interview Scheduling</span>
+        </a>
+
+        <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg">
+          <svg class="w-5 h-5 mr-3 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+            </path>
+          </svg>
+          <span>Reports</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- User Profile -->
+    <div class="absolute bottom-0 left-0 w-64 p-4 border-t border-gray-800">
+      <div class="flex items-center">
+        <div
+          class="w-10 h-10 rounded-full bg-darkblue-700 flex items-center justify-center text-accent-green font-semibold">
+          HR
+        </div>
+        <div class="ml-3">
+          <p class="text-sm font-medium text-white">Alex Morgan</p>
+          <p class="text-xs text-gray-400">HR Manager</p>
+        </div>
+        <button id="logout-btn" class="ml-10 text-gray-300 hover:text-white">
+          <div class="flex items-center">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="ml-64 flex-1 animate-contentFadeIn">
+    <!-- Header -->
+    <header class="bg-darkblue-900 shadow-md animate-headerSlideDown sticky top-0 z-10">
+      <div class="px-6 py-4 flex items-center justify-between">
+        <h2 class="text-xl font-semibold text-white">Filter Resume</h2>
+
+        <div class="flex items-center space-x-4">
+          <div class="relative">
+            <input type="text" placeholder="Search..."
+              class="form-input py-2 pl-10 pr-4 w-64 rounded-lg bg-darkblue-800 border border-gray-700 focus:outline-none focus:ring-1 focus:ring-accent-green text-sm" />
+            <div class="absolute left-3 top-2.5">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Dashboard Content -->
+    <main class="p-6">
+      <!-- Page Title -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-accent-green">Filter Resume</h1>
+        <p class="text-gray-400 mt-2">
+          Evaluate and filter AI-screened resumes based on manager's
+          requirements
+        </p>
+      </div>
+
+      <!-- Manager's Requirements Section -->
+      <div
+        class="bg-darkblue-800 rounded-xl shadow-lg p-6 mb-8 border border-gray-700 hover:shadow-glow transition-all duration-300">
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+          <h3 id="requirementTitle" class="text-xl font-semibold text-white flex items-center">
+            <svg class="w-5 h-5 mr-2 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+              </path>
+            </svg>
+            Requirements: —
+          </h3>
+
+          <div class="mt-4 md:mt-0">
+            <select id="requirementSelector"
+              class="form-input py-2 px-4 rounded-lg bg-darkblue-900 border border-gray-700 text-white focus:outline-none focus:ring-1 focus:ring-accent-green text-sm">
+              <option value="">Select Requirement</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="border-t border-gray-700 pt-4">
+          <div class="mb-4">
+            <h4 class="text-sm font-medium text-gray-400 mb-2">
+              Required Skills:
+            </h4>
+            <div id="skillsContainer" class="flex flex-wrap gap-2"></div>
+          </div>
+
+          <div class="mb-4">
+            <h4 class="text-sm font-medium text-gray-400 mb-2">
+              Required Soft Skills:
+            </h4>
+            <div id="SoftskillsContainer" class="flex flex-wrap gap-2"></div>
+          </div>
+
+
+          <div class="mb-4">
+            <h4 class="text-sm font-medium text-gray-400 mb-2">
+              Experience Level:
+            </h4>
+            <div id="experienceContainer" class="flex flex-wrap gap-2"></div>
+          </div>
+
+          <div class="mb-4">
+            <h4 class="text-sm font-medium text-gray-400 mb-2">Education:</h4>
+            <div id="educationContainer" class="flex flex-wrap gap-2"></div>
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-medium text-gray-400 mb-2">Created at:</h4>
+            <div id="DateContainer" class="flex flex-wrap gap-2"></div>
+          </div>
+        </div>
+      </div>
+
+
+
+      <!-- Evaluate Button -->
+      <div class="flex justify-center mb-8">
+        <button id="evaluateBtn"
+          class="btn-primary px-8 py-3 text-black bg-accent-green font-medium rounded-lg shadow-md hover:scale-105 hover:shadow-glow-lg flex items-center">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z">
+            </path>
+          </svg>
+          Evaluate with AI
+        </button>
+      </div>
+
+
+      <!-- Results Section (Initially Hidden) -->
+      <div id="resultsSection" class="hidden">
+        <!-- Top Resumes List -->
+        <div class="mb-6 flex items-center justify-between">
+          <h3 class="text-xl font-semibold text-white flex items-center">
+            <svg class="w-5 h-5 mr-2 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+              </path>
+            </svg>
+            Top Matching Resumes
+          </h3>
+
+          <div class="flex items-center">
+            <span class="text-sm text-gray-400 mr-3">Sort by:</span>
+            <select
+              class="form-input py-1.5 px-3 rounded-lg bg-darkblue-900 border border-gray-700 text-white focus:outline-none focus:ring-1 focus:ring-accent-green text-sm">
+              <option value="score-desc">Score (High to Low)</option>
+              <option value="score-asc">Score (Low to High)</option>
+              <option value="name-asc">Name (A-Z)</option>
+              <option value="name-desc">Name (Z-A)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Container to hold dynamic resume cards -->
+        <div id="resumeCardsContainer" class="space-y-4 mb-8"></div>
+
+        <!-- Send to Manager Button -->
+        <div class="flex justify-end mb-8">
+          <button id="sendToManagerBtn"
+            class="btn-primary px-6 py-3 text-black bg-accent-green font-medium rounded-lg shadow-md hover:scale-105 hover:shadow-glow-lg flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+            </svg>
+            Send Selected to Manager
+          </button>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex flex-col md:flex-row items-center justify-between">
+          <div class="text-sm text-gray-400 mb-4 md:mb-0">
+            Showing <span class="font-medium text-white">1</span> to
+            <span class="font-medium text-white">5</span> of
+            <span class="font-medium text-white">24</span> resumes
+          </div>
+
+          <div class="flex space-x-2">
+            <button
+              class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg bg-darkblue-800 text-gray-400 hover:text-accent-green disabled:opacity-50"
+              disabled>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+              </svg>
+            </button>
+            <!-- pagination numbers -->
+            <button class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg active">1</button>
+            <button
+              class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg bg-darkblue-800 text-gray-300">2</button>
+            <button
+              class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg bg-darkblue-800 text-gray-300">3</button>
+            <button
+              class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg bg-darkblue-800 text-gray-300">4</button>
+            <button
+              class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg bg-darkblue-800 text-gray-300">5</button>
+            <button
+              class="pagination-btn w-9 h-9 flex items-center justify-center rounded-lg bg-darkblue-800 text-gray-400 hover:text-accent-green">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Sidebar submenu toggle
+    const menuButtons = document.querySelectorAll(".sidebar-menu button");
+    menuButtons.forEach((button) => {
+      button.addEventListener("click", function () {
+        const submenu = this.nextElementSibling;
+        const icon = this.querySelector(".icon-rotate");
+
+        submenu.classList.toggle("open");
+        icon.style.transform = submenu.classList.contains("open")
+          ? "rotate(180deg)"
+          : "rotate(0)";
+
+        // Close other submenus
+        document.querySelectorAll(".submenu.open").forEach((menu) => {
+          if (menu !== submenu) {
+            menu.classList.remove("open");
+            menu.previousElementSibling.querySelector(
+              ".icon-rotate"
+            ).style.transform = "rotate(0)";
+          }
+        });
+      });
+    });
+
+
+
+    async function loadRequirementDropdown() {
+      const res = await fetch(`${apiConfig.getURL("api/list_job_requirements/")}`, {
+        credentials: "include"
+      });
+      const requirements = await res.json();
+      const selector = document.getElementById("requirementSelector");
+
+      requirements.forEach(req => {
+        const opt = document.createElement("option");
+        opt.value = req.requirement_id;
+        opt.textContent = `#${req.requirement_id} - ${req.position} (by ${req.created_by})`;
+        selector.appendChild(opt);
+      });
+    }
+
+    // Load requirement details
+    document.getElementById("requirementSelector").addEventListener("change", e => {
+      const reqId = e.target.value;
+      if (reqId) loadRequirementDetails(reqId);
+    });
+
+    function createBadge(text, highlight = false) {
+      return `
+    <span class="skill-badge px-3 py-1 bg-darkblue-700 ${highlight ? 'text-accent-green border border-accent-green' : 'text-white'} text-sm rounded-full">
+      ${text}
+    </span>`;
+    }
+
+    async function loadRequirementDetails(reqId) {
+      try {
+        const res = await fetch(`${apiConfig.getURL("api/get_job_requirement_detail/${reqId}/")}`, {
+          credentials: "include"
+        });
+        const data = await res.json();
+
+        const req = data.requirement;
+
+        // Update header
+        document.getElementById("requirementTitle").innerHTML = `
+      <svg class="w-5 h-5 mr-2 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+        </path>
+      </svg>
+      Requirements: ${req.position} <span class="ml-2 text-sm text-gray-400">(by ${req.created_by})</span>
+    `;
+
+        // Inject badge groups
+        document.getElementById("skillsContainer").innerHTML =
+          data.skills.map(s => createBadge(s, true)).join('');
+        document.getElementById("SoftskillsContainer").innerHTML =
+          data.soft_skills.map(s => createBadge(s, true)).join('');
+        document.getElementById("educationContainer").innerHTML =
+          data.education.map(e => createBadge(e)).join('');
+        document.getElementById("experienceContainer").innerHTML =
+          req.experience ? createBadge(req.experience) : '';
+        document.getElementById("DateContainer").innerHTML =
+          req.created_at ? createBadge(new Date(req.created_at).toLocaleString()) : '';
+
+      } catch (err) {
+        console.error("Failed to load requirement details:", err);
+      }
+    }
+
+
+    // Evaluate button click
+    const evaluateBtn = document.getElementById("evaluateBtn");
+    const resultsSection = document.getElementById("resultsSection");
+    const loadingOverlay = document.createElement('div');
+    loadingOverlay.id = 'loadingOverlay';
+    loadingOverlay.style.display = 'none';
+    loadingOverlay.style.position = 'fixed';
+    loadingOverlay.style.top = '0';
+    loadingOverlay.style.left = '0';
+    loadingOverlay.style.width = '100vw';
+    loadingOverlay.style.height = '100vh';
+    loadingOverlay.style.background = 'rgba(10,23,39,0.85)';
+    loadingOverlay.style.zIndex = '10000';
+    loadingOverlay.style.alignItems = 'center';
+    loadingOverlay.style.justifyContent = 'center';
+    loadingOverlay.innerHTML = `
+      <div class="flex flex-col items-center">
+        <svg class="animate-spin h-12 w-12 text-accent-green" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span class="mt-4 text-accent-green text-lg font-semibold">Evaluating with AI...</span>
+      </div>
+    `;
+    document.body.appendChild(loadingOverlay);
+
+    evaluateBtn.addEventListener("click", async function () {
+      const requirementId = document.getElementById("requirementSelector").value;
+
+      if (!requirementId) {
+        showError("Please select a job requirement before evaluating.");
+        return;
+      }
+
+      // Show loading overlay and animate main content out
+      loadingOverlay.style.display = "flex";
+      loadingOverlay.style.opacity = "0";
+      setTimeout(() => { loadingOverlay.style.opacity = "1"; }, 10);
+      document.querySelector("main").style.opacity = "0.5";
+      evaluateBtn.disabled = true;
+      evaluateBtn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg> Evaluating...`;
+
+      try {
+        // Simulate API call (replace with your real fetch)
+        // await new Promise(resolve => setTimeout(resolve, 2000));
+        const response = await fetch(`${apiConfig.getURL("api/evaluate/")}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ requirement_id: requirementId })
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+          // Hide overlay and show results with animation
+          loadingOverlay.style.opacity = "0";
+          setTimeout(() => { loadingOverlay.style.display = "none"; }, 300);
+          document.querySelector("main").style.opacity = "1";
+          evaluateBtn.disabled = false;
+          evaluateBtn.innerHTML = `Evaluate with AI`;
+          // Animate results section in
+          resultsSection.classList.remove("hidden");
+          resultsSection.style.opacity = "0";
+          resultsSection.style.transform = "translateY(30px)";
+          setTimeout(() => {
+            resultsSection.style.transition = "opacity 0.5s, transform 0.5s";
+            resultsSection.style.opacity = "1";
+            resultsSection.style.transform = "translateY(0)";
+          }, 10);
+          resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        } else {
+          // Error from API: revert transition, show error dialog
+          loadingOverlay.style.opacity = "0";
+          setTimeout(() => { loadingOverlay.style.display = "none"; }, 300);
+          document.querySelector("main").style.opacity = "1";
+          evaluateBtn.disabled = false;
+          evaluateBtn.innerHTML = `Evaluate with AI`;
+          showError(data.message || "Error occurred during evaluation.");
+        }
+      } catch (err) {
+        // Network or JS error: revert transition, show error dialog
+        loadingOverlay.style.opacity = "0";
+        setTimeout(() => { loadingOverlay.style.display = "none"; }, 300);
+        document.querySelector("main").style.opacity = "1";
+        evaluateBtn.disabled = false;
+        evaluateBtn.innerHTML = `Evaluate with AI`;
+        showError("Error occurred during evaluation.");
+      }
+    });
+
+
+    // Custom checkbox functionality
+    const checkboxes = document.querySelectorAll(".custom-checkbox");
+    checkboxes.forEach((checkbox) => {
+      checkbox.addEventListener("click", function () {
+        this.classList.toggle("checked");
+      });
+    });
+
+    // Send to Manager button click
+    const sendToManagerBtn = document.getElementById("sendToManagerBtn");
+
+    sendToManagerBtn.addEventListener("click", async function () {
+      const checkedBoxes = document.querySelectorAll("input.resume-checkbox:checked");
+
+      if (checkedBoxes.length === 0) {
+        const notification = document.createElement("div");
+        notification.className =
+          "fixed bottom-4 right-4 bg-amber-500 text-black px-4 py-3 rounded-lg shadow-lg flex items-center transform transition-all duration-500 z-50";
+        notification.innerHTML = `
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M12 9v2m0 4h.01m-6.9384h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4
+                  c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+          Please select at least one resume to send.
+        `;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+          notification.style.opacity = "0";
+          notification.style.transform = "translateY(20px)";
+          setTimeout(() => notification.remove(), 300);
+        }, 3000);
+
+        return;
+      }
+
+      // ✅ Proceed with sending selected resumes
+      const resumeIds = Array.from(checkedBoxes).map(cb => cb.dataset.id);
+      const requirementId = checkedBoxes[0].dataset.reqId;
+
+      // Show loading
+      sendToManagerBtn.disabled = true;
+      sendToManagerBtn.innerHTML = `
+        <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+        </svg> Sending...`;
+
+      try {
+        const res = await fetch(`${apiConfig.getURL("api/hr/shortlist/")}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(
+            resumeIds.map(id => ({
+              requirement_id: requirementId,
+              resume_id: id
+            }))
+          ),
+        });
+
+        const data = await res.json();
+
+        // Show success toast
+        const notification = document.createElement("div");
+        notification.className =
+          "fixed bottom-4 right-4 bg-accent-green text-black px-4 py-3 rounded-lg shadow-lg flex items-center transform transition-all duration-500 z-50";
+        notification.innerHTML = `
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          ${resumeIds.length} resume${resumeIds.length > 1 ? "s" : ""} sent to manager successfully!
+        `;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+          notification.style.opacity = "0";
+          notification.style.transform = "translateY(20px)";
+          setTimeout(() => notification.remove(), 300);
+        }, 3000);
+
+        // Clear checkboxes
+        checkedBoxes.forEach(cb => {
+          cb.checked = false;
+          cb.closest("label").classList.remove("checked");
+        });
+
+      } catch (err) {
+        console.error("Error sending resumes:", err);
+        showError("Something went wrong. Please try again.");
+      } finally {
+        sendToManagerBtn.disabled = false;
+        sendToManagerBtn.innerHTML = `
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+          </svg> Send Selected to Manager`;
+      }
+    });
+
+ 
+
+    // Name Search Filter
+    const searchInput = document.querySelector(
+      'input[placeholder="Search..."]'
+    );
+    const resumeCards = document.querySelectorAll(".resume-card");
+
+    searchInput.addEventListener("input", function () {
+      const query = this.value.toLowerCase();
+
+      resumeCards.forEach((card) => {
+        const name = card.querySelector("h4").textContent.toLowerCase();
+        if (name.includes(query)) {
+          card.style.display = "block";
+        } else {
+          card.style.display = "none";
+        }
+      });
+    });
+
+    document.getElementById("logout-btn").addEventListener("click", async function () {
+      try {
+        const res = await fetch(`${apiConfig.getURL("api/logout/")}`, {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+
+        let data = {};
+        try {
+          data = await res.json(); // attempt to parse JSON
+        } catch (err) {
+          console.warn("No JSON response received", err);
+        }
+
+        console.log("Logout response:", data);
+
+        if (res.ok) {
+          window.location.href = data.redirect || "/login.html";
+        } else {
+          showError("Logout failed: " + (data.message || "Unknown error"));
+        }
+
+      } catch (error) {
+        console.error("Logout error:", error);
+        showError("Network error during logout.");
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadRequirementDropdown(); // ✅ Load dropdown from backend
+
+      const requirementId = document.getElementById("requirementSelector").value;
+      if (requirementId) loadResumes(requirementId); // ⬅️ If pre-selected (optional)
+    });
+
+  </script>
+
+  <div id="error-message" style="display:none;color:red;margin-bottom:10px;"></div>
+  <div id="error-dialog" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.3);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#fff;padding:24px 32px;border-radius:8px;box-shadow:0 2px 16px rgba(0,0,0,0.2);min-width:300px;max-width:90vw;text-align:center;position:relative;">
+    <span id="error-dialog-message" style="color:#b91c1c;font-size:1.1em;"></span>
+    <br><br>
+    <button onclick="closeErrorDialog()" style="background:#b91c1c;color:#fff;padding:8px 20px;border:none;border-radius:4px;cursor:pointer;">OK</button>
+  </div>
+</div>
+<script>
+function showError(message) {
+  var dialog = document.getElementById('error-dialog');
+  var msgSpan = document.getElementById('error-dialog-message');
+  if (dialog && msgSpan) {
+    msgSpan.textContent = message;
+    dialog.style.display = 'flex';
+  }
+}
+function closeErrorDialog() {
+  var dialog = document.getElementById('error-dialog');
+  if (dialog) dialog.style.display = 'none';
+}
+</script>
+
+</body>
+
+</html>

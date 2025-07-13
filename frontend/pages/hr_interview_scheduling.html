@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../config/config.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SafeNet HR - Finalised Candidates</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            darkblue: {
+              950: "#0a1727",
+              900: "#0d1b2a",
+              800: "#112240",
+              700: "#1b2c3f",
+            },
+            accent: {
+              green: "#2ed573",
+            }
+          },
+          boxShadow: {
+            glow: "0 0 15px rgba(46, 213, 115, 0.3)",
+            "glow-lg": "0 0 25px rgba(46, 213, 115, 0.4)",
+          },
+          keyframes: {
+            float: {
+              "0%, 100%": { transform: "translateY(0)" },
+              "50%": { transform: "translateY(-10px)" },
+            },
+            pulse: {
+              "0%, 100%": { opacity: 1 },
+              "50%": { opacity: 0.7 },
+            },
+            headerSlideDown: {
+              "0%": { transform: "translateY(-20px)", opacity: 0 },
+              "100%": { transform: "translateY(0)", opacity: 1 },
+            },
+            sidebarSlideIn: {
+              "0%": { transform: "translateX(-20px)", opacity: 0 },
+              "100%": { transform: "translateX(0)", opacity: 1 },
+            },
+            contentFadeIn: {
+              "0%": { opacity: 0 },
+              "100%": { opacity: 1 },
+            },
+            cardSlideUp: {
+              "0%": { transform: "translateY(20px)", opacity: 0 },
+              "100%": { transform: "translateY(0)", opacity: 1 },
+            },
+          },
+          animation: {
+            float: "float 3s ease-in-out infinite",
+            pulse: "pulse 2s ease-in-out infinite",
+            headerSlideDown: "headerSlideDown 0.5s ease-out forwards",
+            sidebarSlideIn: "sidebarSlideIn 0.5s ease-out forwards",
+            contentFadeIn: "contentFadeIn 0.8s ease-out forwards",
+            cardSlideUp: "cardSlideUp 0.5s ease-out forwards",
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background-color: #0a1727;
+    }
+
+    .sidebar-item {
+      transition: all 0.3s ease;
+    }
+
+    .sidebar-item:hover {
+      background-color: rgba(46, 213, 115, 0.15);
+      transform: translateX(5px);
+    }
+
+    .sidebar-item.active {
+      background-color: rgba(46, 213, 115, 0.2);
+      border-left: 3px solid #2ed573;
+    }
+
+    .submenu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .submenu.open {
+      max-height: 500px;
+    }
+
+    .submenu a {
+      transform: translateX(0);
+      transition: all 0.3s ease;
+    }
+
+    .submenu a:hover {
+      transform: translateX(5px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2ed573 0%, #10ac84 100%);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent);
+      transition: all 0.6s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-primary:hover::after {
+      left: 100%;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-input {
+      transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+      box-shadow: 0 0 0 2px rgba(46, 213, 115, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .candidate-card {
+      transition: all 0.3s ease;
+      border-left: 3px solid transparent;
+    }
+
+   
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(46, 213, 115, 0.1);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .shield-pulse {
+      animation: pulse 2s infinite;
+    }
+
+    .delay-100 {
+      animation-delay: 0.1s;
+    }
+
+    .delay-200 {
+      animation-delay: 0.2s;
+    }
+
+    .delay-300 {
+      animation-delay: 0.3s;
+    }
+
+    .delay-400 {
+      animation-delay: 0.4s;
+    }
+
+    .delay-500 {
+      animation-delay: 0.5s;
+    }
+
+    .pagination-btn {
+      transition: all 0.3s ease;
+    }
+
+    .pagination-btn:hover:not(.active) {
+      background-color: rgba(46, 213, 115, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .pagination-btn.active {
+      background-color: #2ed573;
+      color: #0d1b2a;
+    }
+
+    .status-badge {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .status-badge::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      100% {
+        left: 100%;
+      }
+    }
+
+    .btn-action {
+      transition: all 0.3s ease;
+    }
+
+    .btn-action:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-action.joined:hover {
+      box-shadow: 0 0 15px rgba(46, 213, 115, 0.5);
+    }
+
+    .btn-action.remove:hover {
+      box-shadow: 0 0 15px rgba(255, 71, 87, 0.5);
+    }
+
+    
+  </style>
+</head>
+
+<body class="bg-darkblue-950 text-white min-h-screen flex">
+  <!-- Background Particles -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none">
+    <div class="particle w-2 h-2 top-[10%] left-[5%] animate-float delay-100"></div>
+    <div class="particle w-3 h-3 top-[20%] left-[15%] animate-float delay-200"></div>
+    <div class="particle w-2 h-2 top-[30%] left-[25%] animate-float delay-300"></div>
+    <div class="particle w-4 h-4 top-[40%] left-[35%] animate-float delay-400"></div>
+    <div class="particle w-2 h-2 top-[50%] left-[45%] animate-float delay-500"></div>
+    <div class="particle w-3 h-3 top-[60%] left-[55%] animate-float delay-100"></div>
+    <div class="particle w-2 h-2 top-[70%] left-[65%] animate-float delay-200"></div>
+    <div class="particle w-4 h-4 top-[80%] left-[75%] animate-float delay-300"></div>
+    <div class="particle w-2 h-2 top-[90%] left-[85%] animate-float delay-400"></div>
+    <div class="particle w-3 h-3 top-[15%] left-[95%] animate-float delay-500"></div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="w-64 bg-darkblue-900 min-h-screen shadow-lg border-r border-gray-800 fixed animate-sidebarSlideIn z-10">
+    <!-- Logo -->
+    <div class="p-6 border-b border-gray-800">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-lg bg-accent-green bg-opacity-20 flex items-center justify-center shield-pulse">
+          <svg class="w-6 h-6 text-accent-green" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd"
+              d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd"></path>
+          </svg>
+        </div>
+        <h1 class="text-xl font-semibold text-white">SafeNet</h1>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="mt-8 px-4">
+      <div class="space-y-2">
+        <a href="./hr_resumeupload.html" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg">
+          <svg class="w-5 h-5 mr-3 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+          </svg>
+          <span>Upload Resume</span>
+        </a>
+
+        <a href="./hr_filterresume.html" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg">
+          <svg class="w-5 h-5 mr-3 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
+            </path>
+          </svg>
+          <span>Filter Resume</span>
+        </a>
+
+        <a href="./hr_finalised_candidate.html"
+          class="sidebar-item active flex items-center px-4 py-3 text-white rounded-lg">
+          <svg class="w-5 h-5 mr-3 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span>Finalised Candidates</span>
+        </a>
+
+        <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg">
+          <svg class="w-5 h-5 mr-3 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          <span>Interview Scheduling</span>
+        </a>
+
+        <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg">
+          <svg class="w-5 h-5 mr-3 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+            </path>
+          </svg>
+          <span>Reports</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- User Profile -->
+    <div class="absolute bottom-0 left-0 w-64 p-4 border-t border-gray-800">
+      <div class="flex items-center">
+        <div
+          class="w-10 h-10 rounded-full bg-darkblue-700 flex items-center justify-center text-accent-green font-semibold">
+          HR
+        </div>
+        <div class="ml-3">
+          <p class="text-sm font-medium text-white">Alex Morgan</p>
+          <p class="text-xs text-gray-400">HR Manager</p>
+        </div>
+        <button id="logout-btn" class="ml-10 text-gray-300 hover:text-white">
+          <div class="flex items-center">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  
+
+  <!-- Notification System -->
+  <div id="notificationContainer" class="fixed bottom-4 right-4 z-50 space-y-4"></div>
+
+  <div id="error-dialog" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.3);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:#fff;padding:24px 32px;border-radius:8px;box-shadow:0 2px 16px rgba(0,0,0,0.2);min-width:300px;max-width:90vw;text-align:center;position:relative;">
+      <span id="error-dialog-message" style="color:#b91c1c;font-size:1.1em;"></span>
+      <br><br>
+      <button onclick="closeErrorDialog()" style="background:#b91c1c;color:#fff;padding:8px 20px;border:none;border-radius:4px;cursor:pointer;">OK</button>
+    </div>
+  </div>
+  <script>
+  function showError(message) {
+    var dialog = document.getElementById('error-dialog');
+    var msgSpan = document.getElementById('error-dialog-message');
+    if (dialog && msgSpan) {
+      msgSpan.textContent = message;
+      dialog.style.display = 'flex';
+    }
+  }
+  function closeErrorDialog() {
+    var dialog = document.getElementById('error-dialog');
+    if (dialog) dialog.style.display = 'none';
+  }
+ 
+
+    
+
+
+   
+  </script>
+</body>
+
+</html>

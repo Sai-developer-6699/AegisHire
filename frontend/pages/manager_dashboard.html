@@ -72,64 +72,72 @@
         }
 
         .floating {
-          animation: float 6s ease-in-out infinite;
+            animation: float 6s ease-in-out infinite;
         }
 
         @keyframes float {
-          0% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-20px);
-          }
-          100% {
-            transform: translateY(0px);
-          }
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
         }
 
         .particle {
-          position: absolute;
-          border-radius: 50%;
-          background: rgba(46, 213, 115, 0.2);
-          animation: particle-animation 15s infinite;
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(46, 213, 115, 0.2);
+            animation: particle-animation 15s infinite;
         }
 
         @keyframes particle-animation {
-          0% {
-            transform: translate(0, 0);
-          }
-          25% {
-            transform: translate(100px, -50px);
-          }
-          50% {
-            transform: translate(50px, 100px);
-          }
-          75% {
-            transform: translate(-50px, 50px);
-          }
-          100% {
-            transform: translate(0, 0);
-          }
+            0% {
+                transform: translate(0, 0);
+            }
+
+            25% {
+                transform: translate(100px, -50px);
+            }
+
+            50% {
+                transform: translate(50px, 100px);
+            }
+
+            75% {
+                transform: translate(-50px, 50px);
+            }
+
+            100% {
+                transform: translate(0, 0);
+            }
         }
 
         .glow {
-          box-shadow: 0 0 15px rgba(46, 213, 115, 0.3);
+            box-shadow: 0 0 15px rgba(46, 213, 115, 0.3);
         }
 
         .shield-icon {
-          animation: shield-pulse 3s infinite;
+            animation: shield-pulse 3s infinite;
         }
 
         @keyframes shield-pulse {
-          0% {
-            filter: drop-shadow(0 0 2px rgba(46, 213, 115, 0.4));
-          }
-          50% {
-            filter: drop-shadow(0 0 8px rgba(46, 213, 115, 0.6));
-          }
-          100% {
-            filter: drop-shadow(0 0 2px rgba(46, 213, 115, 0.4));
-          }
+            0% {
+                filter: drop-shadow(0 0 2px rgba(46, 213, 115, 0.4));
+            }
+
+            50% {
+                filter: drop-shadow(0 0 8px rgba(46, 213, 115, 0.6));
+            }
+
+            100% {
+                filter: drop-shadow(0 0 2px rgba(46, 213, 115, 0.4));
+            }
         }
 
 
@@ -369,31 +377,32 @@
             }
         }
     </style>
+    <script src="../config/config.js"></script>
 </head>
 
 <body class="bg-darkblue-950 text-white min-h-screen">
+    <div id="error-message" style="display:none;color:red;margin-bottom:10px;"></div>
+    <div id="error-dialog" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.3);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#fff;padding:24px 32px;border-radius:8px;box-shadow:0 2px 16px rgba(0,0,0,0.2);min-width:300px;max-width:90vw;text-align:center;position:relative;">
+    <span id="error-dialog-message" style="color:#b91c1c;font-size:1.1em;"></span>
+    <br><br>
+    <button onclick="closeErrorDialog()" style="background:#b91c1c;color:#fff;padding:8px 20px;border:none;border-radius:4px;cursor:pointer;">OK</button>
+  </div>
+</div>
+    <div id="notificationContainer" style="position:fixed;top:24px;right:24px;z-index:10000;display:flex;flex-direction:column;gap:12px;"></div>
     <div class="flex">
         <!-- Sidebar (Desktop) -->
-        <div
-            id="sidebar"
-            class="hidden lg:block w-64 bg-darkblue-900 min-h-screen shadow-lg border-r border-gray-800 fixed animate-sidebarSlideIn z-20"
-        >
+        <div id="sidebar"
+            class="hidden lg:block w-64 bg-darkblue-900 min-h-screen shadow-lg border-r border-gray-800 fixed animate-sidebarSlideIn z-20">
             <!-- Logo -->
             <div class="p-6 border-b border-gray-800">
                 <div class="flex items-center space-x-3">
                     <div
-                        class="w-10 h-10 rounded-lg bg-accent-green bg-opacity-20 flex items-center justify-center shield-pulse"
-                    >
-                        <svg
-                            class="w-6 h-6 text-accent-green"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                        >
-                            <path
-                                fill-rule="evenodd"
+                        class="w-10 h-10 rounded-lg bg-accent-green bg-opacity-20 flex items-center justify-center shield-pulse">
+                        <svg class="w-6 h-6 text-accent-green" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
                                 d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                clip-rule="evenodd"
-                            ></path>
+                                clip-rule="evenodd"></path>
                         </svg>
                     </div>
                     <h1 class="text-xl font-semibold text-white">SafeNet</h1>
@@ -403,81 +412,45 @@
             <!-- Navigation -->
             <nav class="mt-8 px-4">
                 <div class="space-y-2">
-                    <a
-                        href="./manager_dashboard.html"
-                        class="sidebar-item active flex items-center px-4 py-3 text-gray-300 rounded-lg"
-                    >
-                        <svg
-                            class="w-5 h-5 mr-3 text-accent-green"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                            ></path>
+                    <a href="./manager_dashboard.html"
+                        class="sidebar-item active flex items-center px-4 py-3 text-gray-300 rounded-lg">
+                        <svg class="w-5 h-5 mr-3 text-accent-green" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                            </path>
                         </svg>
                         <span>Dashboard</span>
                     </a>
 
-                    <a
-                        href="./manager_job_creation.html"
-                        class="sidebar-item flex items-center px-4 py-3 text-white hover:bg-accent-green hover:bg-opacity-20 rounded-lg"
-                    >
-                        <svg
-                            class="w-5 h-5 mr-3 text-accent-green"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                            ></path>
+                    <a href="./manager_job_creation.html"
+                        class="sidebar-item flex items-center px-4 py-3 text-white hover:bg-accent-green hover:bg-opacity-20 rounded-lg">
+                        <svg class="w-5 h-5 mr-3 text-accent-green" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
                         </svg>
                         <span>Job Creation</span>
                     </a>
-                    <a
-                        href="./manager_shortlist.html"
-                        class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg"
-                    >
-                        <svg
-                            class="w-5 h-5 mr-3 text-accent-green"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                            ></path>
+                    <a href="./manager_shortlist.html"
+                        class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg">
+                        <svg class="w-5 h-5 mr-3 text-accent-green" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                            </path>
                         </svg>
                         <span>Shortlist Candidate</span>
                     </a>
 
-                    <a
-                        href="./manager_candidate_performance.html"
-                        class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg z-50 rounded-lg"
-                    >
-                        <svg
-                            class="w-5 h-5 mr-3 text-accent-green"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                            ></path>
+                    <a href="./manager_candidate_performance.html"
+                        class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-lg z-50 rounded-lg">
+                        <svg class="w-5 h-5 mr-3 text-accent-green" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                            </path>
                         </svg>
                         <span>Candidate Performance</span>
                     </a>
@@ -488,28 +461,19 @@
             <div class="absolute bottom-0 left-0 w-64 p-4 border-t border-gray-800 bg-gray-900">
                 <div class="flex items-center">
                     <div
-                        class="w-10 h-10 rounded-full bg-darkblue-700 flex items-center justify-center text-accent-green font-semibold"
-                    >
+                        class="w-10 h-10 rounded-full bg-darkblue-700 flex items-center justify-center text-accent-green font-semibold">
                         MG
                     </div>
                     <div class="ml-3">
                         <p class="text-sm font-medium text-white">Mark Green</p>
-                        <p class="text-xs text-gray-400">Department Manager</p>
+                        <p class="text-xs text-gray-400">Manager</p>
                     </div>
-                    <button class="ml-4 text-gray-300 hover:text-white">
+                    <button id="logout-btn" class="ml-10 text-gray-300 hover:text-white">                        
                         <div class="flex items-center">
-                            <svg
-                                class="w-5 h-5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                                ></path>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                                </path>
                             </svg>
                         </div>
                     </button>
@@ -543,5 +507,88 @@
             </div>
         </div>
     </div>
+    <script>
+        function showError(message) {
+            var errorDiv = document.getElementById('error-message');
+            if (errorDiv) {
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+                setTimeout(function() { errorDiv.style.display = 'none'; }, 5000);
+            }
+            var dialog = document.getElementById('error-dialog');
+            var msgSpan = document.getElementById('error-dialog-message');
+            if (dialog && msgSpan) {
+                msgSpan.textContent = message;
+                dialog.style.display = 'flex';
+            }
+        }
+        function closeErrorDialog() {
+            var dialog = document.getElementById('error-dialog');
+            if (dialog) dialog.style.display = 'none';
+        }
+        document.getElementById("logout-btn").addEventListener("click", async function () {
+            try {
+                const res = await fetch(`${apiConfig.getURL("api/logout/")}`, {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                let data = {};
+                try {
+                    data = await res.json(); // attempt to parse JSON
+                } catch (err) {
+                    console.warn("No JSON response received", err);
+                }
+
+                console.log("Logout response:", data);
+
+                if (res.ok) {
+                    window.location.href = data.redirect || "/login.html";
+                } else {
+                    showError("Logout failed: " + (data.message || "Unknown error"));
+                }
+
+            } catch (error) {
+                console.error("Logout error:", error);
+                showError("Network error during logout.");
+            }
+        });
+    </script>
+    <script>
+function showSuccess(message) {
+  const container = document.getElementById('notificationContainer');
+  if (!container) return;
+  const notif = document.createElement('div');
+  notif.textContent = message;
+  notif.style.background = '#22c55e'; // Tailwind green-500
+  notif.style.color = '#fff';
+  notif.style.padding = '14px 24px';
+  notif.style.borderRadius = '8px';
+  notif.style.boxShadow = '0 2px 8px rgba(0,0,0,0.12)';
+  notif.style.fontWeight = 'bold';
+  notif.style.fontSize = '1rem';
+  notif.style.display = 'flex';
+  notif.style.alignItems = 'center';
+  notif.style.justifyContent = 'space-between';
+  notif.style.gap = '16px';
+  const closeBtn = document.createElement('button');
+  closeBtn.textContent = '×';
+  closeBtn.style.background = 'transparent';
+  closeBtn.style.border = 'none';
+  closeBtn.style.color = '#fff';
+  closeBtn.style.fontSize = '1.2em';
+  closeBtn.style.cursor = 'pointer';
+  closeBtn.onclick = () => container.removeChild(notif);
+  notif.appendChild(closeBtn);
+  container.appendChild(notif);
+  setTimeout(() => {
+    if (container.contains(notif)) container.removeChild(notif);
+  }, 3000);
+}
+</script>
 </body>
+
 </html>

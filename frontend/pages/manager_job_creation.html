@@ -396,6 +396,7 @@
             }
         }
     </style>
+    <script src="../config/config.js"></script>
 </head>
 
 <body class="bg-darkblue-950 text-white min-h-screen">
@@ -475,9 +476,9 @@
                     </div>
                     <div class="ml-3">
                         <p class="text-sm font-medium text-white">Mark Green</p>
-                        <p class="text-xs text-gray-400">Department Manager</p>
+                        <p class="text-xs text-gray-400">Manager</p>
                     </div>
-                    <button class="ml-4 text-gray-300 hover:text-white">
+                    <button id="logout" class="ml-4 text-gray-300 hover:text-white">
                         <div class="flex items-center">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -685,8 +686,30 @@
                         </div>
                     </div>
                 </div>
+                <div id="logoutMessage" style="display:none; color: green; margin-top: 10px;"></div>
             </div>
         </div>
+        <div id="error-dialog" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.3);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#fff;padding:24px 32px;border-radius:8px;box-shadow:0 2px 16px rgba(0,0,0,0.2);min-width:300px;max-width:90vw;text-align:center;position:relative;">
+    <span id="error-dialog-message" style="color:#b91c1c;font-size:1.1em;"></span>
+    <br><br>
+    <button onclick="closeErrorDialog()" style="background:#b91c1c;color:#fff;padding:8px 20px;border:none;border-radius:4px;cursor:pointer;">OK</button>
+  </div>
+</div>
+<script>
+function showError(message) {
+  var dialog = document.getElementById('error-dialog');
+  var msgSpan = document.getElementById('error-dialog-message');
+  if (dialog && msgSpan) {
+    msgSpan.textContent = message;
+    dialog.style.display = 'flex';
+  }
+}
+function closeErrorDialog() {
+  var dialog = document.getElementById('error-dialog');
+  if (dialog) dialog.style.display = 'none';
+}
+</script>
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 // ─── Element references ─────────────────────────────────────────────
@@ -700,6 +723,46 @@
                 const jobForm = document.getElementById('jobForm');
                 const resetButton = document.querySelector('button[type="reset"]');
                 const jobList = document.getElementById('jobList');
+                const myJobsButton = document.getElementById('my-jobs-btn');
+                const allJobsButton = document.getElementById('all-jobs-btn');
+                const searchInput = document.getElementById('search-jobs');
+                const sortByIDButton = document.getElementById('sort-by-id');
+                const sortByRecentButton = document.getElementById('sort-by-recent');
+
+                // ─── Event listeners ────────────────────────────────────────────────
+                document.getElementById("logout").addEventListener("click", async function () {
+                    try {
+                        const response = await fetch(`${apiConfig.getURL('api/logout/')}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            credentials: 'include'
+                        });
+
+                        const data = await response.json();
+                        const messageDiv = document.getElementById("logoutMessage");
+
+                        if (response.ok) {
+                            messageDiv.textContent = data.message;
+                            messageDiv.style.display = 'block';
+
+                            setTimeout(() => {
+                                window.location.href = data.redirect;
+                            }, 1500); // Delay to show message before redirect
+                        } else {
+                            messageDiv.textContent = "Logout failed.";
+                            messageDiv.style.display = 'block';
+                            messageDiv.style.color = 'red';
+                        }
+                    } catch (error) {
+                        const messageDiv = document.getElementById("logoutMessage");
+                        messageDiv.textContent = "An error occurred.";
+                        messageDiv.style.display = 'block';
+                        messageDiv.style.color = 'red';
+                        console.error("Error during logout:", error);
+                    }
+                });
 
                 // ─── Utility functions ─────────────────────────────────────────────
                 function createSkillPill(skill) {
@@ -718,7 +781,7 @@
                 async function renderRecentJobs() {
                     jobList.innerHTML = '<li class="italic text-[#9ca3af] animate-pulse">Loading...</li>';
                     try {
-                        const res = await fetch('http://127.0.0.1:8000/api/get-recent-jobs/?limit=5');
+                        const res = await fetch(`${apiConfig.getURL('api/get-recent-jobs/?limit=5')}`);
                         const data = await res.json();
                         const jobs = data.jobs || [];
                         if (!jobs.length) {
@@ -759,7 +822,7 @@
 
                 (async function fetchPositions() {
                     try {
-                        const res = await fetch('http://127.0.0.1:8000/api/get_positions/');
+                        const res = await fetch(`${apiConfig.getURL('api/get_positions/')}`);
                         const data = await res.json();
                         if (!res.ok) throw new Error(data.error || 'Failed to load positions');
                         jobCategory.innerHTML = `<option value="" disabled selected>Select category</option>`;
@@ -781,10 +844,10 @@
                         const position = jobCategory.value;
                         if (!position) return;
                         try {
-                            await fetch('http://127.0.0.1:8000/api/check_session/', {
+                            await fetch(`${apiConfig.getURL('api/check_session/')}`, {
                                 method: 'GET', credentials: 'include'
                             });
-                            const res = await fetch('http://127.0.0.1:8000/api/get_recommendations_for_position/', {
+                            const res = await fetch(`${apiConfig.getURL('api/get_recommendations_for_position/')}`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ position })
@@ -828,7 +891,7 @@
                             soft_skills: selectedSoft
                         };
                         try {
-                            const res = await fetch('http://127.0.0.1:8000/api/submit_job/', {
+                            const res = await fetch(`${apiConfig.getURL('api/submit_job/')}`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 credentials: 'include',
@@ -836,10 +899,10 @@
                             });
                             const result = await res.json();
                             if (res.ok) {
-                                alert('Job post sent to HR!');
+                                showError('Job post sent to HR!');
                                 jobForm.reset();
                             } else {
-                                alert('Submission failed: ' + result.error);
+                                showError('Submission failed: ' + result.error);
                             }
                         } catch (err) {
                             console.error('Submission error:', err);

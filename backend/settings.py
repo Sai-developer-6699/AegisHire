@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +25,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-$%wf^&v*=)1e)@hcen4@3t-bmtw**6lf0_3%*1^!$u4+95q_w!'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-change-this-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '0.0.0.0',
+    '*',  # Allow all hosts (temporary for testing)
+]
 
 
 # Application definition
@@ -71,6 +81,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'backend.context_processors.api_config',  # Add API config
             ],
         },
     },
@@ -79,19 +90,47 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 
-# Database
+# Database Configuration
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'recruitment',
-        'USER': 'root',
-        'PASSWORD': 'Mysql@2004',
-        'HOST': 'localhost',
-        'PORT': '3306',
+# Determine which database to use based on environment
+DB_TYPE = os.getenv('DB_TYPE', 'local').lower()
+
+if DB_TYPE == 'company':
+    # Use company database
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.getenv('COMPANY_DB_NAME', 'company_recruitment'),
+            'USER': os.getenv('COMPANY_DB_USER', 'company_user'),
+            'PASSWORD': os.getenv('COMPANY_DB_PASSWORD', ''),
+            'HOST': os.getenv('COMPANY_DB_HOST', 'company-server.com'),
+            'PORT': os.getenv('COMPANY_DB_PORT', '3306'),
+            'OPTIONS': {
+                'charset': 'utf8mb4',
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            },
+        }
     }
-}
+else:
+    # Use local database (default)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.getenv('LOCAL_DB_NAME', 'recruitment'),
+            'USER': os.getenv('LOCAL_DB_USER', 'root'),
+            'PASSWORD': os.getenv('LOCAL_DB_PASSWORD', ''),
+            'HOST': os.getenv('LOCAL_DB_HOST', 'localhost'),
+            'PORT': os.getenv('LOCAL_DB_PORT', '3306'),
+            'OPTIONS': {
+                'charset': 'utf8mb4',
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            },
+        }
+    }
+
+# Database routers for multi-database support
+DATABASE_ROUTERS = ['backend.routers.DatabaseRouter']
 
 
 
@@ -136,7 +175,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = os.getenv('CORS_ALLOW_ALL_ORIGINS', 'True').lower() == 'true'
 # CORS settings to allow frontend JS to connect
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = [
@@ -168,10 +207,11 @@ REST_FRAMEWORK = {
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 
-# STATIC_URL = '/static/'
+
 # # Media files settings
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = BASE_DIR / 'media'
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MEDIA_URL = os.getenv('MEDIA_URL', '/media/')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # # Default primary key field type
 # DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # # Logging configuration

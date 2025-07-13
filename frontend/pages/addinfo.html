@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add New User</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background-color: #0a0a0a;
+      color: #e0e0e0;
+    }
+
+    .gradient-bg {
+      background: linear-gradient(135deg, #0a2e1f 0%, #0f3d29 100%);
+    }
+
+    .floating {
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-20px);
+      }
+
+      100% {
+        transform: translateY(0px);
+      }
+    }
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(46, 213, 115, 0.2);
+      animation: particle-animation 15s infinite;
+    }
+
+    @keyframes particle-animation {
+      0% {
+        transform: translate(0, 0);
+      }
+
+      25% {
+        transform: translate(100px, -50px);
+      }
+
+      50% {
+        transform: translate(50px, 100px);
+      }
+
+      75% {
+        transform: translate(-50px, 50px);
+      }
+
+      100% {
+        transform: translate(0, 0);
+      }
+    }
+
+    .glow {
+      box-shadow: 0 0 15px rgba(46, 213, 115, 0.3);
+    }
+
+    .shield-icon {
+      animation: shield-pulse 3s infinite;
+    }
+
+    @keyframes shield-pulse {
+      0% {
+        filter: drop-shadow(0 0 2px rgba(46, 213, 115, 0.4));
+      }
+
+      50% {
+        filter: drop-shadow(0 0 8px rgba(46, 213, 115, 0.6));
+      }
+
+      100% {
+        filter: drop-shadow(0 0 2px rgba(46, 213, 115, 0.4));
+      }
+    }
+
+    .sidebar-item {
+      transition: all 0.3s ease;
+    }
+
+    .sidebar-item:hover {
+      background-color: rgba(46, 213, 115, 0.15);
+      transform: translateX(5px);
+    }
+
+    .sidebar-item.active {
+      background-color: rgba(46, 213, 115, 0.2);
+      border-left: 3px solid #2ed573;
+    }
+
+    .submenu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .submenu.open {
+      max-height: 500px;
+    }
+
+    .submenu a {
+      transform: translateX(0);
+      transition: all 0.3s ease;
+    }
+
+    .submenu a:hover {
+      transform: translateX(5px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2ed573 0%, #10ac84 100%);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent);
+      transition: all 0.6s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-primary:hover::after {
+      left: 100%;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-secondary::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg,
+          transparent,
+          rgba(255, 255, 255, 0.1),
+          transparent);
+      transition: all 0.6s ease;
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-secondary:hover::after {
+      left: 100%;
+    }
+
+    .form-input {
+      background-color: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+      background-color: rgba(255, 255, 255, 0.12);
+      border-color: #2ed573;
+      box-shadow: 0 0 0 3px rgba(46, 213, 115, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .form-select {
+      background-color: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23e0e0e0' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 0.5rem center;
+      background-repeat: no-repeat;
+      background-size: 1.5em 1.5em;
+      padding-right: 2.5rem;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+
+    .form-select:focus {
+      background-color: rgba(255, 255, 255, 0.12);
+      border-color: #2ed573;
+      box-shadow: 0 0 0 3px rgba(46, 213, 115, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .form-checkbox {
+      position: relative;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .form-checkbox.checked {
+      background-color: #2ed573;
+      border-color: #2ed573;
+    }
+
+    .form-checkbox.checked::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 6px;
+      width: 5px;
+      height: 10px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+      animation: checkbox-check 0.3s ease-out;
+    }
+
+    @keyframes checkbox-check {
+      0% {
+        height: 0;
+      }
+
+      50% {
+        height: 10px;
+      }
+
+      100% {
+        height: 10px;
+      }
+    }
+
+    .form-checkbox:hover {
+      border-color: #2ed573;
+    }
+
+    .header-animation {
+      animation: header-slide-down 0.6s ease-out;
+    }
+
+    @keyframes header-slide-down {
+      0% {
+        transform: translateY(-20px);
+        opacity: 0;
+      }
+
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .content-animation {
+      animation: content-fade-in 0.8s ease-out;
+    }
+
+    @keyframes content-fade-in {
+      0% {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .sidebar-animation {
+      animation: sidebar-slide-in 0.7s ease-out;
+    }
+
+    @keyframes sidebar-slide-in {
+      0% {
+        transform: translateX(-30px);
+        opacity: 0;
+      }
+
+      100% {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .form-section {
+      animation: form-section-fade-in 0.5s ease-out;
+    }
+
+    @keyframes form-section-fade-in {
+      0% {
+        transform: translateY(10px);
+        opacity: 0;
+      }
+
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(46, 213, 115, 0.4);
+      transform: scale(0);
+      animation: ripple 0.8s linear;
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(2.5);
+        opacity: 0;
+      }
+    }
+
+    .hover-glow:hover {
+      box-shadow: 0 0 15px rgba(46, 213, 115, 0.5);
+    }
+
+    .avatar-preview {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .avatar-preview:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(46, 213, 115, 0.5);
+    }
+
+    .avatar-preview::after {
+      content: "Upload";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .avatar-preview:hover::after {
+      opacity: 1;
+    }
+
+    .avatar-initials {
+      font-size: 36px;
+      font-weight: 600;
+      color: #2ed573;
+    }
+
+    .form-group {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      position: absolute;
+      top: 0.75rem;
+      left: 0.75rem;
+      color: rgba(255, 255, 255, 0.6);
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus+label,
+    .form-group input:not(:placeholder-shown)+label {
+      top: -0.5rem;
+      left: 0.5rem;
+      font-size: 0.75rem;
+      padding: 0 0.25rem;
+      background-color: #0f172a;
+      color: #2ed573;
+    }
+
+    .form-group input {
+      padding-top: 1rem;
+      padding-bottom: 0.5rem;
+    }
+
+    .form-tab {
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .form-tab::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #2ed573;
+      transition: width 0.3s ease;
+    }
+
+    .form-tab.active {
+      color: #2ed573;
+    }
+
+    .form-tab.active::after {
+      width: 100%;
+    }
+
+    .form-tab:hover::after {
+      width: 100%;
+    }
+
+    .tab-content {
+      display: none;
+      animation: tab-fade-in 0.5s ease-out;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes tab-fade-in {
+      0% {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .permission-toggle {
+      position: relative;
+      width: 50px;
+      height: 24px;
+      border-radius: 12px;
+      background-color: rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .permission-toggle::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: white;
+      transition: all 0.3s ease;
+    }
+
+    .permission-toggle.active {
+      background-color: #2ed573;
+    }
+
+    .permission-toggle.active::after {
+      left: 28px;
+    }
+  </style>
+    <script src="../config/config.js"></script>
+</head>
+
+<body>
+  <!-- Background Particles -->
+  <div class="fixed inset-0 z-0 overflow-hidden">
+    <div class="particle w-4 h-4 top-[10%] left-[10%]"></div>
+    <div class="particle w-6 h-6 top-[20%] left-[80%]"></div>
+    <div class="particle w-3 h-3 top-[60%] left-[5%]"></div>
+    <div class="particle w-5 h-5 top-[70%] left-[70%]"></div>
+    <div class="particle w-4 h-4 top-[40%] left-[30%]"></div>
+    <div class="particle w-2 h-2 top-[30%] left-[50%]"></div>
+    <div class="particle w-3 h-3 top-[80%] left-[40%]"></div>
+  </div>
+
+  <div class="min-h-screen flex relative z-10">
+    <!-- Sidebar -->
+    <div class="w-64 bg-gray-900 border-r border-gray-800 flex flex-col sidebar-animation">
+      <!-- Logo -->
+      <div class="p-4 border-b border-gray-800">
+        <div class="flex items-center">
+          <svg class="w-8 h-8 text-green-400 shield-icon" viewBox="0 0 24 24" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+          <h1 class="text-xl font-bold ml-3 text-white">SafeNet</h1>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="flex-1 overflow-y-auto py-4">
+        <nav class="px-2 space-y-1">
+          <div class="sidebar-item px-3 py-3 rounded-md">
+            <div class="flex items-center">
+              <svg class="w-5 h-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                fill="currentColor">
+                <path
+                  d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+              </svg>
+              <span class="ml-3 text-sm font-medium text-white"><a href="dashboard.html">Dashboard</a></span>
+            </div>
+          </div>
+
+          <div class="sidebar-item active px-3 py-3 rounded-md">
+            <div class="flex items-center justify-between cursor-pointer" id="user-management-menu">
+              <div class="flex items-center">
+                <svg class="w-5 h-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                  fill="currentColor">
+                  <path
+                    d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                </svg>
+                <span class="ml-3 text-sm font-medium text-white">User Management</span>
+              </div>
+              <svg class="w-4 h-4 text-gray-400 transform transition-transform rotate-180" id="user-management-arrow"
+                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                  clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="submenu open mt-1 pl-6 space-y-1" id="user-management-submenu">
+              <a href="allusers.html" class="block py-2 px-3 text-sm text-gray-300 rounded-md hover:bg-gray-800">All
+                Users</a>
+              <a href="addinfo.html"
+                class="block py-2 px-3 text-sm text-green-400 bg-gray-800 bg-opacity-50 rounded-md">Add New User</a>
+              <a href="usergroup.html" class="block py-2 px-3 text-sm text-gray-300 rounded-md hover:bg-gray-800">User
+                Groups</a>
+            </div>
+          </div>
+
+          <div class="sidebar-item px-3 py-3 rounded-md">
+            <div class="flex items-center justify-between cursor-pointer" id="role-assignment-menu">
+              <div class="flex items-center">
+                <svg class="w-5 h-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                  fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd" />
+                </svg>
+                <span class="ml-3 text-sm font-medium text-white">Role Assignment</span>
+              </div>
+              <svg class="w-4 h-4 text-gray-400 transform transition-transform" id="role-assignment-arrow"
+                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                  clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="submenu mt-1 pl-6 space-y-1" id="role-assignment-submenu">
+              <a href="#" class="block py-2 px-3 text-sm text-gray-300 rounded-md hover:bg-gray-800">Manage Roles</a>
+              <a href="#" class="block py-2 px-3 text-sm text-gray-300 rounded-md hover:bg-gray-800">Assign Roles</a>
+              <a href="#" class="block py-2 px-3 text-sm text-gray-300 rounded-md hover:bg-gray-800">Role
+                Permissions</a>
+            </div>
+          </div>
+
+          <div class="sidebar-item active px-3 py-3 rounded-md">
+            <div class="flex items-center">
+              <svg class="w-5 h-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                fill="currentColor">
+                <path
+                  d="M16.862 3.487a2.25 2.25 0 1 1 3.182 3.182l-.586.586-3.182-3.182.586-.586zM15.448 4.901l-9.9 9.9a2.25 2.25 0 0 0-.586 1.01l-.858 3.432a.75.75 0 0 0 .91.91l3.432-.858a2.25 2.25 0 0 0 1.01-.586l9.9-9.9-3.182-3.182z" />
+              </svg>
+              <span class="ml-3 text-sm font-medium text-white">
+                <a href="addedit_job.html">Add/Edit Job</a>
+              </span>
+            </div>
+          </div>
+
+        </nav>
+      </div>
+
+      <!-- User Profile -->
+      <div class="p-4 border-t border-gray-800">
+        <div class="flex items-center hover-glow rounded-lg p-2 transition-all duration-300 cursor-pointer">
+          <div class="bg-gray-800 rounded-full w-8 h-8 flex items-center justify-center pulse-effect">
+            <svg class="w-5 h-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+              fill="currentColor">
+              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm font-medium text-white">Admin User</p>
+            <p class="text-xs text-gray-400">Administrator</p>
+          </div>
+          <button id="logout-btn" class="ml-10 text-gray-300 hover:text:white">
+            <div class="flex items-center">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+              </svg>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col bg-gray-900">
+      <!-- Header -->
+      <header class="bg-black border-b border-gray-800 shadow-lg header-animation">
+        <div class="px-6 py-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <a href="#" class="text-gray-400 hover:text-white mr-2">
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                    clip-rule="evenodd" />
+                </svg>
+              </a>
+              <h1 class="text-2xl font-bold text-white">Add New User</h1>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <main class="flex-1 overflow-auto p-6 content-animation">
+        <!-- Form Tabs -->
+        <div class="mb-6 border-b border-gray-800">
+          <div class="flex space-x-8">
+            <div class="form-tab active pb-3 px-1" data-tab="basic-info">
+              <div class="flex items-center">
+                <svg class="w-5 h-5 mr-2 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                  fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                    clip-rule="evenodd" />
+                </svg>
+                <span>Basic Information</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Content -->
+        <div class="tab-content active" id="basic-info-content">
+          <div class="bg-gray-800 rounded-lg shadow-lg p-6 mb-6 hover-glow">
+            <h2 class="text-xl font-semibold mb-6 text-white">
+              User Information
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 form-section">
+              <!-- User Details -->
+              <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <div class="form-group">
+                  <form id="user-form">
+                    <input type="text" id="first-name"
+                      class="form-input w-full px-3 py-2 bg-gray-800 rounded-md focus:outline-none" placeholder=" " />
+                    <label for="first-name">First Name</label>
+                </div>
+
+                <div class="form-group">
+                  <input type="text" id="last-name"
+                    class="form-input w-full px-3 py-2 bg-gray-800 rounded-md focus:outline-none" placeholder=" " />
+                  <label for="last-name">Last Name</label>
+                </div>
+
+                <div class="form-group">
+                  <input type="email" id="email"
+                    class="form-input w-full px-3 py-2 bg-gray-800 rounded-md focus:outline-none" placeholder=" "
+                    required />
+                  <label for="email">Email Address</label>
+                  <span id="email-error" style="color: red"></span>
+                </div>
+
+                <div class="form-group">
+                  <input type="tel" id="phone"
+                    class="form-input w-full px-3 py-2 bg-gray-800 text-white hover:text-white rounded-md focus:outline-none"
+                    placeholder=" " />
+                  <label for="phone">Phone Number</label>
+                </div>
+
+                <div class="form-group">
+                  <select id="department"
+                    class="form-select w-full px-3 py-2 bg-gray-800 text-white hover:text-white rounded-md focus:outline-none">
+                    <option value="" selected disabled>
+                      Select Department
+                    </option>
+                    <option class="bg-gray-800 text-green-400 hover:bg-gray-600 hover:text-white" value="hr">
+                      Human Resources
+                    </option>
+                    <option class="bg-gray-800 text-green-400 hover:bg-gray-600 hover:text-white" value="it">
+                      Information Technology
+                    </option>
+                    <option class="bg-gray-800 text-green-400 hover:bg-gray-600 hover:text-white" value="marketing">
+                      Marketing
+                    </option>
+                    <option class="bg-gray-800 text-green-400 hover:bg-gray-600 hover:text-white" value="finance">
+                      Finance
+                    </option>
+                    <option class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white" value="operations">
+                      Operations
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <select id="role"
+                    class="form-select w-full px-3 py-2 bg-gray-800 text-white rounded-md focus:outline-none">
+                    <option value="" selected disabled>Select Role</option>
+                    <option class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white" value="admin">
+                      Admin
+                    </option>
+                    <option class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white" value="Manager">
+                      Manager
+                    </option>
+                    <option class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white" value="HR">
+                      HR
+                    </option>
+                    <option class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white" value="Candidate">
+                      Candidate
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-gray-800 rounded-lg shadow-lg p-6 mb-6 hover-glow">
+            <h2 class="text-xl font-semibold mb-6 text-white">
+              Account Settings
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="form-group">
+                <input type="text" id="username"
+                  class="form-input w-full px-3 py-2 bg-gray-800 rounded-md focus:outline-none" placeholder=" " />
+                <label for="username">Username</label>
+              </div>
+
+              <div class="form-group">
+                <select id="status" class="form-select w-full px-3 py-2 bg-gray-800 rounded-md focus:outline-none">
+                  <option value="" selected disabled>Select Status</option>
+                  <option class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white" value="active">
+                    Active
+                  </option>
+                  <option class="bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white" value="inactive">
+                    Inactive
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <input type="password" id="password"
+                  class="form-input w-full px-3 py-2 bg-gray-800 rounded-md focus:outline-none" placeholder=" " />
+                <label for="password">Password</label>
+              </div>
+
+              <div class="form-group">
+                <input type="password" id="confirm-password"
+                  class="form-input w-full px-3 py-2 bg-gray-800 rounded-md focus:outline-none" placeholder=" " />
+                <label for="confirm-password">Confirm Password</label>
+              </div>
+            </div>
+
+            <div class="mt-6">
+              <div class="flex items-center space-x-2">
+                <div class="form-checkbox" id="send-welcome-email"></div>
+                <label for="send-welcome-email" class="text-sm text-gray-300 cursor-pointer">Send welcome email with
+                  login credentials</label>
+              </div>
+
+              <div class="flex items-center space-x-2 mt-3">
+                <div class="form-checkbox" id="require-password-change"></div>
+                <label for="require-password-change" class="text-sm text-gray-300 cursor-pointer">Require password
+                  change on first login</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="mt-6 flex justify-end space-x-4">
+          <button class="btn-secondary text-white px-6 py-2 rounded-md" id="cancel-btn-bottom">
+            Cancel
+          </button>
+          <button class="btn-primary text-white px-6 py-2 rounded-md" id="save-user-btn-bottom">
+            Save User
+          </button>
+          </form>
+        </div>
+      </main>
+    </div>
+  </div>
+  <!-- Success Modal -->
+  <div id="success-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
+    <div class="bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-sm text-center">
+      <h2 class="text-xl font-semibold text-green-400 mb-4">Success</h2>
+      <p id="success-message" class="text-gray-200 mb-6">User saved successfully.</p>
+      <button id="close-modal-btn" class="btn-primary text-white px-4 py-2 rounded-md w-full">OK</button>
+    </div>
+  </div>
+
+  <!-- Cancel Confirmation Modal -->
+  <!-- Cancel Confirmation Modal -->
+  <div id="cancel-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm text-center">
+      <h2 class="text-xl font-semibold text-gray-800 mb-2">Cancel Changes?</h2>
+      <p class="text-sm text-gray-600 mb-6">Are you sure you want to cancel? Any unsaved changes will be lost.</p>
+      <div class="flex justify-center gap-4">
+        <button id="cancel-modal-no"
+          class="px-5 py-2 rounded-2xl bg-gray-300 text-gray-700 font-medium hover:bg-gray-400 transition">
+          No
+        </button>
+        <button id="cancel-modal-yes"
+          class="px-5 py-2 rounded-2xl bg-red-500 text-white font-medium hover:bg-red-600 transition">
+          Yes
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="error-dialog" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.3);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:#fff;padding:24px 32px;border-radius:8px;box-shadow:0 2px 16px rgba(0,0,0,0.2);min-width:300px;max-width:90vw;text-align:center;position:relative;">
+      <span id="error-dialog-message" style="color:#b91c1c;font-size:1.1em;"></span>
+      <br><br>
+      <button onclick="closeErrorDialog()" style="background:#b91c1c;color:#fff;padding:8px 20px;border:none;border-radius:4px;cursor:pointer;">OK</button>
+    </div>
+  </div>
+  <script>
+    function showError(message) {
+      var dialog = document.getElementById('error-dialog');
+      var msgSpan = document.getElementById('error-dialog-message');
+      if (dialog && msgSpan) {
+        msgSpan.textContent = message;
+        dialog.style.display = 'flex';
+      }
+    }
+    function closeErrorDialog() {
+      var dialog = document.getElementById('error-dialog');
+      if (dialog) dialog.style.display = 'none';
+    }
+  </script>
+
+  <script>
+    // Create animated background effect
+    function createParticles() {
+      const container = document.querySelector(".fixed");
+      for (let i = 0; i < 20; i++) {
+        const size = Math.random() * 5 + 2;
+        const particle = document.createElement("div");
+        particle.classList.add("particle");
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.top = `${Math.random() * 100}%`;
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.opacity = Math.random() * 0.5 + 0.1;
+        particle.style.animationDuration = `${Math.random() * 20 + 10}s`;
+        particle.style.animationDelay = `${Math.random() * 5}s`;
+        container.appendChild(particle);
+      }
+    }
+    createParticles();
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      const userId = urlParams.get("userid");
+
+      if (userId) {
+        const passwordField = document.getElementById("password");
+        const confirmPasswordField = document.getElementById("confirm-password");
+
+        if (passwordField) passwordField.style.display = "none";
+        if (confirmPasswordField) confirmPasswordField.style.display = "none";
+
+        fetch(`${apiConfig.getURL("api/get-user-by-id/${userId}/")}`)
+          .then((res) => res.json())
+          .then((data) => {
+            document.getElementById("first-name").value = data.first_name;
+            document.getElementById("last-name").value = data.last_name;
+            document.getElementById("username").value = data.username;
+            document.getElementById("email").value = data.email;
+            document.getElementById("phone").value = data.phone_number;
+            document.getElementById("department").value = data.department;
+            document.getElementById("status").value = data.status;
+            document.getElementById("role").value = data.role;
+
+          });
+      }
+    });
+
+
+
+
+    // Toggle submenu functionality with animation
+    document
+      .getElementById("user-management-menu")
+      .addEventListener("click", function () {
+        const submenu = document.getElementById("user-management-submenu");
+        const arrow = document.getElementById("user-management-arrow");
+        submenu.classList.toggle("open");
+        arrow.classList.toggle("rotate-180");
+      });
+
+    document
+      .getElementById("role-assignment-menu")
+      .addEventListener("click", function () {
+        const submenu = document.getElementById("role-assignment-submenu");
+        const arrow = document.getElementById("role-assignment-arrow");
+        submenu.classList.toggle("open");
+        arrow.classList.toggle("rotate-180");
+      });
+
+
+    function validateEmail() {
+      const email = document.getElementById("email").value;
+      const emailError = document.getElementById("email-error");
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailPattern.test(email)) {
+        emailError.textContent = "Please enter a valid email address.";
+        return false;
+      } else {
+        emailError.textContent = "";
+        return true;
+      }
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+      const emailInput = document.getElementById("email");
+      emailInput.addEventListener("blur", validateEmail);
+    });
+
+
+
+
+    // getting values from the form
+
+    document.getElementById("save-user-btn-bottom").addEventListener("click", async function (e) {
+      e.preventDefault();
+
+      const data = {
+        first_name: document.getElementById("first-name").value,
+        last_name: document.getElementById("last-name").value,
+        email: document.getElementById("email").value,
+        phone_number: document.getElementById("phone").value,
+        department: document.getElementById("department").value,
+        username: document.getElementById("username").value,
+        password: document.getElementById("password").value,
+        confirm_password: document.getElementById("confirm-password").value,
+        status: document.getElementById("status").value,
+        role: document.getElementById("role").value,
+      };
+
+      if (data.password !== data.confirm_password) {
+        showError("Passwords do not match!");
+        return;
+      }
+
+      try {
+        // 🔍 Step 1: Check if user exists using username
+        const checkRes = await fetch(`${apiConfig.getURL("api/get-user-by-username/${data.username}/")}`);
+        const checkData = await checkRes.json();
+
+        let url, method;
+
+        if (checkRes.ok && checkData.userid) {
+          // ✅ User exists → update
+          url = `${apiConfig.getURL("api/update-user-by-username/${data.username}/")}`;
+          method = "PUT";
+        } else {
+          // ❌ User doesn't exist → insert
+          url = apiConfig.getURL("api/register/");
+          method = "POST";
+        }
+
+        // 📨 Step 2: Proceed with insert/update
+        const saveRes = await fetch(url, {
+          method: method,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+
+        const saveData = await saveRes.json();
+        document.getElementById("success-message").textContent = saveData.message || "Operation completed.";
+        document.getElementById("success-modal").classList.remove("hidden");
+        document.getElementById("close-modal-btn").addEventListener("click", function () {
+          document.getElementById("success-modal").classList.add("hidden");
+          window.location.href = "allusers.html";
+        });
+      } catch (err) {
+        console.error("Error:", err);
+        showError("Something went wrong. Check console.");
+
+      }
+    });
+
+    // Initialize custom checkboxes
+    function initCheckboxes() {
+      document.querySelectorAll(".form-checkbox").forEach((checkbox) => {
+        checkbox.addEventListener("click", function () {
+          this.classList.toggle("checked");
+        });
+      });
+    }
+
+    // Initialize permission toggles
+    function initPermissionToggles() {
+      document.querySelectorAll(".permission-toggle").forEach((toggle) => {
+        toggle.addEventListener("click", function () {
+          this.classList.toggle("active");
+        });
+      });
+    }
+
+    // Create ripple effect
+    function createRippleEffect(event) {
+      const button = event.currentTarget;
+      const ripple = document.createElement("span");
+
+      const rect = button.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+
+      const x = event.clientX - rect.left - size / 2;
+      const y = event.clientY - rect.top - size / 2;
+
+      ripple.className = "ripple";
+      ripple.style.width = ripple.style.height = `${size}px`;
+      ripple.style.left = `${x}px`;
+      ripple.style.top = `${y}px`;
+
+      button.appendChild(ripple);
+
+      setTimeout(() => {
+        ripple.remove();
+      }, 800);
+    }
+
+    // Add ripple effect to buttons
+    document
+      .getElementById("cancel-btn-bottom")
+      .addEventListener("click", createRippleEffect);
+    document
+      .getElementById("save-user-btn-bottom")
+      .addEventListener("click", createRippleEffect);
+
+    // Form validation and submission
+
+    document
+      .getElementById("save-user-btn-bottom")
+      .addEventListener("click", function (e) {
+        createRippleEffect(e);
+      });
+
+
+
+
+
+    // In a real implementation, this would submit the form data to a server
+
+    // ✅ Clear the form (if inside form with id="user-form")
+    document.getElementById("user-form").reset();
+
+
+
+    // Redirect to users list (in a real implementation)
+    // window.location.href = 'users.html';
+
+
+    // Cancel button functionality
+    document.getElementById("cancel-btn-bottom").addEventListener("click", function (e) {
+      e.preventDefault();
+      document.getElementById("cancel-modal").classList.remove("hidden");
+    });
+
+    document.getElementById("cancel-modal-no").addEventListener("click", function () {
+      document.getElementById("cancel-modal").classList.add("hidden");
+    });
+
+    document.getElementById("cancel-modal-yes").addEventListener("click", function () {
+      window.history.back(); // Or use window.location.href = "allusers.html";
+    });
+
+
+    document.getElementById("logout-btn").addEventListener("click", async function () {
+      try {
+        const res = await fetch(`${apiConfig.getURL("api/logout/")}`, {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+
+        let data = {};
+        try {
+          data = await res.json(); // attempt to parse JSON
+        } catch (err) {
+          console.warn("No JSON response received", err);
+        }
+
+        console.log("Logout response:", data);
+
+        if (res.ok) {
+          window.location.href = data.redirect || "/login.html";
+        } else {
+          showError("Logout failed: " + (data.message || "Unknown error"));
+        }
+
+      } catch (error) {
+        console.error("Logout error:", error);
+        showError("Network error during logout.");
+      }
+    });
+
+    // Initialize everything
+    createParticles();
+    initCheckboxes();
+    initPermissionToggles();
+
+  </script>
+</body>
+
+</html>
