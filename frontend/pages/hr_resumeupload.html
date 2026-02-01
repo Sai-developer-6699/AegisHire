@@ -188,6 +188,7 @@
     }
   </style>
     <script src="../config/config.js"></script>
+    <script src="../assets/js/simple-api.js"></script>
 </head>
 
 <body class="bg-darkblue-950 text-white min-h-screen flex">
@@ -266,7 +267,7 @@
       <div class="flex items-center">
         <div
           class="w-10 h-10 rounded-full bg-darkblue-700 flex items-center justify-center text-accent-green font-semibold">
-          HR
+          Manager
         </div>
         <div class="ml-3">
           <p id="user-name" class="text-sm font-medium text-white">Loading...</p>
@@ -284,7 +285,6 @@
     </div>
   </div>
 
-  </div>
 
   <!-- Main Content -->
   <div class="ml-64 flex-1 animate-contentFadeIn">
@@ -630,7 +630,7 @@
         formData.append("resume", resumeFile);
 
         try {
-          const res = await fetch(`${apiConfig.getURL("api/hr/upload/")}`, {
+          const res = await fetch(`${apiConfig.getURL("hr/upload/")}`, {
             method: "POST",
             body: formData,
             credentials: 'include'
@@ -663,7 +663,7 @@
     }
     document.getElementById("logout-btn").addEventListener("click", async function () {
       try {
-        const res = await fetch(`${apiConfig.getURL("api/logout/")}`, {
+        const res = await fetch(`${apiConfig.getURL("logout/")}`, {
           method: "POST",
           credentials: "include",
           headers: {
@@ -722,7 +722,7 @@
       container.innerHTML = "";
 
       try {
-        const response = await fetch(`${apiConfig.getURL("api/hr/recent-resumes/?limit=${limit}")}`);
+        const response = await fetch(`${apiConfig.getURL(`hr/recent-resumes/?limit=${limit}`)}`);
         const data = await response.json();
 
         if (!response.ok) throw new Error(data.error || "Failed to fetch");
@@ -780,7 +780,7 @@
     document.addEventListener("DOMContentLoaded", () => loadRecentUploads(6));
     async function fetchUserProfile() {
       try {
-        const response = await fetch(`${apiConfig.getURL("api/user-profile/")}`, {
+        const response = await fetch(`${apiConfig.getURL("user-profile/")}`, {
           method: "GET",
           credentials: "include",
           headers: {

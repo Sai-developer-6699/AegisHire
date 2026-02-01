@@ -54,26 +54,34 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       showOverlay();
 
-      const res = await fetch(`${apiConfig.getURL('api/login/')}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ username, password })
-      });
-
-      if (!res.ok) throw new Error('Invalid credentials');
-      const data = await res.json();
+      // Use simple POST request
+      const data = await simplePost('/login/', { username, password });
 
       responseMessage.textContent = 'Login successful!';
 
+      // Validate roleid exists
+      if (!data.roleid) {
+        responseMessage.textContent = 'Invalid user role. Please contact support.';
+        return;
+      }
+
       // role-based redirect
       switch (data.roleid) {
-        case 1: return window.location.href = '../pages/dashboard.html';
-        case 2: return window.location.href = '../pages/manager_dashboard.html';
-        case 3: return window.location.href = '../pages/hr_resumeupload.html';
-        case 4: return window.location.href = '../pages/candidate_dashboard.html';
+        case 1: 
+          console.log('Redirecting Admin to dashboard');
+          return window.location.href = 'pages/dashboard.html';
+        case 2: 
+          console.log('Redirecting Manager to manager dashboard');
+          return window.location.href = 'pages/manager_dashboard.html';
+        case 3: 
+          console.log('Redirecting HR to resume upload');
+          return window.location.href = 'pages/hr_resumeupload.html';
+        case 4: 
+          console.log('Redirecting Candidate to candidate dashboard');
+          return window.location.href = 'pages/candidate_dashboard.html';
         default:
-          responseMessage.textContent = 'Unknown role. Please contact support.';
+          console.error('Unknown role ID:', data.roleid);
+          responseMessage.textContent = `Unknown role (ID: ${data.roleid}). Please contact support.`;
       }
     }
     catch (err) {

@@ -8,6 +8,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
     rel="stylesheet" />
+  <script src="../config/config.js"></script>
   <style>
     body {
       font-family: "Poppins", sans-serif;
@@ -501,7 +502,7 @@
       left: 28px;
     }
   </style>
-    <script src="../config/config.js"></script>
+    <script src="../assets/js/simple-api.js"></script>
 </head>
 
 <body>
@@ -911,10 +912,9 @@
         if (passwordField) passwordField.style.display = "none";
         if (confirmPasswordField) confirmPasswordField.style.display = "none";
 
-        fetch(`${apiConfig.getURL("api/get-user-by-id/${userId}/")}`)
-          .then((res) => res.json())
+                simpleGet(`/get-user-by-id/${userId}/`)
           .then((data) => {
-            document.getElementById("first-name").value = data.first_name;
+              document.getElementById("first-name").value = data.first_name;
             document.getElementById("last-name").value = data.last_name;
             document.getElementById("username").value = data.username;
             document.getElementById("email").value = data.email;
@@ -996,41 +996,41 @@
 
       try {
         // 🔍 Step 1: Check if user exists using username
-        const checkRes = await fetch(`${apiConfig.getURL("api/get-user-by-username/${data.username}/")}`);
-        const checkData = await checkRes.json();
+        try {
+          const checkData = await simpleGet(`/get-user-by-username/${data.username}/`);
+          
+          let endpoint, method;
 
-        let url, method;
+          if (checkData.userid) {
+            // ✅ User exists → update
+            endpoint = `/update-user-by-username/${data.username}/`;
+            method = "PUT";
+          } else {
+            // ❌ User doesn't exist → insert
+            endpoint = `/register/`;
+            method = "POST";
+          }
 
-        if (checkRes.ok && checkData.userid) {
-          // ✅ User exists → update
-          url = `${apiConfig.getURL("api/update-user-by-username/${data.username}/")}`;
-          method = "PUT";
-        } else {
-          // ❌ User doesn't exist → insert
-          url = apiConfig.getURL("api/register/");
-          method = "POST";
+          // 📨 Step 2: Proceed with insert/update
+          let saveData;
+          if (method === "PUT") {
+            saveData = await simplePut(endpoint, data);
+          } else {
+            saveData = await simplePost(endpoint, data);
+          }
+          document.getElementById("success-message").textContent = saveData.message || "Operation completed.";
+          document.getElementById("success-modal").classList.remove("hidden");
+          document.getElementById("close-modal-btn").addEventListener("click", function () {
+            document.getElementById("success-modal").classList.add("hidden");
+            window.location.href = "allusers.html";
+          });
+        } catch (err) {
+          console.error("Error:", err);
+          showError("Something went wrong. Check console.");
         }
-
-        // 📨 Step 2: Proceed with insert/update
-        const saveRes = await fetch(url, {
-          method: method,
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        });
-
-        const saveData = await saveRes.json();
-        document.getElementById("success-message").textContent = saveData.message || "Operation completed.";
-        document.getElementById("success-modal").classList.remove("hidden");
-        document.getElementById("close-modal-btn").addEventListener("click", function () {
-          document.getElementById("success-modal").classList.add("hidden");
-          window.location.href = "allusers.html";
-        });
       } catch (err) {
         console.error("Error:", err);
         showError("Something went wrong. Check console.");
-
       }
     });
 
@@ -1122,8 +1122,8 @@
 
 
     document.getElementById("logout-btn").addEventListener("click", async function () {
-      try {
-        const res = await fetch(`${apiConfig.getURL("api/logout/")}`, {
+  try {
+    const res = await fetch(`${apiConfig.getURL("api/logout/")}`, {
           method: "POST",
           credentials: "include",
           headers: {

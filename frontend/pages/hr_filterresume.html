@@ -243,6 +243,7 @@
     }
   </style>
     <script src="../config/config.js"></script>
+    <script src="../assets/js/simple-api.js"></script>
 </head>
 
 <body class="bg-darkblue-950 text-white min-h-screen flex">
@@ -329,15 +330,15 @@
     </nav>
 
     <!-- User Profile -->
-    <div class="absolute bottom-0 left-0 w-64 p-4 border-t border-gray-800">
+    <div class="absolute bg-darkblue-900 bottom-0 left-0 w-64 p-4 border-t border-gray-800">
       <div class="flex items-center">
         <div
           class="w-10 h-10 rounded-full bg-darkblue-700 flex items-center justify-center text-accent-green font-semibold">
           HR
         </div>
         <div class="ml-3">
-          <p class="text-sm font-medium text-white">Alex Morgan</p>
-          <p class="text-xs text-gray-400">HR Manager</p>
+          <p id="user-name" class="text-sm font-medium text-white">Loading...</p>
+          <p id="user-role" class="text-xs text-gray-400">Role</p>
         </div>
         <button id="logout-btn" class="ml-10 text-gray-300 hover:text-white">
           <div class="flex items-center">
@@ -533,351 +534,433 @@
     </main>
   </div>
 
-  <script>
-    // Sidebar submenu toggle
-    const menuButtons = document.querySelectorAll(".sidebar-menu button");
-    menuButtons.forEach((button) => {
-      button.addEventListener("click", function () {
-        const submenu = this.nextElementSibling;
-        const icon = this.querySelector(".icon-rotate");
+    <script>
+      // Sidebar submenu toggle
+      const menuButtons = document.querySelectorAll(".sidebar-menu button");
+      menuButtons.forEach((button) => {
+        button.addEventListener("click", function () {
+          const submenu = this.nextElementSibling;
+          const icon = this.querySelector(".icon-rotate");
 
-        submenu.classList.toggle("open");
-        icon.style.transform = submenu.classList.contains("open")
-          ? "rotate(180deg)"
-          : "rotate(0)";
+          submenu.classList.toggle("open");
+          icon.style.transform = submenu.classList.contains("open")
+            ? "rotate(180deg)"
+            : "rotate(0)";
 
-        // Close other submenus
-        document.querySelectorAll(".submenu.open").forEach((menu) => {
-          if (menu !== submenu) {
-            menu.classList.remove("open");
-            menu.previousElementSibling.querySelector(
-              ".icon-rotate"
-            ).style.transform = "rotate(0)";
-          }
+          // Close other submenus
+          document.querySelectorAll(".submenu.open").forEach((menu) => {
+            if (menu !== submenu) {
+              menu.classList.remove("open");
+              menu.previousElementSibling.querySelector(
+                ".icon-rotate"
+              ).style.transform = "rotate(0)";
+            }
+          });
         });
       });
-    });
 
 
 
-    async function loadRequirementDropdown() {
-      const res = await fetch(`${apiConfig.getURL("api/list_job_requirements/")}`, {
-        credentials: "include"
-      });
-      const requirements = await res.json();
-      const selector = document.getElementById("requirementSelector");
-
-      requirements.forEach(req => {
-        const opt = document.createElement("option");
-        opt.value = req.requirement_id;
-        opt.textContent = `#${req.requirement_id} - ${req.position} (by ${req.created_by})`;
-        selector.appendChild(opt);
-      });
-    }
-
-    // Load requirement details
-    document.getElementById("requirementSelector").addEventListener("change", e => {
-      const reqId = e.target.value;
-      if (reqId) loadRequirementDetails(reqId);
-    });
-
-    function createBadge(text, highlight = false) {
-      return `
-    <span class="skill-badge px-3 py-1 bg-darkblue-700 ${highlight ? 'text-accent-green border border-accent-green' : 'text-white'} text-sm rounded-full">
-      ${text}
-    </span>`;
-    }
-
-    async function loadRequirementDetails(reqId) {
-      try {
-        const res = await fetch(`${apiConfig.getURL("api/get_job_requirement_detail/${reqId}/")}`, {
+      async function loadRequirementDropdown() {
+                const res = await fetch(`${apiConfig.getURL("list_job_requirements/")}`, {
           credentials: "include"
         });
-        const data = await res.json();
+        const requirements = await res.json();
+        const selector = document.getElementById("requirementSelector");
 
-        const req = data.requirement;
-
-        // Update header
-        document.getElementById("requirementTitle").innerHTML = `
-      <svg class="w-5 h-5 mr-2 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
-        </path>
-      </svg>
-      Requirements: ${req.position} <span class="ml-2 text-sm text-gray-400">(by ${req.created_by})</span>
-    `;
-
-        // Inject badge groups
-        document.getElementById("skillsContainer").innerHTML =
-          data.skills.map(s => createBadge(s, true)).join('');
-        document.getElementById("SoftskillsContainer").innerHTML =
-          data.soft_skills.map(s => createBadge(s, true)).join('');
-        document.getElementById("educationContainer").innerHTML =
-          data.education.map(e => createBadge(e)).join('');
-        document.getElementById("experienceContainer").innerHTML =
-          req.experience ? createBadge(req.experience) : '';
-        document.getElementById("DateContainer").innerHTML =
-          req.created_at ? createBadge(new Date(req.created_at).toLocaleString()) : '';
-
-      } catch (err) {
-        console.error("Failed to load requirement details:", err);
+        requirements.forEach(req => {
+          const opt = document.createElement("option");
+          opt.value = req.requirement_id;
+          opt.textContent = `#${req.requirement_id} - ${req.position} (by ${req.created_by})`;
+          selector.appendChild(opt);
+        });
       }
-    }
 
+      // Load requirement details
+      document.getElementById("requirementSelector").addEventListener("change", e => {
+        const reqId = e.target.value;
+        if (reqId) loadRequirementDetails(reqId);
+      });
 
-    // Evaluate button click
-    const evaluateBtn = document.getElementById("evaluateBtn");
-    const resultsSection = document.getElementById("resultsSection");
-    const loadingOverlay = document.createElement('div');
-    loadingOverlay.id = 'loadingOverlay';
-    loadingOverlay.style.display = 'none';
-    loadingOverlay.style.position = 'fixed';
-    loadingOverlay.style.top = '0';
-    loadingOverlay.style.left = '0';
-    loadingOverlay.style.width = '100vw';
-    loadingOverlay.style.height = '100vh';
-    loadingOverlay.style.background = 'rgba(10,23,39,0.85)';
-    loadingOverlay.style.zIndex = '10000';
-    loadingOverlay.style.alignItems = 'center';
-    loadingOverlay.style.justifyContent = 'center';
-    loadingOverlay.innerHTML = `
-      <div class="flex flex-col items-center">
-        <svg class="animate-spin h-12 w-12 text-accent-green" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      function createBadge(text, highlight = false) {
+        return `
+      <span class="skill-badge px-3 py-1 bg-darkblue-700 ${highlight ? 'text-accent-green border border-accent-green' : 'text-white'} text-sm rounded-full">
+        ${text}
+      </span>`;
+      }
+
+      async function loadRequirementDetails(reqId) {
+        try {
+          const res = await fetch(`${apiConfig.getURL(`get_job_requirement_detail/${reqId}/`)}`, {
+            credentials: "include"
+          });
+          const data = await res.json();
+
+          const req = data.requirement;
+
+          // Update header
+          document.getElementById("requirementTitle").innerHTML = `
+        <svg class="w-5 h-5 mr-2 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+          </path>
         </svg>
-        <span class="mt-4 text-accent-green text-lg font-semibold">Evaluating with AI...</span>
-      </div>
-    `;
-    document.body.appendChild(loadingOverlay);
+        Requirements: ${req.position} <span class="ml-2 text-sm text-gray-400">(by ${req.created_by})</span>
+      `;
 
-    evaluateBtn.addEventListener("click", async function () {
-      const requirementId = document.getElementById("requirementSelector").value;
+          // Inject badge groups
+          document.getElementById("skillsContainer").innerHTML =
+            data.skills.map(s => createBadge(s, true)).join('');
+          document.getElementById("SoftskillsContainer").innerHTML =
+            data.soft_skills.map(s => createBadge(s, true)).join('');
+          document.getElementById("educationContainer").innerHTML =
+            data.education.map(e => createBadge(e)).join('');
+          document.getElementById("experienceContainer").innerHTML =
+            req.experience ? createBadge(req.experience) : '';
+          document.getElementById("DateContainer").innerHTML =
+            req.created_at ? createBadge(new Date(req.created_at).toLocaleString()) : '';
 
-      if (!requirementId) {
-        showError("Please select a job requirement before evaluating.");
-        return;
-      }
-
-      // Show loading overlay and animate main content out
-      loadingOverlay.style.display = "flex";
-      loadingOverlay.style.opacity = "0";
-      setTimeout(() => { loadingOverlay.style.opacity = "1"; }, 10);
-      document.querySelector("main").style.opacity = "0.5";
-      evaluateBtn.disabled = true;
-      evaluateBtn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg> Evaluating...`;
-
-      try {
-        // Simulate API call (replace with your real fetch)
-        // await new Promise(resolve => setTimeout(resolve, 2000));
-        const response = await fetch(`${apiConfig.getURL("api/evaluate/")}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ requirement_id: requirementId })
-        });
-        const data = await response.json();
-
-        if (response.ok) {
-          // Hide overlay and show results with animation
-          loadingOverlay.style.opacity = "0";
-          setTimeout(() => { loadingOverlay.style.display = "none"; }, 300);
-          document.querySelector("main").style.opacity = "1";
-          evaluateBtn.disabled = false;
-          evaluateBtn.innerHTML = `Evaluate with AI`;
-          // Animate results section in
-          resultsSection.classList.remove("hidden");
-          resultsSection.style.opacity = "0";
-          resultsSection.style.transform = "translateY(30px)";
-          setTimeout(() => {
-            resultsSection.style.transition = "opacity 0.5s, transform 0.5s";
-            resultsSection.style.opacity = "1";
-            resultsSection.style.transform = "translateY(0)";
-          }, 10);
-          resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
-        } else {
-          // Error from API: revert transition, show error dialog
-          loadingOverlay.style.opacity = "0";
-          setTimeout(() => { loadingOverlay.style.display = "none"; }, 300);
-          document.querySelector("main").style.opacity = "1";
-          evaluateBtn.disabled = false;
-          evaluateBtn.innerHTML = `Evaluate with AI`;
-          showError(data.message || "Error occurred during evaluation.");
+        } catch (err) {
+          console.error("Failed to load requirement details:", err);
         }
-      } catch (err) {
-        // Network or JS error: revert transition, show error dialog
-        loadingOverlay.style.opacity = "0";
-        setTimeout(() => { loadingOverlay.style.display = "none"; }, 300);
-        document.querySelector("main").style.opacity = "1";
-        evaluateBtn.disabled = false;
-        evaluateBtn.innerHTML = `Evaluate with AI`;
-        showError("Error occurred during evaluation.");
-      }
-    });
-
-
-    // Custom checkbox functionality
-    const checkboxes = document.querySelectorAll(".custom-checkbox");
-    checkboxes.forEach((checkbox) => {
-      checkbox.addEventListener("click", function () {
-        this.classList.toggle("checked");
-      });
-    });
-
-    // Send to Manager button click
-    const sendToManagerBtn = document.getElementById("sendToManagerBtn");
-
-    sendToManagerBtn.addEventListener("click", async function () {
-      const checkedBoxes = document.querySelectorAll("input.resume-checkbox:checked");
-
-      if (checkedBoxes.length === 0) {
-        const notification = document.createElement("div");
-        notification.className =
-          "fixed bottom-4 right-4 bg-amber-500 text-black px-4 py-3 rounded-lg shadow-lg flex items-center transform transition-all duration-500 z-50";
-        notification.innerHTML = `
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                  d="M12 9v2m0 4h.01m-6.9384h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4
-                  c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-          </svg>
-          Please select at least one resume to send.
-        `;
-        document.body.appendChild(notification);
-
-        setTimeout(() => {
-          notification.style.opacity = "0";
-          notification.style.transform = "translateY(20px)";
-          setTimeout(() => notification.remove(), 300);
-        }, 3000);
-
-        return;
       }
 
-      // ✅ Proceed with sending selected resumes
-      const resumeIds = Array.from(checkedBoxes).map(cb => cb.dataset.id);
-      const requirementId = checkedBoxes[0].dataset.reqId;
-
-      // Show loading
-      sendToManagerBtn.disabled = true;
-      sendToManagerBtn.innerHTML = `
-        <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-        </svg> Sending...`;
-
-      try {
-        const res = await fetch(`${apiConfig.getURL("api/hr/shortlist/")}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify(
-            resumeIds.map(id => ({
-              requirement_id: requirementId,
-              resume_id: id
-            }))
-          ),
+      async function loadEvaluatedResumes(requirementId) {
+    try {
+        const res = await fetch(apiConfig.getURL(`hr/resumes/${requirementId}/`), {
+            credentials: "include"
         });
-
         const data = await res.json();
 
-        // Show success toast
-        const notification = document.createElement("div");
-        notification.className =
-          "fixed bottom-4 right-4 bg-accent-green text-black px-4 py-3 rounded-lg shadow-lg flex items-center transform transition-all duration-500 z-50";
-        notification.innerHTML = `
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        const container = document.getElementById("resumeCardsContainer");
+
+        if (!data.resumes || data.resumes.length === 0) {
+            container.innerHTML = `<p class="text-gray-400">No evaluated resumes found.</p>`;
+            return;
+        }
+
+        container.innerHTML = data.resumes.map(r => {
+            // Skills handling (limit to 6, +more if needed)
+            const maxSkills = 6;
+            const skillsToShow = (r.skills || []).slice(0, maxSkills);
+            const hiddenCount = (r.skills || []).length - maxSkills;
+
+            const skillsHtml = skillsToShow.map(skill => `
+                <span class="px-2 py-1 bg-darkblue-800 text-accent-green text-xs rounded-full">${skill}</span>
+            `).join('');
+
+            const moreHtml = hiddenCount > 0
+                ? `<span class="px-2 py-1 bg-darkblue-800 text-gray-400 text-xs rounded-full">+${hiddenCount} more</span>`
+                : '';
+
+            return `
+            <div class="resume-card bg-darkblue-700 rounded-xl p-4 shadow-md animate-cardSlideUp" style="animation-delay: 0.1s;">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between">
+                    <div class="flex items-center mb-4 md:mb-0">
+                        <div class="custom-checkbox mr-4" data-id="${r.resume_id}" data-req-id="${requirementId}">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-semibold text-white">${r.name}</h4>
+                            <p class="text-gray-400 text-sm">${r.email}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col md:flex-row items-start md:items-center space-y-3 md:space-y-0 md:space-x-6 w-full md:w-auto">
+                        <div class="bg-darkblue-800 rounded-lg px-4 py-2 flex items-center">
+                            <svg class="w-5 h-5 text-accent-green mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                            <span class="text-accent-green font-semibold">Score: ${r.score}%</span>
+                        </div>
+                        
+                        <div class="flex space-x-3">
+                            <a href="${r.resume_url}" target="_blank" class="text-accent-green hover:text-green-300 underline flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                                View Resume
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4 pl-10">
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        ${skillsHtml}${moreHtml}
+                    </div>
+                </div>
+            </div>
+            `;
+        }).join('');
+
+    } catch (err) {
+        console.error("Failed to load evaluated resumes:", err);
+    }
+}
+
+
+      // Evaluate button click
+      const evaluateBtn = document.getElementById("evaluateBtn");
+      const resultsSection = document.getElementById("resultsSection");
+      const loadingOverlay = document.createElement('div');
+      loadingOverlay.id = 'loadingOverlay';
+      loadingOverlay.style.display = 'none';
+      loadingOverlay.style.position = 'fixed';
+      loadingOverlay.style.top = '0';
+      loadingOverlay.style.left = '0';
+      loadingOverlay.style.width = '100vw';
+      loadingOverlay.style.height = '100vh';
+      loadingOverlay.style.background = 'rgba(10,23,39,0.85)';
+      loadingOverlay.style.zIndex = '10000';
+      loadingOverlay.style.alignItems = 'center';
+      loadingOverlay.style.justifyContent = 'center';
+      loadingOverlay.innerHTML = `
+        <div class="flex flex-col items-center">
+          <svg class="animate-spin h-12 w-12 text-accent-green" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          ${resumeIds.length} resume${resumeIds.length > 1 ? "s" : ""} sent to manager successfully!
-        `;
-        document.body.appendChild(notification);
+          <span class="mt-4 text-accent-green text-lg font-semibold">Evaluating with AI...</span>
+        </div>
+      `;
+      document.body.appendChild(loadingOverlay);
 
-        setTimeout(() => {
-          notification.style.opacity = "0";
-          notification.style.transform = "translateY(20px)";
-          setTimeout(() => notification.remove(), 300);
-        }, 3000);
+      evaluateBtn.addEventListener("click", async function () {
+        const requirementId = document.getElementById("requirementSelector").value;
 
-        // Clear checkboxes
-        checkedBoxes.forEach(cb => {
-          cb.checked = false;
-          cb.closest("label").classList.remove("checked");
-        });
+        if (!requirementId) {
+          showError("Please select a job requirement before evaluating.");
+          return;
+        }
 
-      } catch (err) {
-        console.error("Error sending resumes:", err);
-        showError("Something went wrong. Please try again.");
-      } finally {
-        sendToManagerBtn.disabled = false;
-        sendToManagerBtn.innerHTML = `
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-          </svg> Send Selected to Manager`;
-      }
-    });
+        // Show loading overlay and animate main content out
+        loadingOverlay.style.display = "flex";
+        loadingOverlay.style.opacity = "0";
+        setTimeout(() => { loadingOverlay.style.opacity = "1"; }, 10);
+        document.querySelector("main").style.opacity = "0.5";
+        evaluateBtn.disabled = true;
+        evaluateBtn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg> Evaluating...`;
 
- 
+        try {
+          // Simulate API call (replace with your real fetch)
+          // await new Promise(resolve => setTimeout(resolve, 2000));
+          const response = await fetch(apiConfig.getURL("evaluate/"), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ requirement_id: requirementId })
+          });
+          const data = await response.json();
+          
 
-    // Name Search Filter
-    const searchInput = document.querySelector(
-      'input[placeholder="Search..."]'
-    );
-    const resumeCards = document.querySelectorAll(".resume-card");
+          if (response.ok) {
+            loadEvaluatedResumes(requirementId); 
+            // Hide overlay and show results with animation
+            loadingOverlay.style.opacity = "0";
+            setTimeout(() => { loadingOverlay.style.display = "none"; }, 300);
+            document.querySelector("main").style.opacity = "1";
+            evaluateBtn.disabled = false;
+            evaluateBtn.innerHTML = `Evaluate with AI`;
+            // Animate results section in
+            resultsSection.classList.remove("hidden");
+            resultsSection.style.opacity = "0";
+            resultsSection.style.transform = "translateY(30px)";
+            setTimeout(() => {
+              resultsSection.style.transition = "opacity 0.5s, transform 0.5s";
+              resultsSection.style.opacity = "1";
+              resultsSection.style.transform = "translateY(0)";
+            }, 10);
+            resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
 
-    searchInput.addEventListener("input", function () {
-      const query = this.value.toLowerCase();
-
-      resumeCards.forEach((card) => {
-        const name = card.querySelector("h4").textContent.toLowerCase();
-        if (name.includes(query)) {
-          card.style.display = "block";
-        } else {
-          card.style.display = "none";
+  
+          } else {
+            // Error from API: revert transition, show error dialog
+            loadingOverlay.style.opacity = "0";
+            setTimeout(() => { loadingOverlay.style.display = "none"; }, 300);
+            document.querySelector("main").style.opacity = "1";
+            evaluateBtn.disabled = false;
+            evaluateBtn.innerHTML = `Evaluate with AI`;
+            showError(data.message || "Error occurred during evaluation.");
+          }
+        } catch (err) {
+          // Network or JS error: revert transition, show error dialog
+          loadingOverlay.style.opacity = "0";
+          setTimeout(() => { loadingOverlay.style.display = "none"; }, 300);
+          document.querySelector("main").style.opacity = "1";
+          evaluateBtn.disabled = false;
+          evaluateBtn.innerHTML = `Evaluate with AI`;
+          showError("Error occurred during evaluation.");
         }
       });
-    });
 
-    document.getElementById("logout-btn").addEventListener("click", async function () {
-      try {
-        const res = await fetch(`${apiConfig.getURL("api/logout/")}`, {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json"
+     
+
+      // Custom checkbox functionality
+      document.addEventListener("click", function (e) {
+          const checkbox = e.target.closest(".custom-checkbox");
+          if (checkbox) {
+              checkbox.classList.toggle("checked");
+          }
+      });
+
+
+      // Send to Manager button click
+      const sendToManagerBtn = document.getElementById("sendToManagerBtn");
+
+      sendToManagerBtn.addEventListener("click", async function () {
+        const checkedBoxes = document.querySelectorAll(".custom-checkbox.checked");
+
+        if (checkedBoxes.length === 0) {
+          const notification = document.createElement("div");
+          notification.className =
+            "fixed bottom-4 right-4 bg-amber-500 text-black px-4 py-3 rounded-lg shadow-lg flex items-center transform transition-all duration-500 z-50";
+          notification.innerHTML = `
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M12 9v2m0 4h.01m-6.9384h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4
+                    c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+            Please select at least one resume to send.
+          `;
+          document.body.appendChild(notification);
+
+          setTimeout(() => {
+            notification.style.opacity = "0";
+            notification.style.transform = "translateY(20px)";
+            setTimeout(() => notification.remove(), 300);
+          }, 3000);
+
+          return;
+        }
+
+        // ✅ Proceed with sending selected resumes
+        const resumeIds = Array.from(checkedBoxes).map(cb => cb.dataset.id);
+        const requirementId = checkedBoxes[0].dataset.reqId;
+
+        // Show loading
+        sendToManagerBtn.disabled = true;
+        sendToManagerBtn.innerHTML = `
+          <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg> Sending...`;
+
+        try {
+          const res = await fetch(`${apiConfig.getURL("hr/shortlist/")}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify(
+              resumeIds.map(id => ({
+                requirement_id: requirementId,
+                resume_id: id
+              }))
+            ),
+          });
+
+          const data = await res.json();
+
+          // Show success toast
+          const notification = document.createElement("div");
+          notification.className =
+            "fixed bottom-4 right-4 bg-accent-green text-black px-4 py-3 rounded-lg shadow-lg flex items-center transform transition-all duration-500 z-50";
+          notification.innerHTML = `
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            ${resumeIds.length} resume${resumeIds.length > 1 ? "s" : ""} sent to manager successfully!
+          `;
+          document.body.appendChild(notification);
+
+          setTimeout(() => {
+            notification.style.opacity = "0";
+            notification.style.transform = "translateY(20px)";
+            setTimeout(() => notification.remove(), 300);
+          }, 3000);
+
+          // Clear checkboxes
+          checkedBoxes.forEach(cb => {
+              cb.classList.remove("checked"); // ✅ safe, no closest() needed
+          });
+
+        } catch (err) {
+          console.error("Error sending resumes:", err);
+          showError("Something went wrong. Please try again.");
+        } finally {
+          sendToManagerBtn.disabled = false;
+          sendToManagerBtn.innerHTML = `
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+            </svg> Send Selected to Manager`;
+        }
+      });
+
+  
+
+      // Name Search Filter
+      const searchInput = document.querySelector(
+        'input[placeholder="Search..."]'
+      );
+      const resumeCards = document.querySelectorAll(".resume-card");
+
+      searchInput.addEventListener("input", function () {
+        const query = this.value.toLowerCase();
+
+        resumeCards.forEach((card) => {
+          const name = card.querySelector("h4").textContent.toLowerCase();
+          if (name.includes(query)) {
+            card.style.display = "block";
+          } else {
+            card.style.display = "none";
           }
         });
+      });
 
-        let data = {};
+      document.getElementById("logout-btn").addEventListener("click", async function () {
         try {
-          data = await res.json(); // attempt to parse JSON
-        } catch (err) {
-          console.warn("No JSON response received", err);
+          const res = await fetch(`${apiConfig.getURL("logout/")}`, {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json"
+            }
+          });
+
+          let data = {};
+          try {
+            data = await res.json(); // attempt to parse JSON
+          } catch (err) {
+            console.warn("No JSON response received", err);
+          }
+
+          console.log("Logout response:", data);
+
+          if (res.ok) {
+            window.location.href = data.redirect || "/index.html";
+          } else {
+            showError("Logout failed: " + (data.message || "Unknown error"));
+          }
+
+        } catch (error) {
+          console.error("Logout error:", error);
+          showError("Network error during logout.");
         }
+      });
 
-        console.log("Logout response:", data);
+      document.addEventListener("DOMContentLoaded", () => {
+        loadRequirementDropdown(); // ✅ Load dropdown from backend
 
-        if (res.ok) {
-          window.location.href = data.redirect || "/login.html";
-        } else {
-          showError("Logout failed: " + (data.message || "Unknown error"));
-        }
+        const requirementId = document.getElementById("requirementSelector").value;
+        if (requirementId) loadResumes(requirementId); // ⬅️ If pre-selected (optional)
+      });
 
-      } catch (error) {
-        console.error("Logout error:", error);
-        showError("Network error during logout.");
-      }
-    });
-
-    document.addEventListener("DOMContentLoaded", () => {
-      loadRequirementDropdown(); // ✅ Load dropdown from backend
-
-      const requirementId = document.getElementById("requirementSelector").value;
-      if (requirementId) loadResumes(requirementId); // ⬅️ If pre-selected (optional)
-    });
-
-  </script>
+    </script>
 
   <div id="error-message" style="display:none;color:red;margin-bottom:10px;"></div>
   <div id="error-dialog" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.3);z-index:9999;align-items:center;justify-content:center;">
@@ -900,6 +983,32 @@ function closeErrorDialog() {
   var dialog = document.getElementById('error-dialog');
   if (dialog) dialog.style.display = 'none';
 }
+
+async function fetchUserProfile() {
+      try {
+        const response = await fetch(`${apiConfig.getURL("user-profile/")}`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+
+          // Update DOM with dynamic data
+          document.getElementById("user-name").textContent = userData.username || "User";
+          document.getElementById("user-role").textContent = userData.role || "Role";
+        } else {
+          console.error("Failed to load user profile");
+        }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    }
+
+    fetchUserProfile();
 </script>
 
 </body>

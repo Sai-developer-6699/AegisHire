@@ -80,7 +80,7 @@ def dashboard(request):
 @api_view(['POST'])
 def logout_api(request):
     request.session.flush()  # Clears session data
-    return Response({'message': 'Logged out successfully', 'redirect': '/index.html'})
+    return Response({'message': 'Logged out successfully', 'redirect': '../index.html'}) # Redirect to frontend index page
 
 
 # View for checking session
@@ -933,6 +933,10 @@ def get_shortlisted_candidates(request, requirement_id):
         user_id = request.session.get('userid')
         role_id = request.session.get('roleid')
 
+        # Debug logging
+        print(f"get_shortlisted_candidates called with requirement_id: {requirement_id}")
+        print(f"user_id: {user_id}, role_id: {role_id}")
+
         # Only allow managers (role_id == 2)
         if role_id != 2 or not user_id:
             return Response({"error": "Unauthorized access."}, status=401)
@@ -962,12 +966,15 @@ def get_shortlisted_candidates(request, requirement_id):
                 "resume_id": row[0],
                 "name": row[1],
                 "email": row[2],
-                "resume_url": request.build_absolute_uri(f"/media/{row[3]}"),
+                "resume_url": row[3],  # Just the file path, not full URL
                 "ai_score": row[4],
                 "position_name": row[5]
             }
             for row in rows
         ]
+
+        print(f"Returning {len(result)} candidates")
+        print(f"Result: {result}")
 
         return Response(result)
 

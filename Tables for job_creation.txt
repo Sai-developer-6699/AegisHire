@@ -1,3 +1,39 @@
+CREATE TABLE job_requirement (
+    requirement_id INT AUTO_INCREMENT PRIMARY KEY,
+    position_id INT NOT NULL,
+    experience_range VARCHAR(50) NOT NULL,
+    created_by INT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (position_id) REFERENCES position_master(position_id),
+    FOREIGN KEY (created_by) REFERENCES users(userid)
+);
+
+CREATE TABLE job_skill (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    requirement_id INT NOT NULL,
+    skill_id INT NOT NULL,
+    FOREIGN KEY (requirement_id) REFERENCES job_requirement(requirement_id) ON DELETE CASCADE,
+    FOREIGN KEY (skill_id) REFERENCES skill_master(skill_id)
+);
+
+CREATE TABLE job_education (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    requirement_id INT NOT NULL,
+    education_id INT NOT NULL,
+    FOREIGN KEY (requirement_id) REFERENCES job_requirement(requirement_id) ON DELETE CASCADE,
+    FOREIGN KEY (education_id) REFERENCES education_master(education_id)
+);
+
+CREATE TABLE job_softskill (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    requirement_id INT NOT NULL,
+    soft_skill_id INT NOT NULL,
+    FOREIGN KEY (requirement_id) REFERENCES job_requirement(requirement_id) ON DELETE CASCADE,
+    FOREIGN KEY (soft_skill_id) REFERENCES soft_skill_master(soft_skill_id)
+);
+
+manager_job_creation.html
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -396,8 +432,6 @@
             }
         }
     </style>
-    <script src="../config/config.js"></script>
-    <script src="../assets/js/simple-api.js"></script>
 </head>
 
 <body class="bg-darkblue-950 text-white min-h-screen">
@@ -469,26 +503,27 @@
             </nav>
 
             <!-- User Profile -->
-            <div class="absolute bg-darkblue-900 bottom-0 left-0 w-64 p-4 border-t border-gray-800">
+            <div class="absolute bottom-0 left-0 w-64 p-4 border-t border-gray-800 bg-gray-900">
                 <div class="flex items-center">
-                  <div
-                    class="w-10 h-10 rounded-full bg-darkblue-700 flex items-center justify-center text-accent-green font-semibold">
-                    MK
-                  </div>
-                  <div class="ml-3">
-                    <p id="user-name" class="text-sm font-medium text-white">Loading...</p>
-                    <p id="user-role" class="text-xs text-gray-400">Role</p>
-                  </div>
-                  <button id="logout-btn" class="ml-10 text-gray-300 hover:text-white">
-                    <div class="flex items-center">
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                      </svg>
+                    <div
+                        class="w-10 h-10 rounded-full bg-darkblue-700 flex items-center justify-center text-accent-green font-semibold">
+                        MG
                     </div>
-                  </button>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-white">Mark Green</p>
+                        <p class="text-xs text-gray-400">Manager</p>
+                    </div>
+                    <button id="logout" class="ml-4 text-gray-300 hover:text-white">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                                </path>
+                            </svg>
+                        </div>
+                    </button>
                 </div>
-              </div>
+            </div>
         </div>
 
         <!-- Main Content Area -->
@@ -689,27 +724,6 @@
                 <div id="logoutMessage" style="display:none; color: green; margin-top: 10px;"></div>
             </div>
         </div>
-        <div id="error-dialog" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.3);z-index:9999;align-items:center;justify-content:center;">
-  <div style="background:#fff;padding:24px 32px;border-radius:8px;box-shadow:0 2px 16px rgba(0,0,0,0.2);min-width:300px;max-width:90vw;text-align:center;position:relative;">
-    <span id="error-dialog-message" style="color:#b91c1c;font-size:1.1em;"></span>
-    <br><br>
-    <button onclick="closeErrorDialog()" style="background:#b91c1c;color:#fff;padding:8px 20px;border:none;border-radius:4px;cursor:pointer;">OK</button>
-  </div>
-</div>
-<script>
-function showError(message) {
-  var dialog = document.getElementById('error-dialog');
-  var msgSpan = document.getElementById('error-dialog-message');
-  if (dialog && msgSpan) {
-    msgSpan.textContent = message;
-    dialog.style.display = 'flex';
-  }
-}
-function closeErrorDialog() {
-  var dialog = document.getElementById('error-dialog');
-  if (dialog) dialog.style.display = 'none';
-}
-</script>
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 // ─── Element references ─────────────────────────────────────────────
@@ -730,9 +744,9 @@ function closeErrorDialog() {
                 const sortByRecentButton = document.getElementById('sort-by-recent');
 
                 // ─── Event listeners ────────────────────────────────────────────────
-                document.getElementById("logout-btn").addEventListener("click", async function () {
+                document.getElementById("logout").addEventListener("click", async function () {
                     try {
-                        const response = await fetch(`${apiConfig.getURL('logout/')}`, {
+                        const response = await fetch('http://127.0.0.1:8000/api/logout/', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -781,7 +795,7 @@ function closeErrorDialog() {
                 async function renderRecentJobs() {
                     jobList.innerHTML = '<li class="italic text-[#9ca3af] animate-pulse">Loading...</li>';
                     try {
-                        const res = await fetch(`${apiConfig.getURL('get-recent-jobs/?limit=5')}`);
+                        const res = await fetch('http://127.0.0.1:8000/api/get-recent-jobs/?limit=5');
                         const data = await res.json();
                         const jobs = data.jobs || [];
                         if (!jobs.length) {
@@ -822,7 +836,7 @@ function closeErrorDialog() {
 
                 (async function fetchPositions() {
                     try {
-                        const res = await fetch(`${apiConfig.getURL('get_positions/')}`);
+                        const res = await fetch('http://127.0.0.1:8000/api/get_positions/');
                         const data = await res.json();
                         if (!res.ok) throw new Error(data.error || 'Failed to load positions');
                         jobCategory.innerHTML = `<option value="" disabled selected>Select category</option>`;
@@ -844,10 +858,10 @@ function closeErrorDialog() {
                         const position = jobCategory.value;
                         if (!position) return;
                         try {
-                            await fetch(`${apiConfig.getURL('api/check_session/')}`, {
+                            await fetch('http://127.0.0.1:8000/api/check_session/', {
                                 method: 'GET', credentials: 'include'
                             });
-                            const res = await fetch(`${apiConfig.getURL('get_recommendations_for_position/')}`, {
+                            const res = await fetch('http://127.0.0.1:8000/api/get_recommendations_for_position/', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ position })
@@ -891,7 +905,7 @@ function closeErrorDialog() {
                             soft_skills: selectedSoft
                         };
                         try {
-                            const res = await fetch(`${apiConfig.getURL('api/submit_job/')}`, {
+                            const res = await fetch('http://127.0.0.1:8000/api/submit_job/', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 credentials: 'include',
@@ -899,10 +913,10 @@ function closeErrorDialog() {
                             });
                             const result = await res.json();
                             if (res.ok) {
-                                showError('Job post sent to HR!');
+                                alert('Job post sent to HR!');
                                 jobForm.reset();
                             } else {
-                                showError('Submission failed: ' + result.error);
+                                alert('Submission failed: ' + result.error);
                             }
                         } catch (err) {
                             console.error('Submission error:', err);
@@ -917,33 +931,419 @@ function closeErrorDialog() {
                     }
                 }
             });
-
-            async function fetchUserProfile() {
-      try {
-        const response = await fetch(`${apiConfig.getURL("user-profile/")}`, {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json"
-          }
-        });
-
-        if (response.ok) {
-          const userData = await response.json();
-
-          // Update DOM with dynamic data
-          document.getElementById("user-name").textContent = userData.username || "User";
-          document.getElementById("user-role").textContent = userData.role || "Role";
-        } else {
-          console.error("Failed to load user profile");
-        }
-      } catch (error) {
-        console.error("Error fetching user profile:", error);
-      }
-    }
-
-    fetchUserProfile();
         </script>
 </body>
 
 </html>
+
+
+
+urls :
+urlpatterns = [
+    path('', home, name='home'), 
+    path('login/', login_api, name='api-login'),
+    path('api/register/', register_api, name='register'),
+    path('api/get-users/', get_all_users, name='get-users'),
+    path('api/get-user-by-username/<str:username>/', get_user_by_username, name='get-user-by-username'),
+    path('api/update-user-by-username/<str:username>/', update_user_by_username, name='update-user-by-username'),
+    path('api/delete-user/<int:userid>/', delete_user),
+    path('api/get-user-by-id/<int:userid>/', get_user_by_id, name='get-user-by-id'),
+    path('api/get_recommendations_for_position/', get_recommendations_for_position, name='get_recommendations_for_position'),
+    path('api/submit_job/', submit_job, name='submit_job'),
+    path('api/get-recent-jobs/', get_recent_jobs, name='get-recent-jobs'),
+    path('api/check_session/', check_session, name='check_session'),
+    path('api/logout/', logout_api, name='logout'),
+    path('api/dashboard/', dashboard, name='dashboard'),
+    path('api/get_positions/', get_positions, name='get_positions'),
+    path('api/list_job_requirements/',list_job_requirements, name='list_job_requirements'),
+    path('api/get_job_requirement_detail/<int:requirement_id>/',get_job_requirement_detail, name='get_job_requirement_detail')
+]
+
+
+
+view.py
+
+
+
+@csrf_exempt
+@api_view(['GET'])
+def get_positions(request):
+    cursor = connection.cursor()
+    cursor.execute("SELECT position_name FROM position_master")
+    positions = [row[0] for row in cursor.fetchall()]
+    return Response(positions)
+
+@csrf_exempt
+@api_view(['POST'])
+def get_recommendations_for_position(request):
+    try:
+        position_name = request.data.get('position', '').strip()
+
+        if not position_name:
+            return Response({'error': 'Position name is required'}, status=400)
+
+        def fetch_column(cursor, query, params):
+            cursor.execute(query, params)
+            return [row[0] for row in cursor.fetchall()]
+
+        with connection.cursor() as cursor:
+            # Get position_id
+            cursor.execute(
+                "SELECT position_id FROM position_master WHERE position_name = %s",
+                [position_name]
+            )
+            row = cursor.fetchone()
+            if not row:
+                return Response({'error': 'Invalid position'}, status=400)
+
+            position_id = row[0]
+
+            # Fetch values using shared function
+            technical_skills = fetch_column(cursor, """
+                SELECT s.skill_name
+                FROM job_requirement_skills psm
+                JOIN skill_master s ON psm.skill_id = s.skill_id
+                WHERE psm.position_id = %s
+            """, [position_id])
+
+            soft_skills = fetch_column(cursor, """
+                SELECT ss.soft_skill_name
+                FROM job_requirement_softskills pssm
+                JOIN soft_skill_master ss ON pssm.soft_skill_id = ss.soft_skill_id
+                WHERE pssm.position_id = %s
+            """, [position_id])
+
+            education = fetch_column(cursor, """
+                SELECT e.education_name
+                FROM job_requirement_education pem
+                JOIN education_master e ON pem.education_id = e.education_id
+                WHERE pem.position_id = %s
+            """, [position_id])
+
+        return Response({
+            'technical_skills': technical_skills,
+            'soft_skills': soft_skills,
+            'education': education
+        })
+
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
+
+
+### Submit Job
+
+
+
+@csrf_exempt
+@api_view(['POST'])
+def submit_job(request):
+    try:
+        userid = request.session.get('userid')
+        roleid = request.session.get('roleid')
+
+        # Authorization checks
+        if not userid or not roleid or roleid != 2:
+            return Response({'error': 'Unauthorized'}, status=401)
+
+        # Input extraction
+        position_name = request.data.get('position')
+        experience_range = request.data.get('experience')
+        selected_skills = request.data.get('technical_skills', [])
+        selected_education = request.data.get('education', [])
+        selected_soft_skills = request.data.get('soft_skills', [])
+
+        # Basic validation
+        if not position_name or not experience_range:
+            return Response({'error': 'Position and experience are required'}, status=400)
+
+        if not isinstance(selected_skills, list) or not isinstance(selected_education, list) or not isinstance(selected_soft_skills, list):
+            return Response({'error': 'Skills, education, and soft skills must be lists'}, status=400)
+
+        with connection.cursor() as cursor:
+            # Get position_id
+            cursor.execute("SELECT position_id FROM position_master WHERE position_name=%s", [position_name])
+            pos_row = cursor.fetchone()
+            if not pos_row:
+                return Response({'error': 'Invalid position'}, status=400)
+            position_id = pos_row[0]
+
+            # Insert into job_requirement
+            cursor.execute("""
+                INSERT INTO job_requirement (position_id, experience_range, created_by)
+                VALUES (%s, %s, %s)
+            """, [position_id, experience_range, userid])
+            cursor.execute("SELECT LAST_INSERT_ID()")
+            requirement_id = cursor.fetchone()[0]
+
+            # Insert into job_skill
+            # Build skill name → ID map
+            cursor.execute("SELECT skill_id, skill_name FROM skill_master")
+            skill_map = {name.lower(): sid for sid, name in cursor.fetchall()}
+            for skill_name in selected_skills:
+                sid = skill_map.get(skill_name.lower())
+                if sid:
+                    cursor.execute("INSERT INTO job_skill (requirement_id, skill_id) VALUES (%s, %s)", [requirement_id, sid])
+                else:
+                    return Response({'error': f'Invalid skill: {skill_name}'}, status=400)
+
+
+            # Insert into job_education
+            # Get all education name-to-id mappings
+            cursor.execute("SELECT education_id, education_name FROM education_master")
+            education_map = {name.lower(): eid for eid, name in cursor.fetchall()}
+
+            # Then in the loop
+            for edu in selected_education:
+                edu_id = education_map.get(edu.lower())  # Convert 'B.Tech' → 1
+                if edu_id:
+                    cursor.execute("""
+                        INSERT INTO job_education (requirement_id, education_id)
+                        VALUES (%s, %s)
+                    """, [requirement_id, edu_id])
+                else:
+                    return Response({'error': f'Invalid education: {edu}'}, status=400)
+
+            # Insert into job_softskill (note: table name should be singular as per your schema)
+            cursor.execute("SELECT soft_skill_id, soft_skill_name FROM soft_skill_master")
+            soft_skill_map = {name.lower(): sid for sid, name in cursor.fetchall()}
+            for soft_skill in selected_soft_skills:
+                if isinstance(soft_skill, str):
+                    soft_skill_id = soft_skill_map.get(soft_skill.lower())
+                else:
+                    soft_skill_id = soft_skill  # assume it's already an ID
+
+                if soft_skill_id:
+                    cursor.execute("""
+                        INSERT INTO job_softskill (requirement_id, soft_skill_id)
+                        VALUES (%s, %s)
+                    """, [requirement_id, soft_skill_id])
+                else:
+                    return Response({'error': f'Invalid soft skill: {soft_skill}'}, status=400)
+
+
+            cursor.connection.commit()
+
+        return Response({'status': 'Job created successfully', 'requirement_id': requirement_id})
+
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
+    
+
+### Update Job
+@csrf_exempt
+@api_view(['PUT'])
+def update_job(request):
+    try:
+        userid = request.session.get('userid')
+        roleid = request.session.get('roleid')
+
+        if not userid or not roleid:
+            return Response({'error': 'Unauthorized'}, status=401)
+        
+        if roleid != 2:
+            return Response({'error': 'Unauthorized'}, status=401)
+        
+        position_name = request.data.get('position')
+        experience_range = request.data.get('experience')
+        selected_skills = request.data.get('skills', [])
+        selected_education = request.data.get('education', [])
+        selected_soft_skills = request.data.get('soft_skills', [])
+
+        # Validate list inputs
+        if not isinstance(selected_skills, list) or not isinstance(selected_education, list) or not isinstance(selected_soft_skills, list):
+            return Response({'error': 'Skills, education, and soft skills must be lists'}, status=400)
+
+        if not position_name or not experience_range:
+            return Response({'error': 'Position and experience are required'}, status=400)
+
+        with connection.cursor() as cursor:
+            # Get position_id
+            cursor.execute("SELECT position_id FROM position_master WHERE position_name=%s", [position_name])
+            pos_row = cursor.fetchone()
+            if not pos_row:
+                return Response({'error': 'Invalid position'}, status=400)
+            position_id = pos_row[0]
+
+            # Insert into job_requirement
+            cursor.execute("""
+                INSERT INTO job_requirement (position_id, experience_range, created_by)
+                VALUES (%s, %s, %s)
+            """, [position_id, experience_range, userid])
+            cursor.execute("SELECT LAST_INSERT_ID()")
+            requirement_id = cursor.fetchone()[0]
+
+  
+           # Insert into job_skills
+            for skill_id in selected_skills:
+                cursor.execute("""
+                    INSERT INTO job_skills (requirement_id, skill_id) VALUES (%s, %s)
+                """, [requirement_id, skill_id])
+
+            # Insert into job_education
+            for education_id in selected_education:
+                cursor.execute("""
+                    INSERT INTO job_education (requirement_id, education_id) VALUES (%s, %s)
+                """, [requirement_id, education_id])
+
+            # Insert into job_softskills
+            for soft_skill_id in selected_soft_skills:
+                cursor.execute("""
+                    INSERT INTO job_softskills (requirement_id, soft_skill_id) VALUES (%s, %s)
+                """, [requirement_id, soft_skill_id])
+
+            cursor.connection.commit()
+
+        return Response({'status': 'Job created successfully', 'requirement_id': requirement_id})
+
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
+
+### Recent Uploads of Job Posts
+
+@csrf_exempt
+@api_view(['GET'])
+def get_recent_jobs(request):
+    try:
+        user_id = request.GET.get('user_id')
+        limit = int(request.GET.get('limit', 5))
+
+        with connection.cursor() as cursor:
+            if user_id:
+                cursor.execute("""
+                    SELECT jr.requirement_id, pm.position_name, jr.experience_range, jr.created_at, u.username
+                    FROM job_requirement jr
+                    JOIN position_master pm ON jr.position_id = pm.position_id
+                    JOIN users u ON jr.created_by = u.userid
+                    WHERE jr.created_by = %s
+                    ORDER BY jr.created_at DESC
+                    LIMIT %s
+                """, [user_id, limit])
+            else:
+                cursor.execute("""
+                    SELECT jr.requirement_id, pm.position_name, jr.experience_range, jr.created_at, u.username
+                    FROM job_requirement jr
+                    JOIN position_master pm ON jr.position_id = pm.position_id
+                    JOIN users u ON jr.created_by = u.userid
+                    ORDER BY jr.created_at DESC 
+                    LIMIT %s
+                """, [limit])
+
+            rows = cursor.fetchall()
+
+        jobs = [{
+            'requirement_id': row[0],
+            'position': row[1],
+            'experience': row[2],
+            'created_at': row[3],
+            'created_by': row[4]
+        } for row in rows]
+
+        return Response({'jobs': jobs})
+
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
+
+
+# Temporary 
+@api_view(['GET'])
+def check_session(request):
+    return Response({
+        'userid': request.session.get('userid'),
+        'roleid': request.session.get('roleid')
+    })
+
+
+
+#    ---------  HR  --------- 
+# HR Filter Resume
+@api_view(['GET'])
+def list_job_requirements(request):
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT 
+                jr.requirement_id,
+                pm.position_name,
+                u.username,
+                jr.experience_range,
+                jr.created_at
+            FROM job_requirement jr
+            JOIN position_master pm ON jr.position_id = pm.position_id
+            JOIN users u ON jr.created_by = u.userid
+            ORDER BY jr.created_at DESC
+        """)
+        results = cursor.fetchall()
+
+    data = [
+        {
+            "requirement_id": row[0],
+            "position": row[1],
+            "created_by": row[2],
+            "experience_range": row[3],
+            "created_at": row[4].strftime("%Y-%m-%d %H:%M:%S")
+        }
+        for row in results
+    ]
+    return Response(data)
+
+@api_view(['GET'])
+def get_job_requirement_detail(request, requirement_id):
+    try:
+        with connection.cursor() as cursor:
+            # Core Requirement Info
+            cursor.execute("""
+                SELECT jr.requirement_id, pm.position_name, u.username, jr.experience_range, jr.created_at
+                FROM job_requirement jr
+                JOIN position_master pm ON jr.position_id = pm.position_id
+                JOIN users u ON jr.created_by = u.userid
+                WHERE jr.requirement_id = %s
+            """, [requirement_id])
+            row = cursor.fetchone()
+            if not row:
+                return Response({'error': 'Requirement not found'}, status=404)
+
+            requirement = {
+                'requirement_id': row[0],
+                'position': row[1],
+                'created_by': row[2],
+                'experience': row[3],
+                'created_at': row[4].strftime("%Y-%m-%d %H:%M:%S"),
+            }
+
+            # Skills
+            cursor.execute("""
+                SELECT sm.skill_name
+                FROM job_skill js
+                JOIN skill_master sm ON js.skill_id = sm.skill_id
+                WHERE js.requirement_id = %s
+            """, [requirement_id])
+            skills = [name for (name,) in cursor.fetchall()]
+
+            # Soft Skills
+            cursor.execute("""
+                SELECT ssm.soft_skill_name
+                FROM job_softskill js
+                JOIN soft_skill_master ssm ON js.soft_skill_id = ssm.soft_skill_id
+                WHERE js.requirement_id = %s
+            """, [requirement_id])
+            soft_skills = [name for (name,) in cursor.fetchall()]
+
+            # Education
+            cursor.execute("""
+                SELECT em.education_name
+                FROM job_education je
+                JOIN education_master em ON je.education_id = em.education_id
+                WHERE je.requirement_id = %s
+            """, [requirement_id])
+            education = [name for (name,) in cursor.fetchall()]
+
+        return Response({
+            "requirement": requirement,
+            "skills": skills,
+            "soft_skills": soft_skills,
+            "education": education
+        })
+
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
+
+	

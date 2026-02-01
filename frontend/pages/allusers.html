@@ -5,6 +5,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>User Management Dashboard</title>
+  <script src="../config/config.js"></script>
+  <script src="../assets/js/simple-api.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
     rel="stylesheet" />
@@ -485,7 +487,7 @@
       box-shadow: 0 0 15px rgba(46, 213, 115, 0.5);
     }
   </style>
-    <script src="../config/config.js"></script>
+
 </head>
 
 <body>
@@ -837,14 +839,7 @@
 
       const apiKey = "your-api-key"; // Or get it from a secure place
 
-      fetch(apiConfig.getURL(`api/get-users/?${params.toString()}`), {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}` // or "Token" if your backend uses token auth
-        }
-      })
-        .then((res) => res.json())
+      simpleGet(`/get-users/?${params.toString()}`)
         .then((data) => {
           users = data;
           // If there's a search term, sort results by best match
@@ -946,6 +941,10 @@
       initCheckboxes();
     }
 
+    // Debug API configuration
+    console.log("Simple API loaded:", typeof simpleGet !== 'undefined');
+    console.log("Simple POST loaded:", typeof simplePost !== 'undefined');
+    
     // Initial render
     renderUsers(users);
 
@@ -1020,20 +1019,29 @@
       if (e.target.closest(".action-button")) {
         const button = e.target.closest(".action-button");
         const userid = button.getAttribute("data-userid");
+        
+        // Debug logging
+        console.log("Delete button clicked, userid:", userid);
+        console.log("Button element:", button);
+
+        // Validate userid
+        if (!userid || userid === "undefined" || userid === "null") {
+          console.error("Invalid userid:", userid);
+          showError("Invalid user ID. Please try again.");
+          return;
+        }
 
         // Use your custom modal dialog
         showDialog("Are you sure you want to delete this user?", () => {
-          fetch(`${apiConfig.getURL("api/delete-user/${userid}/")}`, {
-            method: "DELETE",
-          })
-            .then((res) => res.json())
+          simplePost(`/delete-user/${userid}/`, {})
             .then((data) => {
-              showError(data.message || "User deleted");
+              console.log("Delete success:", data);
+              showApiSuccess(data.message || "User deleted successfully");
               fetchAndRenderUsers(); // Refresh your table
             })
             .catch((err) => {
               console.error("Error deleting user:", err);
-              showError("Something went wrong.");
+              showApiError("Failed to delete user: " + err.message);
             });
         });
       }

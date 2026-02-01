@@ -9,7 +9,6 @@ mobileMenuButton.addEventListener('click', () => {
 });
 
 // Animated circles background using Anime.js
-document.addEventListener('DOMContentLoaded', () => {
   const bg = document.getElementById('animated-bg');
   const circlesCount = 8;
   const colors = ["#10B981", "#047857", "#065F46", "#6EE7B7"];
@@ -45,23 +44,21 @@ document.addEventListener('DOMContentLoaded', () => {
       circle.style.left = anime.random(0, window.innerWidth) + 'px';
     });
   });
-});
-// Smooth scroll for anchor links
-const anchorLinks = document.querySelectorAll('a[href^="#"]');
-anchorLinks.forEach(link => {
-  link.addEventListener('click', function (e) {
-    e.preventDefault();
-    const targetId = this.getAttribute('href').substring(1);
-    const targetElement = document.getElementById(targetId);
-    if (targetElement) {
-      targetElement.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }
-  });
-}
-);
 
+  // Smooth scroll for anchor links
+  const anchorLinks = document.querySelectorAll('a[href^="#"]');
+  anchorLinks.forEach(link => {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      const targetId = this.getAttribute('href').substring(1);
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        targetElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    });
+  });
 
 });

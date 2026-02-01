@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <script src="../config/config.js"></script>
+    <script src="../assets/js/simple-api.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SafeNet Manager - Candidate Performance</title>
@@ -92,7 +93,7 @@
       const select = document.getElementById('requirementSelect');
       select.innerHTML = '<option>Loading...</option>';
       try {
-        const res = await fetch(apiConfig.getURL("api/list_job_requirements/"), { credentials: 'include' });
+        const res = await fetch(apiConfig.getURL("list_job_requirements/"), { credentials: 'include' });
         const data = await res.json();
         select.innerHTML = '';
         data.forEach(req => {
@@ -111,7 +112,7 @@
       const container = document.getElementById('candidatesContainer');
       container.innerHTML = '<div class="text-gray-400">Loading...</div>';
       try {
-        const res = await fetch(`apiConfig.getURL("api/")manager/performance/${requirementId}/`, { credentials: 'include' });
+        const res = await fetch(`${apiConfig.getURL("manager/performance/${requirementId}/")}`, { credentials: 'include' });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Failed to fetch');
         if (!data.candidates.length) {
@@ -142,7 +143,7 @@
       const answersContainer = document.getElementById('answersContainer');
       answersContainer.innerHTML = '<div class="text-gray-400">Loading answers...</div>';
       try {
-        const res = await fetch(`apiConfig.getURL("api/")manager/exam-answers/${mapId}/`, { credentials: 'include' });
+        const res = await fetch(`${apiConfig.getURL("manager/exam-answers/${mapId}/")}`, { credentials: 'include' });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Failed to fetch answers');
         document.getElementById('modalSessionId').value = data.session_id;
@@ -182,7 +183,7 @@
         return { answer_id: answerId, score_awarded: score, is_correct: correct };
       });
       try {
-        const res = await fetch(apiConfig.getURL("api/manager/update-exam-scores/"), {
+        const res = await fetch(apiConfig.getURL("manager/update-exam-scores/"), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',

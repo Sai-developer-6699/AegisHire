@@ -278,6 +278,7 @@
     }
   </style>
     <script src="../config/config.js"></script>
+    <script src="../assets/js/simple-api.js"></script>
 </head>
 
 <body class="bg-darkblue-950 text-white min-h-screen flex">
@@ -587,25 +588,6 @@
       });
     });
 
-    // View toggle functionality
-    const cardViewBtn = document.getElementById("cardViewBtn");
-    const tableViewBtn = document.getElementById("tableViewBtn");
-    const cardView = document.getElementById("cardView");
-    const tableView = document.getElementById("tableView");
-
-    cardViewBtn.addEventListener("click", function () {
-      cardView.classList.remove("hidden");
-      tableView.classList.add("hidden");
-      cardViewBtn.classList.add("active");
-      tableViewBtn.classList.remove("active");
-    });
-
-    tableViewBtn.addEventListener("click", function () {
-      cardView.classList.add("hidden");
-      tableView.classList.remove("hidden");
-      cardViewBtn.classList.remove("active");
-      tableViewBtn.classList.add("active");
-    });
 
     // Mark as Joined functionality
     const joinButtons = document.querySelectorAll(
@@ -768,7 +750,7 @@
 
     document.getElementById("logout-btn").addEventListener("click", async function () {
     try {
-      const res = await fetch(`${apiConfig.getURL("api/logout/")}`, {
+      const res = await fetch(`${apiConfig.getURL("logout/")}`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -797,24 +779,13 @@
     }
   });
 
-  /**
-   * Loads available roles from the API and populates the role filter dropdown
-   * 
-   * API Endpoint: GET apiConfig.getURL("api/")roles/
-   * Expected Response Format:
-   * [
-   *   { "id": 1, "name": "Software Engineer" },
-   *   { "id": 2, "name": "Product Manager" },
-   *   { "id": 3, "name": "UI/UX Designer" }
-   * ]
-   */
   async function loadRoles() {
     const roleFilter = document.getElementById("role-filter");
     roleFilter.innerHTML = '<option value="all">All Roles</option>';
     
     try {
       // Demo API call - replace with your actual endpoint
-      const res = await fetch(`${apiConfig.getURL("api/hr/get-roles/")}`, {
+      const res = await fetch(`${apiConfig.getURL("hr/get-roles/")}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -838,20 +809,6 @@
       
     } catch (err) {
       console.error("Failed to load roles:", err);
-      // Fallback to demo data if API fails
-      const demoRoles = [
-        { id: 1, name: "Software Engineer" },
-        { id: 2, name: "Product Manager" },
-        { id: 3, name: "UI/UX Designer" },
-        { id: 4, name: "Data Analyst" }
-      ];
-      
-      demoRoles.forEach(role => {
-        const opt = document.createElement("option");
-        opt.value = role.id;
-        opt.textContent = role.name;
-        roleFilter.appendChild(opt);
-      });
       
       console.log("Using demo roles data due to API failure");
     }
@@ -894,7 +851,7 @@
       if (status && status !== "all") params.append("status", status);
       
       // API call to get finalised candidates
-      const res = await fetch(`${apiConfig.getURL("api/hr/finalised-candidates/?${params}")}`, {
+      const res = await fetch(`${apiConfig.getURL(`hr/finalised-candidates/?${params}`)}`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -996,33 +953,7 @@
       console.error("Failed to load candidates:", err);
       
       // Fallback to demo data if API fails
-      const demoCandidates = [
-        {
-          map_id: 1,
-          resume_id: 1,
-          name: "John Doe",
-          email: "john.doe@example.com",
-          status: "finalised",
-          finalised_at: "2024-01-15"
-        },
-        {
-          map_id: 2,
-          resume_id: 2,
-          name: "Jane Smith",
-          email: "jane.smith@example.com",
-          status: "joined",
-          finalised_at: "2024-01-12"
-        },
-        {
-          map_id: 3,
-          resume_id: 3,
-          name: "Mike Johnson",
-          email: "mike.johnson@example.com",
-          status: "rejected",
-          finalised_at: "2024-01-10"
-        }
-      ];
-      
+    
       cardView.innerHTML = "";
       demoCandidates.forEach((candidate, index) => {
         const card = document.createElement("div");
@@ -1094,7 +1025,7 @@
    */
   async function markAsJoined(mapId, candidateName) {
     try {
-      const res = await fetch(`${apiConfig.getURL("api/hr/mark-candidate-status/")}`, {
+      const res = await fetch(`${apiConfig.getURL("hr/mark-candidate-status/")}`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -1133,7 +1064,7 @@
     }
     
     try {
-      const res = await fetch(`${apiConfig.getURL("api/hr/mark-candidate-status/")}`, {
+      const res = await fetch(`${apiConfig.getURL("hr/mark-candidate-status/")}`, {
         method: "POST",
         credentials: "include",
         headers: {

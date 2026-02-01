@@ -6,7 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SafeNet Cybersecurity Portal</title>
 
-  <!-- Tailwind CSS CDN -->
+  <!-- Tailwind CSS CDN - Development only -->
+  <!-- For production, install Tailwind CSS as a PostCSS plugin or use the Tailwind CLI -->
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Google Material Icons -->
@@ -16,7 +17,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" defer></script>
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="../assets/css/styles.css" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
 </head>
 
 <body class="relative min-h-screen flex flex-col font-sans text-slate-100">
@@ -174,8 +175,14 @@
     </div>
   </footer>
   <script src="config/config.js"></script>
+  <script src="assets/js/simple-api.js"></script>
   <script src="assets/js/login.js"></script>
   <script src="assets/js/script.js"></script>
+  <script>
+    // Debug: Check if simple API functions are loaded
+    console.log('Simple API loaded:', typeof simplePost !== 'undefined');
+    console.log('Simple GET loaded:', typeof simpleGet !== 'undefined');
+  </script>
   <div id="notificationContainer" style="position:fixed;top:24px;right:24px;z-index:10000;display:flex;flex-direction:column;gap:12px;"></div>
   <script>
   function showSuccess(message) {
