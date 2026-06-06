@@ -33,7 +33,7 @@ export function DesignSystemPage() {
 
   const tableData = [
     { name: 'Adan O P', email: 'adan@example.com', status: 'shortlisted', score: 85.0 },
-    { name: 'Nikhil Suresh', email: 'nikhil@example.com', status: 'evaluated', score: 75.0 },
+    { name: 'John Doe', email: 'john.doe@example.com', status: 'evaluated', score: 75.0 },
     { name: 'Sai Cheranjeeve', email: 'sai@example.com', status: 'approved', score: 62.5 },
   ];
 
