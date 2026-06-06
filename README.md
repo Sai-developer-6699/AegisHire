@@ -1,11 +1,11 @@
 # 🛡️ AegisHire AI — Intelligent & Secure Recruitment Platform
 
-[![React](https://img.shields.www.static.shields.io/badge/Frontend-React%2018%20%2B%20Vite-blue?style=flat-square&logo=react)](https://react.dev/)
-[![TailwindCSS](https://img.shields.www.static.shields.io/badge/Styling-Tailwind%20CSS-38bdf8?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
-[![Django](https://img.shields.www.static.shields.io/badge/Backend-Django%205.x%20%2B%20DRF-092e20?style=flat-square&logo=django)](https://www.djangoproject.com/)
-[![MySQL](https://img.shields.www.static.shields.io/badge/Database-MySQL-4479a1?style=flat-square&logo=mysql)](https://www.mysql.com/)
-[![Redis](https://img.shields.www.static.shields.io/badge/Broker-Redis-dc382d?style=flat-square&logo=redis)](https://redis.io/)
-[![License](https://img.shields.www.static.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+[![React](https://img.shields.io/badge/Frontend-React%2018%20%2B%20Vite-blue?style=flat-square&logo=react)](https://react.dev/)
+[![TailwindCSS](https://img.shields.io/badge/Styling-Tailwind%20CSS-38bdf8?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
+[![Django](https://img.shields.io/badge/Backend-Django%205.x%20%2B%20DRF-092e20?style=flat-square&logo=django)](https://www.djangoproject.com/)
+[![MySQL](https://img.shields.io/badge/Database-MySQL-4479a1?style=flat-square&logo=mysql)](https://www.mysql.com/)
+[![Redis](https://img.shields.io/badge/Broker-Redis-dc382d?style=flat-square&logo=redis)](https://redis.io/)
+[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 
 AegisHire AI is a state-of-the-art, secure, and AI-assisted Applicant Tracking & Assessment System (ATS). It is built with a decoupled modern architecture combining a premium, highly interactive **React & Framer Motion** frontend dashboard with a hardened **Django REST Framework** API backend.
 
