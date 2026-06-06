@@ -34,7 +34,7 @@ class OwnershipService:
 
     def can_modify_requirement(self, user_id, role_id, requirement_id):
         """
-        Same as can_view, but assigned_to IS NULL returns False (must claim before modifying).
+        Same as can_view: HR can modify if assigned to them OR if unassigned.
         For Managers: created_by = user_id
         For Admins: always True
         """
@@ -54,7 +54,7 @@ class OwnershipService:
             if role_id == 2:  # Manager
                 return created_by == user_id
             elif role_id == 3:  # HR
-                return assigned_to == user_id  # Cannot modify if not claimed!
+                return assigned_to == user_id or assigned_to is None
                 
         return False
 
