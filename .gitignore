@@ -292,3 +292,28 @@ interview_questions.log
 # Backup HTML files
 create_form.html
 manager_shortlist.html
+
+# Frontend / Node dependencies, caches, and logs
+node_modules/
+jspm_packages/
+web_modules/
+.npm/
+.eslintcache
+.stylelintcache
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Vite & build environments
+dist/
+dist-ssr/
+.vite/
+.cache/
+.parcel-cache/
+*.local
+
+# AI test documents and resumes
+AI/
+

@@ -1,0 +1,163 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap');
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  .theme {
+    --font-heading: 'Outfit', sans-serif;
+    --font-sans: 'Inter', sans-serif;
+  }
+  :root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --radius: 0.625rem;
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.708 0 0);
+    
+    /* Standard States Light Mode */
+    --success: oklch(0.65 0.15 170);
+    --success-foreground: oklch(0.99 0.01 170);
+    --warning: oklch(0.70 0.15 75);
+    --warning-foreground: oklch(0.99 0.01 75);
+    --error: oklch(0.55 0.20 15);
+    --error-foreground: oklch(0.99 0.01 15);
+  }
+  .dark {
+    --background: oklch(0.14 0.015 245); /* #0B1220 */
+    --foreground: oklch(0.92 0.01 245);  /* #E2E8F0 */
+    --card: oklch(0.18 0.015 245);        /* #111827 */
+    --card-foreground: oklch(0.98 0.005 245);
+    --popover: oklch(0.16 0.015 245);
+    --popover-foreground: oklch(0.92 0.01 245);
+    
+    --primary: oklch(0.55 0.18 260);     /* #4F46E5 */
+    --primary-foreground: oklch(0.98 0.01 260);
+    --secondary: oklch(0.22 0.015 245);   /* #1F2937 */
+    --secondary-foreground: oklch(0.92 0.01 245);
+    --muted: oklch(0.20 0.015 245);
+    --muted-foreground: oklch(0.60 0.01 245);
+    --accent: oklch(0.60 0.16 250);      /* #3B82F6 */
+    --accent-foreground: oklch(0.98 0.01 250);
+    
+    --destructive: oklch(0.60 0.20 15);  /* #F43F5E */
+    --destructive-foreground: oklch(0.98 0.01 15);
+    
+    --border: oklch(0.24 0.015 245);     /* #1F2937 */
+    --input: oklch(0.22 0.015 245);
+    --ring: oklch(0.55 0.18 260 / 25%);
+    
+    --sidebar: oklch(0.12 0.015 245);
+    --sidebar-foreground: oklch(0.80 0.01 245);
+    --sidebar-primary: oklch(0.55 0.18 260);
+    --sidebar-primary-foreground: oklch(0.98 0.01 260);
+    --sidebar-accent: oklch(0.20 0.015 245);
+    --sidebar-accent-foreground: oklch(0.92 0.01 245);
+    --sidebar-border: oklch(0.22 0.015 245);
+    --sidebar-ring: oklch(0.55 0.18 260 / 25%);
+
+    /* Standard States Dark Mode */
+    --success: oklch(0.72 0.14 185);     /* #14B8A6 */
+    --success-foreground: oklch(0.12 0.015 185);
+    --warning: oklch(0.76 0.15 75);      /* #F59E0B */
+    --warning-foreground: oklch(0.12 0.015 75);
+    --error: oklch(0.60 0.20 15);        /* #F43F5E */
+    --error-foreground: oklch(0.98 0.01 15);
+  }
+  * {
+    border-color: var(--border);
+    /* Custom clean scrollbars */
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  /* Webkit custom scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+  html {
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@keyframes ambient-slow-1 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(40px, -60px) scale(1.1);
+  }
+  66% {
+    transform: translate(-30px, 30px) scale(0.95);
+  }
+}
+
+@keyframes ambient-slow-2 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  50% {
+    transform: translate(-50px, 50px) scale(1.15);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-ambient-slow-1 {
+    animation: ambient-slow-1 25s infinite alternate ease-in-out;
+  }
+  .animate-ambient-slow-2 {
+    animation: ambient-slow-2 20s infinite alternate ease-in-out;
+  }
+}
+
+@keyframes gradient-mesh-anim {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
