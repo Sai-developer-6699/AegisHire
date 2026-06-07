@@ -54,6 +54,9 @@ from .views import (
     hr_approve_question_bank,
     hr_publish_question_bank,
     candidate_list_exam_questions,
+    get_notices,
+    mark_notice_read,
+    update_job_status,
 )
 from django.urls import include
 # recruitment/urls.py
@@ -150,4 +153,11 @@ urlpatterns += [
 
     # Candidate Exam Questions
     path('api/candidate/exam-questions/<int:session_id>/', candidate_list_exam_questions, name='candidate-list-exam-questions'),
+
+    # Notices/Notifications Center
+    path('api/notices/', get_notices, name='get-notices'),
+    path('api/notices/<int:notice_id>/read/', mark_notice_read, name='mark-notice-read'),
+
+    # Job Requirement Requisition Status (Close/Reopen/Delete)
+    path('api/jobs/<int:requirement_id>/status/', update_job_status, name='update-job-status'),
 ]

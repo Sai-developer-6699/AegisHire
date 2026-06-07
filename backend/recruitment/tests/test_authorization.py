@@ -56,6 +56,11 @@ class SecurityTestBase(TransactionTestCase):
                   `resume_weight` int NOT NULL DEFAULT 50,
                   `exam_weight` int NOT NULL DEFAULT 50,
                   `exam_duration_minutes` int NOT NULL DEFAULT 60,
+                  `status` enum('ACTIVE', 'CLOSED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
+                  `closed_at` datetime DEFAULT NULL,
+                  `closed_by` int DEFAULT NULL,
+                  `deleted_at` datetime DEFAULT NULL,
+                  `deleted_by` int DEFAULT NULL,
                   PRIMARY KEY (`requirement_id`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
             """)
@@ -750,4 +755,164 @@ class TestWorkflowHardening(SecurityTestBase):
             actions = [r[0] for r in cursor.fetchall()]
             self.assertIn('exam_abandoned', actions)
             self.assertIn('exam_timeout', actions)
+
+
+class TestJobStatusWorkflowAndGuards(SecurityTestBase):
+    def test_job_status_update_permissions(self):
+        # 1. Manager A (userid 2) closes Job 1 (created by Manager A) -> 200 OK
+        self.login_as('manager_a', 2, 2)
+        response = self.client.post('/api/jobs/1/status/', json.dumps({
+            'status': 'CLOSED'
+        }), content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
+        # Verify in DB
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT status, closed_by FROM job_requirement WHERE requirement_id = 1")
+            row = cursor.fetchone()
+            self.assertEqual(row[0], 'CLOSED')
+            self.assertEqual(row[1], 2)
+
+        # 2. Manager A attempts to close Job 2 (created by Manager B, userid 3) -> 403 Forbidden
+        response = self.client.post('/api/jobs/2/status/', json.dumps({
+            'status': 'CLOSED'
+        }), content_type='application/json')
+        self.assertEqual(response.status_code, 403)
+
+        # 3. Manager A attempts to delete Job 1 -> 403 Forbidden (Only Admin can delete)
+        response = self.client.post('/api/jobs/1/status/', json.dumps({
+            'status': 'DELETED'
+        }), content_type='application/json')
+        self.assertEqual(response.status_code, 403)
+
+        # 4. HR A (userid 4) attempts to close Job 1 -> 403 Forbidden
+        self.login_as('hr_a', 3, 4)
+        response = self.client.post('/api/jobs/1/status/', json.dumps({
+            'status': 'CLOSED'
+        }), content_type='application/json')
+        self.assertEqual(response.status_code, 403)
+
+        # 5. Admin (userid 1) closes Job 2 -> 200 OK
+        self.login_as('admin', 1, 1)
+        response = self.client.post('/api/jobs/2/status/', json.dumps({
+            'status': 'CLOSED'
+        }), content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
+        # 6. Admin deletes Job 1 -> 200 OK
+        response = self.client.post('/api/jobs/1/status/', json.dumps({
+            'status': 'DELETED'
+        }), content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
+        # Verify in DB
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT status, deleted_by FROM job_requirement WHERE requirement_id = 1")
+            row = cursor.fetchone()
+            self.assertEqual(row[0], 'DELETED')
+            self.assertEqual(row[1], 1)
+
+        # 7. Admin reopens Job 2 (currently CLOSED) -> 200 OK
+        response = self.client.post('/api/jobs/2/status/', json.dumps({
+            'status': 'ACTIVE'
+        }), content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
+        # Verify in DB
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT status, closed_at, closed_by FROM job_requirement WHERE requirement_id = 2")
+            row = cursor.fetchone()
+            self.assertEqual(row[0], 'ACTIVE')
+            self.assertIsNone(row[1])
+            self.assertIsNone(row[2])
+
+    def test_job_list_filtering(self):
+        # 1. Admin soft-deletes Job 3 (created by Manager A)
+        self.login_as('admin', 1, 1)
+        response = self.client.post('/api/jobs/3/status/', json.dumps({
+            'status': 'DELETED'
+        }), content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
+        # 2. Manager A (userid 2) lists job requirements -> should NOT see Job 3
+        self.login_as('manager_a', 2, 2)
+        response = self.client.get('/api/list_job_requirements/')
+        self.assertEqual(response.status_code, 200)
+        jobs = response.json()
+        req_ids = [j['requirement_id'] for j in jobs]
+        self.assertNotIn(3, req_ids)
+
+        # 3. Admin lists job requirements (default) -> should NOT see Job 3
+        self.login_as('admin', 1, 1)
+        response = self.client.get('/api/list_job_requirements/')
+        self.assertEqual(response.status_code, 200)
+        jobs = response.json()
+        req_ids = [j['requirement_id'] for j in jobs]
+        self.assertNotIn(3, req_ids)
+
+        # 4. Admin lists job requirements with show_deleted=true -> should see Job 3
+        response = self.client.get('/api/list_job_requirements/?show_deleted=true')
+        self.assertEqual(response.status_code, 200)
+        jobs = response.json()
+        req_ids = [j['requirement_id'] for j in jobs]
+        self.assertIn(3, req_ids)
+
+    def test_job_status_guards(self):
+        # Set Job 1 status to CLOSED in the DB
+        with connection.cursor() as cursor:
+            cursor.execute("UPDATE job_requirement SET status = 'CLOSED' WHERE requirement_id = 1")
+
+        # 1. Upload Resume Guard: should fail with 400 Bad Request
+        self.login_as('hr_a', 3, 4)
+        response = self.client.post('/api/hr/upload/', {
+            'requirement_id': 1
+        })
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("not ACTIVE", response.json().get('error', ''))
+
+        # 2. AI Evaluation Guard: should fail with 400
+        response = self.client.post('/api/evaluate/', json.dumps({
+            'requirement_id': 1
+        }), content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("not ACTIVE", response.json().get('error', ''))
+
+        # 3. Shortlisting Guard: should fail with 400
+        response = self.client.post('/api/hr/shortlist/', json.dumps([
+            {'requirement_id': 1, 'resume_id': 1}
+        ]), content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("not ACTIVE", response.json().get('error', ''))
+
+        # 4. Approve Shortlist Guard: should fail with 400
+        self.login_as('manager_a', 2, 2)
+        response = self.client.post('/api/manager/approve-shortlist/', json.dumps({
+            'requirement_id': 1,
+            'candidate_ids': [1]
+        }), content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("not ACTIVE", response.json().get('error', ''))
+
+        # 5. Schedule Interview Guard: should fail with 400
+        self.login_as('hr_a', 3, 4)
+        response = self.client.post('/api/hr/schedule-interview/', json.dumps({
+            'map_id': 1,
+            'interview_datetime': '2026-06-10T14:00:00',
+            'interviewer': 'HR A'
+        }), content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("not ACTIVE", response.json().get('error', ''))
+
+        # 6. Start Exam Guard: should fail with 400
+        # Map candidate 6 to Job 1, set status to approved
+        with connection.cursor() as cursor:
+            cursor.execute("UPDATE resume_job_map SET status = 'approved', user_account_id = 6 WHERE map_id = 1")
+        self.login_as('candidate_a', 4, 6)
+        response = self.client.post('/api/candidate/start-exam/', json.dumps({
+            'resume_id': 1,
+            'requirement_id': 1
+        }), content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("not ACTIVE", response.json().get('error', ''))
+
 

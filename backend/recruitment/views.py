@@ -123,17 +123,55 @@ def register_api(request):
 
     hashed_pwd = make_password(data['password'])
 
+    role_id = get_role_id(data['role'])
+    warning_message = None
+
     with connection.cursor() as cursor:
         cursor.execute("""
             INSERT INTO users (first_name, last_name, username, password, roleid, email, phone_number, department, status)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             data['first_name'], data['last_name'], data['username'],
-            hashed_pwd, get_role_id(data['role']), data['email'],
+            hashed_pwd, role_id, data['email'],
             data['phone_number'], data['department'], data['status']
         ))
         cursor.execute("SELECT LAST_INSERT_ID()")
         new_user_id = cursor.fetchone()[0]
+
+        # If registering a Candidate, check for resume and link mapping
+        if role_id == 4:
+            cursor.execute("SELECT resume_id, resume_name FROM resume WHERE email = %s", [data['email']])
+            resume_row = cursor.fetchone()
+            if not resume_row:
+                warning_message = "No matching resume record found for this email. Candidate may not be able to access exams."
+            else:
+                resume_id, resume_name = resume_row
+                # Update all mapping entries for this candidate to status 'account_created' and set user_account_id
+                cursor.execute("""
+                    UPDATE resume_job_map 
+                    SET user_account_id = %s, status = 'account_created', updated_at = CURRENT_TIMESTAMP
+                    WHERE resume_id = %s
+                """, [new_user_id, resume_id])
+
+                # Create Notice for HR (role_id = 3)
+                cursor.execute("""
+                    INSERT INTO notices (title, message, notice_type, role_id)
+                    VALUES (%s, %s, %s, %s)
+                """, [
+                    "Candidate Account Created",
+                    f"Candidate user account for {data['first_name']} {data['last_name']} (Username: {data['username']}) has been successfully created. Temporary password communicated separately.",
+                    "ACCOUNT_CREATED",
+                    3  # HR role
+                ])
+
+                # Auto-mark Admin's EXAM_APPROVAL notices for this candidate as read
+                action_url = f"/admin/users/add?email={data['email']}&role=candidate"
+                cursor.execute("""
+                    UPDATE notices SET is_read = 1 
+                    WHERE notice_type = 'EXAM_APPROVAL' AND action_url = %s
+                """, [action_url])
+
+            connection.commit()
 
     # Log to audit log
     from recruitment.services.audit_service import audit_service
@@ -145,7 +183,10 @@ def register_api(request):
         details={'username': data['username'], 'role': data['role']}
     )
 
-    return Response({'message': 'User created successfully'})
+    response_data = {'message': 'User created successfully'}
+    if warning_message:
+        response_data['warning'] = warning_message
+    return Response(response_data)
 
 
 # view for getting all users
@@ -259,6 +300,16 @@ def get_user_by_id(request, userid):
         "department": row[6],        
         "role": row[7] 
     })
+
+def check_job_active(requirement_id):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT status FROM job_requirement WHERE requirement_id = %s", [requirement_id])
+        row = cursor.fetchone()
+        if not row:
+            return False, 'Job requirement not found'
+        if row[0] != 'ACTIVE':
+            return False, f'Job requirement is not ACTIVE (current status: {row[0]})'
+    return True, None
 
 
 # Manager Section
@@ -557,6 +608,7 @@ def check_session(request):
 def list_job_requirements(request):
     user_id = request.scope.user_id
     role_id = request.scope.role_id
+    show_deleted = request.GET.get('show_deleted') == 'true' and role_id == 1
 
     query = """
         SELECT 
@@ -566,18 +618,25 @@ def list_job_requirements(request):
             jr.experience_range,
             jr.created_at,
             jr.assigned_to,
-            (SELECT username FROM users WHERE userid = jr.assigned_to) as assigned_username
+            (SELECT username FROM users WHERE userid = jr.assigned_to) as assigned_username,
+            jr.status,
+            jr.closed_at,
+            jr.closed_by
         FROM job_requirement jr
         JOIN position_master pm ON jr.position_id = pm.position_id
         JOIN users u ON jr.created_by = u.userid
+        WHERE 1=1
     """
     params = []
+
+    if not show_deleted:
+        query += " AND jr.status <> 'DELETED'"
     
     if role_id == 3:  # HR: Show assigned to me + unassigned
-        query += " WHERE (jr.assigned_to = %s OR jr.assigned_to IS NULL)"
+        query += " AND (jr.assigned_to = %s OR jr.assigned_to IS NULL)"
         params.append(user_id)
     elif role_id == 2:  # Manager: Show only created by me
-        query += " WHERE jr.created_by = %s"
+        query += " AND jr.created_by = %s"
         params.append(user_id)
         
     query += " ORDER BY jr.created_at DESC"
@@ -592,9 +651,12 @@ def list_job_requirements(request):
             "position": row[1],
             "created_by": row[2],
             "experience_range": row[3],
-            "created_at": row[4].strftime("%Y-%m-%d %H:%M:%S"),
+            "created_at": row[4].strftime("%Y-%m-%d %H:%M:%S") if row[4] else 'N/A',
             "assigned_to": row[5],
-            "assigned_username": row[6]
+            "assigned_username": row[6],
+            "status": row[7],
+            "closed_at": row[8].strftime("%Y-%m-%d %H:%M:%S") if row[8] else None,
+            "closed_by": row[9]
         }
         for row in results
     ]
@@ -796,6 +858,10 @@ def upload_candidate_resume(request):
                 if not ownership.can_modify_requirement(user_id, request.scope.role_id, requirement_id):
                     audit_logger.log_403(request, 'ownership_denied', requirement_id)
                     return Response({'error': 'Forbidden'}, status=403)
+                
+                is_active, err_msg = check_job_active(requirement_id)
+                if not is_active:
+                    return Response({'error': err_msg}, status=400)
             except ValueError:
                 pass
 
@@ -879,7 +945,7 @@ def get_recent_resumes(request):
         if allowed_reqs:
             placeholders = ','.join(['%s'] * len(allowed_reqs))
             query = f"""
-                SELECT r.resume_id, r.resume_name, r.email, r.uploaded_at, r.file_location, rm.status, rm.map_id
+                SELECT r.resume_id, r.resume_name, r.email, r.uploaded_at, r.file_location, rm.status, rm.map_id, rm.requirement_id
                 FROM resume r
                 LEFT JOIN resume_job_map rm ON r.resume_id = rm.resume_id
                 WHERE rm.requirement_id IS NULL OR rm.requirement_id IN ({placeholders})
@@ -889,7 +955,7 @@ def get_recent_resumes(request):
             params = allowed_reqs + [limit]
         else:
             query = """
-                SELECT r.resume_id, r.resume_name, r.email, r.uploaded_at, r.file_location, rm.status, rm.map_id
+                SELECT r.resume_id, r.resume_name, r.email, r.uploaded_at, r.file_location, rm.status, rm.map_id, rm.requirement_id
                 FROM resume r
                 LEFT JOIN resume_job_map rm ON r.resume_id = rm.resume_id
                 WHERE rm.requirement_id IS NULL
@@ -909,7 +975,8 @@ def get_recent_resumes(request):
             'uploaded_at': row[3].strftime('%Y-%m-%d %H:%M:%S'),
             'file_url': request.build_absolute_uri(f"/media/{row[4]}"),
             'status': row[5],
-            'map_id': row[6]
+            'map_id': row[6],
+            'requirement_id': row[7]
         } for row in rows]
 
         return Response({'resumes': resumes})
@@ -965,6 +1032,10 @@ def evaluate_with_ai(request):
         if not ownership.can_modify_requirement(user_id, role_id, requirement_id):
             audit_logger.log_403(request, 'ownership_denied', requirement_id)
             return Response({'error': 'Forbidden'}, status=403)
+
+        is_active, err_msg = check_job_active(requirement_id)
+        if not is_active:
+            return Response({'error': err_msg}, status=400)
 
         batch_size = int(request.data.get('limit', 50))
 
@@ -1037,7 +1108,8 @@ def get_resumes_with_scores(request, requirement_id):
             "file_location": row[3],
             "uploaded_at": row[4].strftime('%Y-%m-%d %H:%M:%S'),
             "score": row[5],
-            "resume_url": request.build_absolute_uri(f"/media/{row[3]}")  # ✅ Fix
+            "resume_url": request.build_absolute_uri(f"/media/{row[3]}"),
+            "requirement_id": requirement_id
         }
         for row in results
     ]
@@ -1076,6 +1148,10 @@ def shortlist_resumes(request):
         if not ownership.can_modify_requirement(user_id, role_id, requirement_id):
             audit_logger.log_403(request, 'ownership_denied', requirement_id)
             return Response({'error': 'Forbidden'}, status=403)
+
+        is_active, err_msg = check_job_active(requirement_id)
+        if not is_active:
+            return Response({'error': err_msg}, status=400)
 
         with connection.cursor() as cursor:
             # Step 1: Shortlist selected resumes
@@ -1187,7 +1263,7 @@ def get_shortlisted_candidates(request, requirement_id):
                 "resume_id": row[0],
                 "name": row[1],
                 "email": row[2],
-                "resume_url": row[3],  # Just the file path, not full URL
+                "resume_url": request.build_absolute_uri(f"/media/{row[3]}") if row[3] else None,
                 "ai_score": row[4],
                 "position_name": row[5]
             }
@@ -1222,6 +1298,10 @@ def approve_shortlisted_candidates(request):
             audit_logger.log_403(request, 'ownership_denied', requirement_id)
             return Response({'error': 'Forbidden'}, status=403)
 
+        is_active, err_msg = check_job_active(int(requirement_id))
+        if not is_active:
+            return Response({'error': err_msg}, status=400)
+
         if not candidate_ids or not isinstance(candidate_ids, list):
             return Response({"error": "Invalid payload format. Must be a non-empty list of candidate_ids."}, status=400)
 
@@ -1232,10 +1312,10 @@ def approve_shortlisted_candidates(request):
 
         placeholders = ','.join(['%s'] * len(selected_ids))
         with connection.cursor() as cursor:
-            # Step 1: Approve selected resumes
+            # Step 1: Approve selected resumes for exam
             cursor.execute(f"""
                 UPDATE resume_job_map
-                SET status = 'approved',
+                SET status = 'exam_approved',
                     evaluated_by = %s,
                     updated_at = CURRENT_TIMESTAMP
                 WHERE requirement_id = %s
@@ -1253,6 +1333,31 @@ def approve_shortlisted_candidates(request):
                   AND resume_id NOT IN ({placeholders})
                   AND status = 'shortlisted'
             """, [user_id, requirement_id] + selected_ids)
+
+            # Step 3: Fetch approved candidate details to create notices for Admin (role_id = 1)
+            cursor.execute(f"""
+                SELECT resume_id, resume_name, email FROM resume WHERE resume_id IN ({placeholders})
+            """, selected_ids)
+            approved_candidates = cursor.fetchall()
+
+            for cand_id, name, email in approved_candidates:
+                action_url = f"/admin/users/add?email={email}&role=candidate"
+                # Prevent duplicate notices
+                cursor.execute("""
+                    SELECT COUNT(*) FROM notices 
+                    WHERE notice_type = 'EXAM_APPROVAL' AND action_url = %s AND is_read = 0
+                """, [action_url])
+                if cursor.fetchone()[0] == 0:
+                    cursor.execute("""
+                        INSERT INTO notices (title, message, notice_type, role_id, action_url)
+                        VALUES (%s, %s, %s, %s, %s)
+                    """, [
+                        "Candidate Approved for Exam",
+                        f"Candidate {name} ({email}) has been approved for the exam of Job Requisition #{requirement_id}. Please create their candidate user account.",
+                        "EXAM_APPROVAL",
+                        1,  # Admin role
+                        action_url
+                    ])
 
             connection.commit()
 
@@ -1328,6 +1433,17 @@ def hr_schedule_interview(request):
     if not ownership.can_schedule_interview(userid, roleid, map_id):
         audit_logger.log_403(request, 'ownership_denied', map_id)
         return Response({'error': 'Forbidden'}, status=403)
+
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT requirement_id FROM resume_job_map WHERE map_id = %s", [map_id])
+        row = cursor.fetchone()
+        if not row:
+            return Response({'error': 'Candidate mapping not found'}, status=404)
+        requirement_id = row[0]
+        
+        is_active, err_msg = check_job_active(requirement_id)
+        if not is_active:
+            return Response({'error': err_msg}, status=400)
 
     try:
         dt = datetime.fromisoformat(interview_datetime)
@@ -1623,6 +1739,10 @@ def candidate_start_exam_session(request):
     if not resume_id or not requirement_id:
         return Response({'error': 'resume_id and requirement_id required'}, status=400)
 
+    is_active, err_msg = check_job_active(requirement_id)
+    if not is_active:
+        return Response({'error': err_msg}, status=400)
+
     from recruitment.services.audit_service import audit_service
     from django.utils import timezone
     import datetime
@@ -1693,8 +1813,8 @@ def candidate_start_exam_session(request):
             else:
                 return Response({'error': f'Exam session already completed with status: {session_status}'}, status=400)
 
-        # 3. Verify candidate's pipeline status is approved or exam_pending
-        if map_status not in ('approved', 'exam_pending'):
+        # 3. Verify candidate's pipeline status is approved, exam_pending, exam_approved, or account_created
+        if map_status not in ('approved', 'exam_pending', 'exam_approved', 'account_created'):
             return Response({'error': f'Cannot start exam. Candidate pipeline status is {map_status}.'}, status=400)
 
         # 4. Fetch configurable exam duration
@@ -2890,4 +3010,137 @@ def candidate_list_exam_questions(request, session_id):
             'options': json.loads(q[3]) if q[3] else None
         })
 
-    return Response({'questions': questions, 'count': len(questions)})
+    return Response({'questions': questions, 'count': len(questions)})
+
+
+@csrf_exempt
+@api_view(['GET'])
+@require_auth
+def get_notices(request):
+    try:
+        user_id = request.scope.user_id
+        role_id = request.scope.role_id
+
+        # Notices can be targeted at either user_id specifically or role_id (or both)
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT notice_id, title, message, notice_type, is_read, action_url, created_at
+                FROM notices
+                WHERE is_read = 0
+                  AND (role_id = %s OR user_id = %s)
+                ORDER BY created_at DESC
+            """, [role_id, user_id])
+            rows = cursor.fetchall()
+
+        result = [
+            {
+                "notice_id": row[0],
+                "title": row[1],
+                "message": row[2],
+                "notice_type": row[3],
+                "is_read": bool(row[4]),
+                "action_url": row[5],
+                "created_at": row[6].strftime("%Y-%m-%d %H:%M:%S") if row[6] else None
+            }
+            for row in rows
+        ]
+        return Response(result)
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
+
+
+@csrf_exempt
+@api_view(['POST'])
+@require_auth
+def mark_notice_read(request, notice_id):
+    try:
+        user_id = request.scope.user_id
+        role_id = request.scope.role_id
+
+        with connection.cursor() as cursor:
+            # Check ownership/targeting
+            cursor.execute("""
+                SELECT role_id, user_id FROM notices WHERE notice_id = %s
+            """, [notice_id])
+            row = cursor.fetchone()
+            if not row:
+                return Response({'error': 'Notice not found'}, status=404)
+            target_role_id, target_user_id = row
+
+            if (target_role_id is not None and target_role_id != role_id) and (target_user_id is not None and target_user_id != user_id):
+                return Response({'error': 'Forbidden'}, status=403)
+
+            cursor.execute("""
+                UPDATE notices SET is_read = 1 WHERE notice_id = %s
+            """, [notice_id])
+            connection.commit()
+
+        return Response({'message': 'Notice marked as read'})
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
+
+
+@csrf_exempt
+@api_view(['POST'])
+@require_auth
+def update_job_status(request, requirement_id):
+    try:
+        user_id = request.scope.user_id
+        role_id = request.scope.role_id
+        new_status = request.data.get('status')
+
+        if new_status not in ('ACTIVE', 'CLOSED', 'DELETED'):
+            return Response({'error': 'Invalid status. Must be ACTIVE, CLOSED, or DELETED.'}, status=400)
+
+        with connection.cursor() as cursor:
+            # Get job creator and current status
+            cursor.execute("""
+                SELECT created_by, status FROM job_requirement WHERE requirement_id = %s
+            """, [requirement_id])
+            row = cursor.fetchone()
+            if not row:
+                return Response({'error': 'Job requirement not found.'}, status=404)
+            created_by, current_status = row
+
+            # Policy checks
+            if new_status == 'DELETED':
+                if role_id != 1:  # Only admin can delete
+                    return Response({'error': 'Forbidden: Only administrators can delete job requirements.'}, status=403)
+                cursor.execute("""
+                    UPDATE job_requirement 
+                    SET status = %s, deleted_at = NOW(), deleted_by = %s 
+                    WHERE requirement_id = %s
+                """, [new_status, user_id, requirement_id])
+            elif new_status in ('CLOSED', 'ACTIVE'):
+                if role_id != 1 and created_by != user_id:  # Only admin or creator manager
+                    return Response({'error': 'Forbidden: You are not authorized to modify this job requirement.'}, status=403)
+
+                if new_status == 'CLOSED':
+                    cursor.execute("""
+                        UPDATE job_requirement 
+                        SET status = %s, closed_at = NOW(), closed_by = %s 
+                        WHERE requirement_id = %s
+                    """, [new_status, user_id, requirement_id])
+                else:  # ACTIVE (reopening)
+                    cursor.execute("""
+                        UPDATE job_requirement 
+                        SET status = %s, closed_at = NULL, closed_by = NULL 
+                        WHERE requirement_id = %s
+                    """, [new_status, requirement_id])
+            
+            connection.commit()
+
+        # Log action to audit log
+        from recruitment.services.audit_service import audit_service
+        audit_service.log(
+            action='update_job_status',
+            actor_id=user_id,
+            target_type='job_requirement',
+            target_id=requirement_id,
+            details={'status': new_status}
+        )
+
+        return Response({'message': f'Job status updated successfully to {new_status}'})
+
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
