@@ -44,11 +44,25 @@ export const jobsService = {
 
   /**
    * Fetches all job requirements.
+   * @param {boolean} showDeleted
    * @returns {Promise<Array>} Adapted job requirements list
    */
-  async getAll() {
-    const data = await apiFetch('api/list_job_requirements/');
+  async getAll(showDeleted = false) {
+    const endpoint = showDeleted ? 'api/list_job_requirements/?show_deleted=true' : 'api/list_job_requirements/';
+    const data = await apiFetch(endpoint);
     return adaptJobList(data);
+  },
+
+  /**
+   * Updates the status of a job requirement (ACTIVE, CLOSED, DELETED).
+   * @param {number|string} requirementId
+   * @param {string} status
+   */
+  async updateJobStatus(requirementId, status) {
+    return apiFetch(`api/jobs/${requirementId}/status/`, {
+      method: 'POST',
+      body: JSON.stringify({ status }),
+    });
   },
 
   /**

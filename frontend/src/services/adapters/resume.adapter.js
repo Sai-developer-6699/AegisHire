@@ -16,6 +16,7 @@ export function adaptResume(raw) {
     uploadedAt:    raw.uploaded_at ?? null,
     mapId:         raw.map_id      ?? null,
     examScore:     raw.exam_score  != null ? parseFloat(raw.exam_score) : null,
+    requirementId: raw.requirement_id ?? raw.requirementId ?? null,
   };
 }
 
