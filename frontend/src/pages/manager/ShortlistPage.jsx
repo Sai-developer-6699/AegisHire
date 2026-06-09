@@ -150,7 +150,7 @@ export function ShortlistPage() {
       name: cand.name,
       email: cand.email,
       score: cand.aiScore,
-      resumeUrl: cand.resumeUrl ? `/media/${cand.resumeUrl}` : null,
+      resumeUrl: cand.resumeUrl ? (cand.resumeUrl.startsWith('http') || cand.resumeUrl.startsWith('/') ? cand.resumeUrl : `/media/${cand.resumeUrl}`) : null,
       status: 'shortlisted'
     });
     setIsDrawerOpen(true);
@@ -317,7 +317,7 @@ export function ShortlistPage() {
                         <TableCell className="text-xs text-gray-400">{cand.email}</TableCell>
                         <TableCell>
                           <a
-                            href={cand.resumeUrl ? `/media/${cand.resumeUrl}` : '#'}
+                            href={cand.resumeUrl ? (cand.resumeUrl.startsWith('http') || cand.resumeUrl.startsWith('/') ? cand.resumeUrl : `/media/${cand.resumeUrl}`) : '#'}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center text-xs text-[#3B82F6] hover:text-[#20bd5c] hover:underline gap-1.5"

@@ -7,107 +7,90 @@
 [![Redis](https://img.shields.io/badge/Broker-Redis-dc382d?style=flat-square&logo=redis)](https://redis.io/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 
-AegisHire AI is a state-of-the-art, secure, and AI-assisted Applicant Tracking & Assessment System (ATS). It is built with a decoupled modern architecture combining a premium, highly interactive **React & Framer Motion** frontend dashboard with a hardened **Django REST Framework** API backend.
+AegisHire AI is a state-of-the-art, secure, and AI-assisted Applicant Tracking & Assessment System (ATS) designed as a comprehensive full-stack portfolio project. It is built using a decoupled architecture: a premium **React & Framer Motion** frontend dashboard and a robust **Django REST Framework** API backend.
 
-Unlike traditional keyword-matching ATS platforms, AegisHire integrates deterministic, multi-factor candidate scoring with secure assessment blueprinting and real-time candidate session anti-cheat log streams.
+Unlike naive keyword-matching ATS platforms, AegisHire implements deterministic multi-factor scoring, custom assessments blueprinting, active timezone expiration tracking, database row locking, and real-time anti-cheat browser logging.
 
 ---
 
-## 📐 System Architecture
+## 🏗️ System Architecture & Workflow
 
-The application is split into a client-server architecture with background worker tasks to process high-latency workloads asynchronously:
+AegisHire AI uses a role-based access control (RBAC) model mapping to 4 distinct user groups:
+1. **Admin (Role 1)**: System oversight, registration of new users, and global job reassignments.
+2. **Hiring Manager (Role 2)**: Job creation, weight configuration, candidate review, and exam grading.
+3. **HR Recruiter (Role 3)**: Job claiming, candidate CV uploads, AI evaluation runs, and candidate onboarding.
+4. **Candidate (Role 4)**: Assessment taking in a secure exam sandbox.
 
 ```mermaid
 graph TD
-    Client[React SPA Client<br/>Vite / Tailwind / Framer Motion]
-    API[Django REST API Backend]
-    DB[(MySQL Database)]
-    Celery[Celery Async Workers]
-    Redis[(Redis Task Broker)]
-    Gemini[Google Gemini AI Engine]
-
-    Client -->|HTTPS REST API Requests| API
-    API -->|Read/Write Row Locks| DB
-    API -->|Queue Asynchronous Tasks| Redis
-    Redis -->|Execute Tasks| Celery
-    Celery -->|Persist Evaluation Metrics| DB
-    Celery -->|Evaluate Resume Skills| Gemini
-    API -->|Generate Question Blueprints| Gemini
+    Manager[Hiring Manager] -->|1. Creates Job Requirement| DB[(MySQL Database)]
+    HR[HR Recruiter] -->|2. Claims Job Post| JobReq[job_requirement]
+    HR -->|3. Uploads Resumes| ResumeTable[resume]
+    Celery[Celery + Redis Worker] -->|4. Async Resume Text Parsing| ResumeTable
+    HR -->|5. Triggers AI Evaluation| EvalEngine[Evaluation Engine]
+    EvalEngine -->|6. Generates Skill Matches & Match Score| JobMap[resume_job_map]
+    Manager -->|7. Configures & Publishes Exam Blueprint| ExamPool[exam_question]
+    Candidate[Candidate] -->|8. Logs in & Takes Secure Assessment| ExamSession[exam_session]
+    Candidate -->|9. Focus Tracking Logs Cheat Alerts| AuditTable[audit_log]
+    Candidate -->|10. Submits Answers| AnsTable[exam_answer]
+    Manager -->|11. Grades Answers| ScoreEngine[Scoring Engine]
+    ScoreEngine -->|12. Final Weighted Score Calculated| JobMap
+    HR -->|13. Finalizes Candidate & Onboards| Onboarding[joined / finalised]
 ```
 
 ---
 
-## 🚀 Key Architectural Features
+## 🛠️ Detailed Engineering Decisions & Flows
 
-### 1. 🤖 Evaluation & Assessment Engines
-* **Deterministic Multi-Factor Scoring:** Evaluates candidates using a reproducible, weighted **50/30/20 system** (50% Skills mapping, 30% Experience years, 20% Education tier), completely eliminating black-box AI bias.
-* **AI Assessments Blueprinter:** Leveraging Google Gemini AI, the system automatically parses candidate-specific skill gaps and designs customized MCQ/technical question pool blueprints for evaluation.
-* **Governance Lifecycle:** Questions undergo a complete `Draft ➔ Approved ➔ Published` workflow. Publishing an exam captures an immutable snapshot of all questions to secure testing integrity.
+### 1. Job Requisition & HR Claiming Model (One-to-Many Recruiter Mapping)
+* **Job Creation**: Hiring Managers design job specifications including target experience levels, candidate-specific MCQ blueprints, and custom scoring weights (`resume_weight` vs `exam_weight`, defaulting to 50/50).
+* **HR Claiming Flow**: Unassigned jobs (`assigned_to = NULL`) appear in a public recruiter pool. HR Recruiters claim posts via `/api/jobs/assign/`. 
+* **Multi-Job Recruiter Capacity**: There is **no restriction** on recruiter load; one HR user can claim and manage multiple job requirements concurrently (one-to-many relationship).
+* **Claim Security**: If Recruiter A attempts to claim a job posting already claimed by Recruiter B, the backend rejects it with `403 Forbidden` (`Already claimed by another recruiter`). Recruiter claiming and unclaiming (releasing a job back to the pool) is fully audited in `audit_log`.
 
-### 2. 🔒 Hardened Assessment Security
-* **Cheat-Resistant Monitoring:** Logs tab blurs, copy-paste events, and browser focus changes during live assessments.
-* **Row Locking (`SELECT FOR UPDATE`):** Enforces atomic database locks on answer submissions to prevent double-click API race conditions.
-* **Aware Timezone Validations:** Ensures robust, timezone-aware comparisons for strict exam duration expirations.
-* **Role-Based Access Control (RBAC):** Restricts data queries based on user roles (`Admin`, `Recruiter/HR`, `Manager`, `Candidate`).
+### 2. Context-Isolated Resume Upload & Routing
+* **Concern**: When an HR Recruiter manages multiple jobs, candidate resumes must route exclusively to the target job and never leak into another requirement's pipeline.
+* **Routing Strategy**: 
+  - The HR Recruiter selects their target claimed job requirement from the dashboard dropdown, passing the `requirement_id` in the upload payload.
+  - The backend validates ownership via `ownership.can_modify_requirement()`. If the recruiter does not own the target requirement, the upload is immediately rejected with `403 Forbidden`.
+  - The uploaded PDF is saved to disk and a row is created in the `resume` table marked `parse_status = 'pending'`. A Celery task (`parse_and_profile_resume`) is dispatched asynchronously to parse the PDF text and map candidate skills.
+  - When the recruiter triggers AI evaluation, the system queries the `resume` table for pending parsed resumes (`parse_status = 'done'`, `is_active = TRUE`) that do *not* have an entry in `resume_job_map` for the specific `requirement_id`. 
+  - Once evaluated, a record is created in `resume_job_map` linking the resume to that specific `requirement_id` with its initial match score. The candidate's `resume.is_active` is marked `FALSE` so they cannot be evaluated for other jobs in parallel.
 
-### 3. 🎨 Premium Interaction Design
-* **Living Hero Workspace:** A responsive, interactive dashboard simulating resume analysis (File ingest ➔ Scan beam sweep ➔ Skills pop ➔ Match score count-up ➔ AI Hire badge reveal) with 3D-tilt mouse perspective hover.
-* **S-Curve Centered Timeline:** A scroll-progress-linked center timeline utilizing a custom double-bend SVG track and a glowing animated bead showing the recruitment pipeline steps.
-* **Interactive Bento Grid:** Spotlights natural language semantic search filtering, real-time question generation rendering, and secure log streams.
+### 3. Asymmetric RAG AI Copilot (Decision Support)
+* **Query Context Isolation**: Instead of dumping the entire database into the AI context (which increases token latency and causes hallucinations), our `RAGService` uses **Asymmetric RAG**.
+* **Intent-Bound Context Retrieval**: 
+  - When a recruiter or manager asks a question (e.g. *"Compare Marcus and Jane for the DevOps role"*), the system fetches context using the active `requirement_id`.
+  - It queries the database for:
+    1. **Job Details**: Position name, experience range.
+    2. **Required Skills**: Skill criteria mapped to this job requirement.
+    3. **Top Candidates**: Scored candidates mapped to this requirement, including their scores, matched skills, missing skills, and AI summaries.
+    4. **Pipeline Summary**: Metrics on candidates in each stage (`applied`, `shortlisted`, `exam_submitted`, etc.).
+  - This highly parsed, structured context is passed to the Google Gemini API, ensuring the response is **completely grounded, accurate, and context-isolated**.
 
----
+### 4. Anti-Cheat Candidate Exam Center
+* **Exam Eligibility**: Candidates (Role 4) log in using accounts generated during the shortlisting process. The backend enforces that the candidate matches the `user_account_id` mapped in `resume_job_map`.
+* **Configurable Duration**: The exam duration is fetched dynamically from the job requirement setting (`exam_duration_minutes`, defaulting to 60).
+* **Database Row Locking (`SELECT FOR UPDATE`)**: 
+  - To prevent double-submit network race conditions (such as double-clicking "Submit" or resubmitting answers after the session expired), the backend wraps the answers submission endpoint in a `transaction.atomic()` block.
+  - The SQL query utilizes `SELECT ... FOR UPDATE` to lock the candidate's `exam_session` row, blocking subsequent submission threads until the first transaction completes.
+* **Timezone-Aware Expiration Validation**: The session's `expires_at` is compared against the server's current timestamp. The comparison engine automatically checks if database datetimes are timezone-aware and aligns them UTC-to-UTC to prevent timezone offset bypassing.
+* **Focus Session Auditing**: The React frontend monitors browser window blur, copy-paste events, and tab changes. Any violations stream immediately to the `/api/audit-log/` backend, printing warnings in the admin audit history.
+* **Manager Evaluation & Grading**: Candidate submissions (MCQ choices and open-ended text answers) are stored in `exam_answer`. The Hiring Manager (Role 2) reviews candidate answers in their overview dashboard and assigns scores.
+* **Weighted Score Recommendation Engine**:
+  Once the manager submits grades via `manager_update_exam_scores`, the pipeline status transitions to `exam_scored` and the final recommendation score is calculated:
+  
+  $$\text{Final Score} = \frac{(\text{Resume Score} \times \text{Resume Weight}) + (\text{Exam Score} \times \text{Exam Weight})}{100}$$
+  
+  The platform maps this combined score to dynamic decision categories:
+  * **Score $\ge$ 80%**: `Strong Hire` (High Confidence)
+  * **Score $\ge$ 70%**: `Hire` (High Confidence)
+  * **Score $\ge$ 60%**: `Hold` (High Confidence)
+  * **Score $<$ 60%**: `Reject` (High Confidence)
 
-## 🛠️ Technology Stack
-
-| Component | Technology | Usage |
-|:---|:---|:---|
-| **Frontend** | React 18, Vite, Tailwind CSS, Framer Motion, Lucide | Single Page Application, high-fidelity micro-interactions, responsive design |
-| **Backend** | Python 3, Django 5.x, Django REST Framework | JSON API development, database routing, security filters |
-| **Database** | MySQL | Role-based data storage, row locking support |
-| **Task Queue** | Celery, Redis | Asynchronous resume parsing, evaluation workflows, stale session cleanups |
-| **AI Integration** | Google Gemini API (via AI Service Factory) | Skill gap analysis, question pool generation, interviewer preparation guides |
-
----
-
-## 📂 Repository Structure
-
-```text
-aegishire-ai-recruitment-tool/
-├── backend/                       # Django REST API Backend
-│   ├── backend/                   # Django settings, routers, and WSGI/ASGI configurations
-│   ├── recruitment/               # Core business logic app (Models, Views, Serializers)
-│   │   ├── services/              # Decoupled services (AI, Parser, Search, Scoring, Auditing)
-│   │   ├── repositories/          # Repo layer isolating raw SQL/ORM query sets
-│   │   └── tests/                 # Security, RBAC, and business logic unit tests
-│   ├── requirements.txt           # Backend python packages
-│   └── manage.py                  # Django administrative script
-│
-├── frontend/                      # React SPA Frontend (Vite)
-│   ├── src/
-│   │   ├── components/            # Reusable UI library (layout, shared, dialogs, charts)
-│   │   ├── context/               # AuthContext state managers
-│   │   ├── hooks/                 # Custom hooks (keyboard shortcuts, API callers)
-│   │   ├── lib/                   # Feature flags, axios clients, styles helpers
-│   │   ├── pages/                 # Routing pages (Landing, Login, HR/Manager Dashboards, Exams)
-│   │   └── App.jsx                # Layout wrapper & routing tables
-│   ├── tailwind.config.js         # Design token customizations
-│   └── package.json               # Node packages list
-```
+  These scores and candidate profiles are immediately displayed in the HR onboarding view, enabling recruiters to finalize (`finalised`) candidates for onboarding.
 
 ---
-
-## 🔧 Environment Variables Reference
-
-Create a `.env` file in the `backend/` directory with the following structure:
-
-| Key | Example Value | Description |
-|:---|:---|:---|
-| `DB_TYPE` | `local` | Database target environment (e.g., `local`, `production`) |
-| `LOCAL_DB_NAME` | `recruitment` | Name of the MySQL Schema |
-| `LOCAL_DB_USER` | `root` | MySQL user name |
-| `LOCAL_DB_PASSWORD` | `your_password` | Password for your MySQL user |
-| `GEMINI_API_KEY` | `AIzaSy...` | Your API key to connect to Google Gemini |
-| `REDIS_URL` | `redis://127.0.0.1:6379/0` | Connection string for Redis Broker |
 
 ---
 
@@ -136,12 +119,24 @@ Create a `.env` file in the `backend/` directory with the following structure:
    ```bash
    pip install -r requirements.txt
    ```
-4. Configure environment variables in `.env` (use `.env.example` as a template).
+4. Configure environment variables in `.env` (use `.env.example` as a template):
+   ```ini
+   DB_TYPE=local
+   LOCAL_DB_NAME=recruitment
+   LOCAL_DB_USER=root
+   LOCAL_DB_PASSWORD=your_password
+   GEMINI_API_KEY=your_gemini_api_key
+   ```
 5. Apply database schema migrations:
    ```bash
    python manage.py migrate
    ```
-6. Run the local development server:
+6. **Seed Default Portfolio Users**:
+   Populate test users, positions, skills, and sample job states using the custom seeder command:
+   ```bash
+   python manage.py seed_portfolio_data
+   ```
+7. Run the development server:
    ```bash
    python manage.py runserver
    ```
@@ -169,14 +164,16 @@ python -m celery -A recruitment worker --loglevel=info -P solo
 
 ---
 
-## 🔒 Security Auditing & Regression Tests
+## 🧪 Seeded Test Accounts (Portfolio Demo)
 
-The backend features a comprehensive security test suite verifying RBAC restrictions, candidate session constraints, and database log integrity. Run it using:
-```bash
-python manage.py test recruitment.tests
-```
+The `seed_portfolio_data` command seeds the following accounts to easily demo role-based workflows (all accounts use password **`password123`**):
 
----
-
-## 📄 License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+| Role | Username | Email | Department / Purpose |
+|---|---|---|---|
+| **Admin** | `admin` | `admin@aegishire.ai` | Global user creation, job reassignments |
+| **Manager** | `manager_lisa` | `lisa.vance@aegishire.ai` | Engineering Manager (owns Software Engineer post) |
+| **Manager** | `manager_john` | `john.doe@aegishire.ai` | Product Manager (owns Product Manager post) |
+| **HR Recruiter** | `hr_sarah` | `hr_sarah@aegishire.ai` | Recruiting specialist (has claimed Lisa's Software Engineer post) |
+| **HR Recruiter** | `hr_michael` | `hr_michael@aegishire.ai` | Recruiting specialist (has claimed John's Product Manager post) |
+| **Candidate** | `candidate_marcus` | `candidate_marcus@aegishire.ai` | Test candidate user |
+| **Candidate** | `candidate_jane` | `candidate_jane@aegishire.ai` | Test candidate user |

@@ -12,14 +12,15 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Briefcase, Users, PlusCircle, ArrowRight, Eye, ClipboardList, Loader2 } from 'lucide-react';
+import { Briefcase, Users, PlusCircle, ArrowRight, Eye, ClipboardList, Loader2, Play, PowerOff } from 'lucide-react';
+import { toast } from 'sonner';
 
 export function ManagerDashboard() {
-  const { username } = useAuth();
+  const { userid, username } = useAuth();
   const navigate = useNavigate();
 
   // Load all job requirements
-  const { data: jobsData, loading: loadingJobs } = useApi(jobsService.getAll);
+  const { data: jobsData, loading: loadingJobs, execute: fetchJobs } = useApi(jobsService.getAll);
   const jobs = jobsData || [];
 
   // Load shortlist statistics to aggregate candidate count
@@ -27,6 +28,16 @@ export function ManagerDashboard() {
   const shortlistStats = statsData || [];
 
   const totalShortlisted = shortlistStats.reduce((acc, curr) => acc + (curr.shortlisted_count ?? 0), 0);
+
+  const handleUpdateStatus = async (requirementId, nextStatus) => {
+    try {
+      await jobsService.updateJobStatus(requirementId, nextStatus);
+      toast.success(`Job requisition ${nextStatus === 'CLOSED' ? 'closed' : 'reopened'} successfully.`);
+      fetchJobs();
+    } catch (error) {
+      toast.error(error.message || 'Failed to update job status.');
+    }
+  };
 
   return (
     <AmbientBackground className="-m-8 p-8 min-h-screen">
@@ -57,7 +68,7 @@ export function ManagerDashboard() {
               </h3>
               <p className="text-[10px] text-gray-500 mt-1">Shortlisted profiles awaiting hiring decision</p>
             </div>
-            <div className="bg-accent/10 p-3 rounded-lg text-accent">
+            <div className="flex-shrink-0 bg-accent/10 p-3 rounded-lg text-accent">
               <Users className="h-6 w-6" />
             </div>
           </div>
@@ -68,11 +79,11 @@ export function ManagerDashboard() {
             <div>
               <p className="text-xs uppercase font-semibold tracking-wider text-gray-400">Unclaimed Requisitions</p>
               <h3 className="text-3xl font-extrabold text-white mt-1">
-                {loadingJobs ? '...' : <NumberTicker value={jobs.filter(j => !j.assignedTo).length} />}
+                {loadingJobs ? '...' : <NumberTicker value={jobs.filter(j => !j.assignedTo && j.status === 'ACTIVE').length} />}
               </h3>
               <p className="text-[10px] text-gray-500 mt-1">Openings requiring HR recruiter claiming</p>
             </div>
-            <div className="bg-accent/10 p-3 rounded-lg text-accent">
+            <div className="flex-shrink-0 bg-accent/10 p-3 rounded-lg text-accent">
               <Briefcase className="h-6 w-6" />
             </div>
           </div>
@@ -89,7 +100,7 @@ export function ManagerDashboard() {
                 {totalShortlisted} candidate approvals pending evaluation
               </p>
             </div>
-            <div className="bg-accent/10 p-3 rounded-lg text-accent">
+            <div className="flex-shrink-0 bg-accent/10 p-3 rounded-lg text-accent">
               <ClipboardList className="h-6 w-6" />
             </div>
           </div>
@@ -99,7 +110,7 @@ export function ManagerDashboard() {
       {/* Requirements Table Card */}
       <Card className="bg-[#0d1e33] border-[#1a2e46] text-white">
         <CardHeader className="flex flex-row items-center justify-between pb-3">
-          <CardTitle className="text-md font-bold">Active Job Openings</CardTitle>
+          <CardTitle className="text-md font-bold">Job Openings & Requisitions</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           {loadingJobs ? (
@@ -126,7 +137,7 @@ export function ManagerDashboard() {
           ) : jobs.length === 0 ? (
             <div className="text-center py-16 text-xs text-gray-500">
               <Briefcase className="h-10 w-10 text-gray-600 mx-auto mb-2" />
-              No active job postings found. Click "Create Posting" to add one.
+              No job postings found. Click "Create Posting" to add one.
             </div>
           ) : (
             <Table>
@@ -134,21 +145,32 @@ export function ManagerDashboard() {
                 <TableRow className="hover:bg-transparent border-b border-[#1a2e46]">
                   <TableHead className="text-gray-400 font-semibold pl-6">Req ID</TableHead>
                   <TableHead className="text-gray-400 font-semibold">Position</TableHead>
+                  <TableHead className="text-gray-400 font-semibold">Status</TableHead>
                   <TableHead className="text-gray-400 font-semibold">Experience</TableHead>
                   <TableHead className="text-gray-400 font-semibold">Created By</TableHead>
                   <TableHead className="text-gray-400 font-semibold">Date Posted</TableHead>
-                  <TableHead className="text-gray-400 font-semibold text-right pr-6">Screening Actions</TableHead>
+                  <TableHead className="text-gray-400 font-semibold text-right pr-6">Requisition Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {jobs.map((job) => {
                   const stat = shortlistStats.find((s) => s.requirement_id === job.requirementId);
                   const shortlistedCount = stat ? stat.shortlisted_count : 0;
+                  const isCreator = job.createdBy === userid;
 
                   return (
                     <TableRow key={job.requirementId} className="hover:bg-[#11243b]/25 border-b border-[#1a2e46]/60">
                       <TableCell className="pl-6 font-semibold text-xs text-gray-400">#REQ-{job.requirementId}</TableCell>
                       <TableCell className="font-semibold text-sm">{job.position}</TableCell>
+                      <TableCell>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
+                          job.status === 'ACTIVE'
+                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                            : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                        }`}>
+                          {job.status}
+                        </span>
+                      </TableCell>
                       <TableCell className="text-sm text-gray-300 capitalize">{job.experience}</TableCell>
                       <TableCell className="text-xs text-gray-400">@{job.createdBy}</TableCell>
                       <TableCell className="text-xs text-gray-400">{job.createdAt}</TableCell>
@@ -158,9 +180,9 @@ export function ManagerDashboard() {
                           variant="ghost"
                           size="sm"
                           onClick={() => navigate(`/manager/shortlist?requirementId=${job.requirementId}`)}
-                          disabled={shortlistedCount === 0}
+                          disabled={shortlistedCount === 0 || job.status !== 'ACTIVE'}
                           className={`text-xs gap-1.5 ${
-                            shortlistedCount > 0
+                            shortlistedCount > 0 && job.status === 'ACTIVE'
                               ? 'text-[#3B82F6] hover:text-white hover:bg-[#3B82F6]/10 border border-[#3B82F6]/20'
                               : 'text-gray-500 cursor-not-allowed hover:bg-transparent border border-transparent'
                           }`}
@@ -179,6 +201,33 @@ export function ManagerDashboard() {
                           <ClipboardList className="h-3.5 w-3.5 text-gray-400 group-hover:text-white" />
                           <span>Performance</span>
                         </Button>
+
+                        {/* Close / Reopen actions for job owner */}
+                        {isCreator && (
+                          job.status === 'ACTIVE' ? (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleUpdateStatus(job.requirementId, 'CLOSED')}
+                              className="text-xs text-amber-400 hover:text-white hover:bg-amber-500/10 border border-amber-500/20 gap-1"
+                              title="Close Job Requisition"
+                            >
+                              <PowerOff className="h-3 w-3" />
+                              <span>Close</span>
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleUpdateStatus(job.requirementId, 'ACTIVE')}
+                              className="text-xs text-emerald-400 hover:text-white hover:bg-emerald-500/10 border border-emerald-500/20 gap-1"
+                              title="Reopen Job Requisition"
+                            >
+                              <Play className="h-3 w-3" />
+                              <span>Reopen</span>
+                            </Button>
+                          )
+                        )}
                       </TableCell>
                     </TableRow>
                   );
