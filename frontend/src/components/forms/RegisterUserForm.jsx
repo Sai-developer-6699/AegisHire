@@ -21,7 +21,7 @@ const registerSchema = z.object({
   status: z.enum(['active', 'inactive']),
 });
 
-export function RegisterUserForm({ onSubmit, isLoading }) {
+export function RegisterUserForm({ onSubmit, isLoading, defaultEmail = '', defaultRole = 'candidate' }) {
   const {
     register,
     handleSubmit,
@@ -34,10 +34,10 @@ export function RegisterUserForm({ onSubmit, isLoading }) {
       last_name: '',
       username: '',
       password: '',
-      email: '',
+      email: defaultEmail,
       phone_number: '',
       department: '',
-      role: 'candidate',
+      role: defaultRole,
       status: 'active',
     },
   });
