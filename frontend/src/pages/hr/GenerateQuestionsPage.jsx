@@ -46,7 +46,7 @@ export function GenerateQuestionsPage() {
         setRequirements(list || []);
         if (list.length > 0) {
           // Select first claimed/assigned job by default if available
-          setSelectedRequirementId(String(list[0].id));
+          setSelectedRequirementId(String(list[0].requirementId));
         }
       } catch (error) {
         console.error('Failed to load requirements:', error);
@@ -171,7 +171,7 @@ export function GenerateQuestionsPage() {
     }
   };
 
-  const currentJob = requirements.find(r => String(r.id) === selectedRequirementId);
+  const currentJob = requirements.find(r => String(r.requirementId) === selectedRequirementId);
   const approvedCount = questions.filter(q => q.status === 'approved').length;
   const publishedCount = questions.filter(q => q.status === 'published').length;
   const draftCount = questions.filter(q => q.status === 'draft').length;
@@ -206,8 +206,8 @@ export function GenerateQuestionsPage() {
                     </SelectTrigger>
                     <SelectContent className="bg-[#11243b] border-[#1a2e46] text-white">
                       {requirements.map((req) => (
-                        <SelectItem key={req.id} value={String(req.id)}>
-                          #{req.id} - {req.positionName} ({req.experienceRange})
+                        <SelectItem key={req.requirementId} value={String(req.requirementId)}>
+                          #{req.requirementId} - {req.position} ({req.experience})
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -336,7 +336,7 @@ export function GenerateQuestionsPage() {
                   <span>Question Bank Governance</span>
                 </CardTitle>
                 <CardDescription className="text-gray-400 text-xs">
-                  Generate, edit, approve and publish technical exam questions for `{currentJob?.positionName || 'Selected Job'}`.
+                  Generate, edit, approve and publish technical exam questions for `{currentJob?.position || 'Selected Job'}`.
                 </CardDescription>
               </div>
               <div className="flex gap-2">
@@ -600,7 +600,7 @@ export function GenerateQuestionsPage() {
                 <div>
                   <h3 className="text-sm font-bold text-white tracking-wide uppercase">Candidate Exam Deck Preview</h3>
                   <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">
-                    {currentJob?.positionName} - {questions.filter(q => q.status === 'approved' || q.status === 'published').length} Active Questions
+                    {currentJob?.position} - {questions.filter(q => q.status === 'approved' || q.status === 'published').length} Active Questions
                   </p>
                 </div>
               </div>

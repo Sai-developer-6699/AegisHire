@@ -342,8 +342,8 @@ export function HRDashboard() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {resumes.map((resume) => (
-                      <TableRow key={resume.id} className="hover:bg-[#11243b]/25 border-b border-[#1a2e46]/60">
+                    {resumes.map((resume, idx) => (
+                      <TableRow key={`${resume.id}-${resume.requirementId || idx}`} className="hover:bg-[#11243b]/25 border-b border-[#1a2e46]/60">
                         <TableCell className="font-semibold text-sm pl-6">{resume.name}</TableCell>
                         <TableCell className="text-sm text-gray-300">{resume.email || 'No email'}</TableCell>
                         <TableCell className="text-xs text-gray-400">
