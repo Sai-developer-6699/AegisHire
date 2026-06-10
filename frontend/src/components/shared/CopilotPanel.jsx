@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Sparkles, Send, Bot, User, Check, GitCommit, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { copilotService } from '@/services/copilot.service';
 
 const COPILOT_SUGGESTIONS = [
   { text: 'Explain score for Rahul', key: 'explain_rahul' },
@@ -55,6 +57,9 @@ Based on the core missing skill tags identified in evaluations (Kubernetes, AWS,
 };
 
 export function CopilotPanel({ isOpen, onClose }) {
+  const [searchParams] = useSearchParams();
+  const activeRequirementId = searchParams.get('requirementId') || searchParams.get('requirement_id') || null;
+
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -70,7 +75,7 @@ export function CopilotPanel({ isOpen, onClose }) {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
-  const handleSend = (text) => {
+  const handleSend = async (text) => {
     if (!text.trim()) return;
 
     // Add user message
@@ -82,24 +87,33 @@ export function CopilotPanel({ isOpen, onClose }) {
     setInputValue('');
     setIsTyping(true);
 
-    // Find response or default
-    const matchedKey = Object.keys(COPILOT_RESPONSES).find(key => 
-      text.toLowerCase().includes(key.replace('_', ' ').replace('candidates', '').trim()) || 
-      text.toLowerCase().includes(key.split('_')[0]) ||
-      text.toLowerCase().includes(key.split('_')[1])
-    );
+    try {
+      const response = await copilotService.sendMessage(text, activeRequirementId);
+      setMessages((prev) => [
+        ...prev,
+        { id: Date.now(), sender: 'bot', text: response.reply || 'No response from AI.' }
+      ]);
+    } catch (err) {
+      console.error('Copilot chat error:', err);
+      
+      // Fallback to static mock responses if backend/Gemini fails (friendly dev fallback)
+      const matchedKey = Object.keys(COPILOT_RESPONSES).find(key => 
+        text.toLowerCase().includes(key.replace('_', ' ').replace('candidates', '').trim()) || 
+        text.toLowerCase().includes(key.split('_')[0]) ||
+        text.toLowerCase().includes(key.split('_')[1])
+      );
 
-    const replyText = matchedKey 
-      ? COPILOT_RESPONSES[matchedKey] 
-      : `I parsed your query: "${text}". \n\nI can analyze candidates, job requirements, and evaluation matrices. Try clicking one of the predefined quick actions above for detailed analysis.`;
+      const replyText = matchedKey 
+        ? COPILOT_RESPONSES[matchedKey] 
+        : `I parsed your query: "${text}". \n\nI can analyze candidates, job requirements, and evaluation matrices. Try clicking one of the predefined quick actions above for detailed analysis.`;
 
-    setTimeout(() => {
-      setIsTyping(false);
       setMessages((prev) => [
         ...prev,
         { id: Date.now(), sender: 'bot', text: replyText }
       ]);
-    }, 1200);
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   const copyToClipboard = (text) => {

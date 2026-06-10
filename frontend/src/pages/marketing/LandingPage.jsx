@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion, useMotionValueEvent } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion, useMotionValueEvent, useMotionValue } from 'framer-motion';
 import { 
   Shield, 
   ArrowRight, 
@@ -11,10 +11,10 @@ import {
   Trophy, 
   Users, 
   CheckCircle2, 
-  Zap, 
-  ChevronRight, 
+  ChevronRight,
   Search, 
-  Lock, 
+  Lock,
+  Zap,
   BarChart3, 
   Clock, 
   Laptop,
@@ -89,22 +89,39 @@ export function LandingPage() {
   const [rotateY, setRotateY] = useState(0);
 
   // Refs for scroll elements
-  const stickyTimelineRef = useRef(null);
+  const sectionRef = useRef(null);        // outer <section min-h-[180vh]>
+  const stickyTimelineRef = useRef(null); // sticky inner div (for node glow useScroll)
+  const pathRef = useRef(null);           // SVG <path> element for getPointAtLength
 
-  // Scroll Progress Hooks
+  // Cached section metrics — updated once on mount/resize, never in scroll handler
+  const sectionTopRef    = useRef(0);
+  const sectionHeightRef = useRef(0);
+
+  useLayoutEffect(() => {
+    const updateMetrics = () => {
+      if (!sectionRef.current) return;
+      sectionTopRef.current    = sectionRef.current.getBoundingClientRect().top + window.scrollY;
+      sectionHeightRef.current = sectionRef.current.offsetHeight;
+    };
+    updateMetrics();
+    const ro = new ResizeObserver(updateMetrics);
+    if (sectionRef.current) ro.observe(sectionRef.current);
+    window.addEventListener('resize', updateMetrics);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', updateMetrics);
+    };
+  }, []);
+
+  // Scroll Progress Hooks (kept for node glow isActive states only)
   const { scrollYProgress } = useScroll({
     target: stickyTimelineRef,
     offset: ["start start", "end end"]
   });
 
-  // Map scroll progress to sticky timeline stages using recommended v12 event listener
+  // centerProgress: 0 when viewport center enters section top, 1 when it leaves section bottom
+  const centerProgress = useMotionValue(0);
   const [scrollStage, setScrollStage] = useState(0);
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    if (latest < 0.165) setScrollStage(0);
-    else if (latest < 0.495) setScrollStage(1);
-    else if (latest < 0.83) setScrollStage(2);
-    else setScrollStage(3);
-  });
 
   // Parallax transformations driven by scroll
   const { scrollY } = useScroll();
@@ -112,9 +129,48 @@ export function LandingPage() {
   const heroOrbitY = useTransform(scrollY, [0, 800], [0, 120]);
   const heroParticleY = useTransform(scrollY, [0, 800], [0, 40]);
 
-  // Ball position on curved track
-  const ballX = useTransform(scrollYProgress, [0, 0.33, 0.66, 1], [50, 10, 90, 50]);
-  const ballY = useTransform(scrollYProgress, [0, 1], [50, 500]);
+  // Scroll handler — NO layout reads, only arithmetic on cached values
+  // Reference point: window center (wH/2).
+  // progress = 0  → window center is at section top
+  // progress = 1  → window center is at section bottom
+  // Denominator = sectionHeight (full section, not sectionHeight - wH)
+  useEffect(() => {
+    return scrollY.on("change", (sy) => {
+      if (window.innerWidth < 768) return; // skip on mobile — SVG is hidden
+      const wH  = window.innerHeight;
+      const raw = (sy + wH - sectionTopRef.current - 0.2)
+                  / sectionHeightRef.current - 0.5;
+      centerProgress.set(Math.max(0, Math.min(1, raw)));
+    });
+  }, [scrollY, centerProgress]);
+
+  // Ball MotionValues — driven by getPointAtLength for exact curve tracking
+  const ballCx = useMotionValue(50);
+  const ballCy = useMotionValue(30);
+  const t = 1.9 ;
+  // Derive ball position and scroll stage from centerProgress
+  useMotionValueEvent(centerProgress, "change", (progress) => {
+    const pathEl = pathRef.current;
+    if (!pathEl) return;
+    const totalLen = pathEl.getTotalLength();
+    const pt = pathEl.getPointAtLength(progress * totalLen*t);
+    ballCx.set(pt.x);
+    ballCy.set(pt.y);
+    // Stage thresholds are midpoints between the 4 SVG node Y positions:
+    // Nodes at y=40, y=190, y=360, y=510 → midpoints at 115, 275, 435
+    if (pt.y < 135) {
+      setScrollStage(0);
+    }
+    else if (pt.y < 275) {
+      setScrollStage(1);
+    }
+    else if (pt.y < 385) {
+      setScrollStage(2);
+    }
+    else {
+      setScrollStage(3);
+    }
+  });
 
   // AI Candidate Reveal Loop (12 seconds cycle)
   useEffect(() => {
@@ -143,6 +199,7 @@ export function LandingPage() {
     }, 4500);
     return () => clearInterval(timer);
   }, [autoPlayStory]);
+
 
   const handleStepClick = (stepIndex) => {
     setActiveStoryStep(stepIndex);
@@ -799,264 +856,271 @@ export function LandingPage() {
       </section>
 
       {/* Sticky Scroll Story Timeline Section */}
-      <section id="timeline" ref={stickyTimelineRef} className="min-h-[160vh] relative z-20 px-6 py-20">
-        {/* Section Title */}
-        <div className="max-w-7xl mx-auto text-center mb-12">
-          <span className="text-[10px] uppercase font-bold text-accent tracking-widest block mb-2">Recruitment Journey</span>
-          <h2 className="text-3xl md:text-4xl font-heading font-extrabold text-white leading-tight">
-            Walkthrough the Ingestion Pipeline
-          </h2>
-          <p className="text-xs md:text-sm text-gray-400 leading-relaxed font-sans max-w-xl mx-auto">
-            Scroll down to track how candidate profiles progress through checks, validations, and custom exam configurations in real-time.
-          </p>
-        </div>
-
-        {/* Sticky 3-Column Grid Container */}
-        <div className="sticky top-20 h-[calc(100vh-80px)] flex flex-col md:flex-row items-center justify-between gap-6 md:gap-12 max-w-7xl mx-auto py-8">
+      <section id="timeline" ref={sectionRef} className="min-h-[140vh] relative z-20 px-6 pt-0 pb-0">
+        
+        {/* Sticky 3-Column Grid Container with Title inside */}
+        <div ref={stickyTimelineRef} className="sticky top-0 h-screen flex flex-col justify-center max-w-7xl mx-auto py-4">
           
-          {/* Left Column: Visual State Previews (Concurrently fading cards, zero unmount flicker) */}
-          <div className="w-full md:w-[42%] flex items-center justify-center min-h-[320px] md:min-h-[380px] bg-[#0c1829]/60 border border-white/5 rounded-2xl p-4 md:p-6 shadow-2xl relative overflow-hidden">
-            
-            {/* Card 0: Ingestion */}
-            <motion.div
-              initial={false}
-              animate={{
-                opacity: scrollStage === 0 ? 1 : 0,
-                x: scrollStage === 0 ? 0 : scrollStage > 0 ? -30 : 30,
-                scale: scrollStage === 0 ? 1 : 0.95,
-                pointerEvents: scrollStage === 0 ? 'auto' : 'none'
-              }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className="absolute inset-0 flex flex-col items-center justify-center p-6 space-y-4 w-full text-center"
-            >
-              <div className="w-12 h-12 rounded-xl bg-accent/5 border border-accent/20 flex items-center justify-center mx-auto text-accent shadow-[0_0_15px_rgba(59,130,246,0.15)]">
-                <UploadCloud className="h-6 w-6" />
-              </div>
-              <div>
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider">{TIMELINE_STEPS[0].subtitle}</h4>
-                <p className="text-[11px] text-gray-500 mt-1 font-sans">Uploading CV profile, analyzing raw structure.</p>
-              </div>
-              <div className="border border-white/5 bg-[#0f213a]/30 rounded-xl p-3 flex justify-between items-center text-left w-full max-w-sm mx-auto">
-                <div className="flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-accent" />
-                  <div>
-                    <span className="text-[10px] font-bold text-white block">Sarah_Jenkins_CV.pdf</span>
-                    <span className="text-[9px] text-gray-500">1.2 MB</span>
-                  </div>
-                </div>
-                <span className="text-[9px] text-accent font-bold uppercase tracking-wider">Queued</span>
-              </div>
-            </motion.div>
-
-            {/* Card 1: Skills Matrix */}
-            <motion.div
-              initial={false}
-              animate={{
-                opacity: scrollStage === 1 ? 1 : 0,
-                x: scrollStage === 1 ? 0 : scrollStage > 1 ? -30 : 30,
-                scale: scrollStage === 1 ? 1 : 0.95,
-                pointerEvents: scrollStage === 1 ? 'auto' : 'none'
-              }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className="absolute inset-0 flex flex-col items-center justify-center p-6 space-y-4 w-full max-w-sm mx-auto"
-            >
-              <div className="w-full flex justify-between items-center pb-2 border-b border-white/5">
-                <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">{TIMELINE_STEPS[1].subtitle}</span>
-                <span className="text-[9px] text-emerald-400 font-bold uppercase">88% Match</span>
-              </div>
-              <div className="space-y-2 text-left w-full">
-                <div>
-                  <span className="text-[9px] text-gray-500 uppercase tracking-widest font-bold block mb-1">Extracted Core Stack</span>
-                  <div className="flex flex-wrap gap-1">
-                    {['React', 'TypeScript', 'TailwindCSS', 'FastAPI'].map(s => (
-                      <span key={s} className="px-2 py-0.5 bg-accent/5 border border-accent/20 rounded text-[9px] text-accent font-medium">{s}</span>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <span className="text-[9px] text-gray-500 uppercase tracking-widest font-bold block mb-1">Gaps Found</span>
-                  <div className="flex flex-wrap gap-1">
-                    {['Docker', 'Kubernetes'].map(s => (
-                      <span key={s} className="px-2 py-0.5 bg-red-500/5 border border-red-500/15 rounded text-[9px] text-red-400 font-medium">{s}</span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Card 2: MCQ Blueprints */}
-            <motion.div
-              initial={false}
-              animate={{
-                opacity: scrollStage === 2 ? 1 : 0,
-                x: scrollStage === 2 ? 0 : scrollStage > 2 ? -30 : 30,
-                scale: scrollStage === 2 ? 1 : 0.95,
-                pointerEvents: scrollStage === 2 ? 'auto' : 'none'
-              }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className="absolute inset-0 flex flex-col items-center justify-center p-6 space-y-4 w-full max-w-sm mx-auto text-left"
-            >
-              <div className="w-full flex justify-between items-center pb-2 border-b border-white/5">
-                <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">{TIMELINE_STEPS[2].subtitle}</span>
-                <span className="text-[9px] text-purple-400 font-bold uppercase">Ready</span>
-              </div>
-              <div className="space-y-2 w-full">
-                <div className="bg-[#11243b]/40 border border-white/5 rounded-xl p-3 space-y-1">
-                  <span className="text-[8px] uppercase tracking-wider text-gray-500 font-bold block font-sans">Generated Question 1 (Technical)</span>
-                  <p className="text-[10px] text-gray-300 italic font-sans">"How do you structure a multi-stage Dockerfile to minify React build sizes?"</p>
-                </div>
-                <div className="bg-[#11243b]/40 border border-white/5 rounded-xl p-3 space-y-1">
-                  <span className="text-[8px] uppercase tracking-wider text-gray-500 font-bold block font-sans">Generated Question 2 (MCQ)</span>
-                  <p className="text-[10px] text-gray-300 italic font-sans">"Which of the following docker-compose fields controls network links?"</p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Card 3: Security Logs */}
-            <motion.div
-              initial={false}
-              animate={{
-                opacity: scrollStage === 3 ? 1 : 0,
-                x: scrollStage === 3 ? 0 : scrollStage > 3 ? -30 : 30,
-                scale: scrollStage === 3 ? 1 : 0.95,
-                pointerEvents: scrollStage === 3 ? 'auto' : 'none'
-              }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className="absolute inset-0 flex flex-col items-center justify-center p-6 space-y-4 w-full max-w-sm mx-auto text-left font-sans"
-            >
-              <div className="w-full flex justify-between items-center pb-2 border-b border-white/5">
-                <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">{TIMELINE_STEPS[3].subtitle}</span>
-                <span className="inline-flex items-center gap-1 text-[9px] text-emerald-400 font-bold uppercase">
-                  <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping" />
-                  Live session
-                </span>
-              </div>
-              <div className="w-full border border-white/5 bg-black/30 rounded-xl p-3.5 space-y-1.5 font-mono text-[9px] text-gray-400">
-                <div>11:41:02 - [AUTH] Candidate logged in successfully.</div>
-                <div className="text-emerald-400">11:42:15 - [LOG] Focused tab verified.</div>
-                <div className="text-amber-400">11:45:30 - [WARN] Browser window focus lost.</div>
-                <div className="text-emerald-400">11:45:38 - [LOG] Focused tab restored.</div>
-              </div>
-            </motion.div>
+          {/* Section Title (Inside the sticky wrapper to align scroll lock) */}
+          <div className="text-center mb-6 shrink-0">
+            <span className="text-[10px] uppercase font-bold text-accent tracking-widest block mb-1">Recruitment Journey</span>
+            <h2 className="text-2xl md:text-3xl font-heading font-extrabold text-white leading-tight">
+              Walkthrough the Ingestion Pipeline
+            </h2>
+            <p className="text-xs md:text-sm text-gray-400 leading-relaxed font-sans max-w-xl mx-auto">
+              Scroll down to track how candidate profiles progress through checks, validations, and custom exam configurations in real-time.
+            </p>
           </div>
 
-          {/* Center Column: Curved SVG Track with Scrolling glowing Ball */}
-          <div className="hidden md:flex w-[16%] h-[550px] items-center justify-center relative">
-            <svg viewBox="0 0 100 550" className="w-full h-full overflow-visible">
-              <defs>
-                <filter id="glow-blue" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="6" result="blur" />
-                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                </filter>
-                <filter id="glow-active" x="-50%" y="-50%" width="200%" height="200%">
-                  <feGaussianBlur stdDeviation="10" result="blur" />
-                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                </filter>
-              </defs>
+          {/* 3-Column Layout Container */}
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 w-full">
+            
+            {/* Left Column: Visual State Previews (Concurrently fading cards, zero unmount flicker) */}
+            <div className="w-full md:w-[45%] flex items-center justify-center min-h-[320px] md:min-h-[380px] bg-[#0c1829]/60 border border-white/5 rounded-2xl p-4 md:p-6 shadow-2xl relative overflow-hidden">
+              
+              {/* Card 0: Ingestion */}
+              <motion.div
+                initial={false}
+                animate={{
+                  opacity: scrollStage === 0 ? 1 : 0,
+                  x: scrollStage === 0 ? 0 : scrollStage > 0 ? -30 : 30,
+                  scale: scrollStage === 0 ? 1 : 0.95,
+                  pointerEvents: scrollStage === 0 ? 'auto' : 'none'
+                }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                className="absolute inset-0 flex flex-col items-center justify-center p-6 space-y-4 w-full text-center"
+              >
+                <div className="w-12 h-12 rounded-xl bg-accent/5 border border-accent/20 flex items-center justify-center mx-auto text-accent shadow-[0_0_15px_rgba(59,130,246,0.15)]">
+                  <UploadCloud className="h-6 w-6" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-white uppercase tracking-wider">{TIMELINE_STEPS[0].subtitle}</h4>
+                  <p className="text-[11px] text-gray-500 mt-1 font-sans">Uploading CV profile, analyzing raw structure.</p>
+                </div>
+                <div className="border border-white/5 bg-[#0f213a]/30 rounded-xl p-3 flex justify-between items-center text-left w-full max-w-sm mx-auto">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-accent" />
+                    <div>
+                      <span className="text-[10px] font-bold text-white block">Sarah_Jenkins_CV.pdf</span>
+                      <span className="text-[9px] text-gray-500">1.2 MB</span>
+                    </div>
+                  </div>
+                  <span className="text-[9px] text-accent font-bold uppercase tracking-wider">Queued</span>
+                </div>
+              </motion.div>
 
-              {/* The S-Curve Background Path */}
-              <path 
-                d="M 50,50 C 50,100 10,150 10,200 C 10,250 90,300 90,350 C 90,400 50,450 50,500" 
-                fill="none" 
-                stroke="rgba(255, 255, 255, 0.05)" 
-                strokeWidth="4" 
-                strokeLinecap="round" 
-              />
+              {/* Card 1: Skills Matrix */}
+              <motion.div
+                initial={false}
+                animate={{
+                  opacity: scrollStage === 1 ? 1 : 0,
+                  x: scrollStage === 1 ? 0 : scrollStage > 1 ? -30 : 30,
+                  scale: scrollStage === 1 ? 1 : 0.95,
+                  pointerEvents: scrollStage === 1 ? 'auto' : 'none'
+                }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                className="absolute inset-0 flex flex-col items-center justify-center p-6 space-y-4 w-full max-w-sm mx-auto"
+              >
+                <div className="w-full flex justify-between items-center pb-2 border-b border-white/5">
+                  <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">{TIMELINE_STEPS[1].subtitle}</span>
+                  <span className="text-[9px] text-emerald-400 font-bold uppercase">88% Match</span>
+                </div>
+                <div className="space-y-2 text-left w-full">
+                  <div>
+                    <span className="text-[9px] text-gray-500 uppercase tracking-widest font-bold block mb-1">Extracted Core Stack</span>
+                    <div className="flex flex-wrap gap-1">
+                      {['React', 'TypeScript', 'TailwindCSS', 'FastAPI'].map(s => (
+                        <span key={s} className="px-2 py-0.5 bg-accent/5 border border-accent/20 rounded text-[9px] text-accent font-medium">{s}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-[9px] text-gray-500 uppercase tracking-widest font-bold block mb-1">Gaps Found</span>
+                    <div className="flex flex-wrap gap-1">
+                      {['Docker', 'Kubernetes'].map(s => (
+                        <span key={s} className="px-2 py-0.5 bg-red-500/5 border border-red-500/15 rounded text-[9px] text-red-400 font-medium">{s}</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
 
-              {/* Nodes (Milestones) */}
-              {[
-                { x: 50, y: 50, idx: 0 },
-                { x: 10, y: 200, idx: 1 },
-                { x: 90, y: 350, idx: 2 },
-                { x: 50, y: 500, idx: 3 }
-              ].map((node) => {
-                const isActive = scrollStage >= node.idx;
-                return (
-                  <g key={node.idx}>
-                    {/* Ring glow */}
-                    {isActive && (
+              {/* Card 2: MCQ Blueprints */}
+              <motion.div
+                initial={false}
+                animate={{
+                  opacity: scrollStage === 2 ? 1 : 0,
+                  x: scrollStage === 2 ? 0 : scrollStage > 2 ? -30 : 30,
+                  scale: scrollStage === 2 ? 1 : 0.95,
+                  pointerEvents: scrollStage === 2 ? 'auto' : 'none'
+                }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                className="absolute inset-0 flex flex-col items-center justify-center p-6 space-y-4 w-full max-w-sm mx-auto text-left"
+              >
+                <div className="w-full flex justify-between items-center pb-2 border-b border-white/5">
+                  <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">{TIMELINE_STEPS[2].subtitle}</span>
+                  <span className="text-[9px] text-purple-400 font-bold uppercase">Ready</span>
+                </div>
+                <div className="space-y-2 w-full">
+                  <div className="bg-[#11243b]/40 border border-white/5 rounded-xl p-3 space-y-1">
+                    <span className="text-[8px] uppercase tracking-wider text-gray-500 font-bold block font-sans">Generated Question 1 (Technical)</span>
+                    <p className="text-[10px] text-gray-300 italic font-sans">"How do you structure a multi-stage Dockerfile to minify React build sizes?"</p>
+                  </div>
+                  <div className="bg-[#11243b]/40 border border-white/5 rounded-xl p-3 space-y-1">
+                    <span className="text-[8px] uppercase tracking-wider text-gray-500 font-bold block font-sans">Generated Question 2 (MCQ)</span>
+                    <p className="text-[10px] text-gray-300 italic font-sans">"Which of the following docker-compose fields controls network links?"</p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Card 3: Security Logs */}
+              <motion.div
+                initial={false}
+                animate={{
+                  opacity: scrollStage === 3 ? 1 : 0,
+                  x: scrollStage === 3 ? 0 : scrollStage > 3 ? -30 : 30,
+                  scale: scrollStage === 3 ? 1 : 0.95,
+                  pointerEvents: scrollStage === 3 ? 'auto' : 'none'
+                }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                className="absolute inset-0 flex flex-col items-center justify-center p-6 space-y-4 w-full max-w-sm mx-auto text-left font-sans"
+              >
+                <div className="w-full flex justify-between items-center pb-2 border-b border-white/5">
+                  <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">{TIMELINE_STEPS[3].subtitle}</span>
+                  <span className="inline-flex items-center gap-1 text-[9px] text-emerald-400 font-bold uppercase">
+                    <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping" />
+                    Live session
+                  </span>
+                </div>
+                <div className="w-full border border-white/5 bg-black/30 rounded-xl p-3.5 space-y-1.5 font-mono text-[9px] text-gray-400">
+                  <div>11:41:02 - [AUTH] Candidate logged in successfully.</div>
+                  <div className="text-emerald-400">11:42:15 - [LOG] Focused tab verified.</div>
+                  <div className="text-amber-400">11:45:30 - [WARN] Browser window focus lost.</div>
+                  <div className="text-emerald-400">11:45:38 - [LOG] Focused tab restored.</div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Center Column: Curved SVG Track with Scrolling glowing Ball */}
+            <div className="hidden md:flex w-[10%] h-[480px] items-center justify-center relative">
+              <svg viewBox="0 0 100 550" className="w-full h-full overflow-visible">
+                <defs>
+                  <filter id="glow-blue" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="6" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                  </filter>
+                  <filter id="glow-active" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="10" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                  </filter>
+                </defs>
+
+                {/* The S-Curve Background Path */}
+                <path 
+                  ref={pathRef}
+                  d="M 50,40 C 50,90 10,140 10,190 C 10,240 90,310 90,360 C 90,410 50,460 50,510" 
+                  fill="none" 
+                  stroke="rgba(255, 255, 255, 0.05)" 
+                  strokeWidth="4" 
+                  strokeLinecap="round" 
+                />
+
+                {/* Nodes (Milestones) */}
+                {[
+                  { x: 50, y: 40, idx: 0 },
+                  { x: 10, y: 190, idx: 1 },
+                  { x: 90, y: 360, idx: 2 },
+                  { x: 50, y: 510, idx: 3 }
+                ].map((node) => {
+                  const isActive = scrollStage >= node.idx;
+                  return (
+                    <g key={node.idx}>
+                      {/* Ring glow */}
+                      {isActive && (
+                        <circle 
+                          cx={node.x} 
+                          cy={node.y} 
+                          r="12" 
+                          fill="none" 
+                          stroke="#3B82F6" 
+                          strokeWidth="1.5" 
+                          className="animate-pulse opacity-40"
+                          style={{ filter: "url(#glow-blue)" }}
+                        />
+                      )}
+                      {/* Main node dot */}
                       <circle 
                         cx={node.x} 
                         cy={node.y} 
-                        r="12" 
-                        fill="none" 
-                        stroke="#3B82F6" 
-                        strokeWidth="1.5" 
-                        className="animate-pulse opacity-40"
-                        style={{ filter: "url(#glow-blue)" }}
+                        r="6" 
+                        className={`transition-all duration-500 cursor-pointer ${
+                          isActive 
+                            ? 'fill-[#3B82F6] stroke-[#3B82F6] shadow-[0_0_15px_#3B82F6]' 
+                            : 'fill-[#0a1220] stroke-white/20'
+                        } stroke-[3]`}
+                        style={isActive ? { filter: "url(#glow-blue)" } : {}}
                       />
-                    )}
-                    {/* Main node dot */}
-                    <circle 
-                      cx={node.x} 
-                      cy={node.y} 
-                      r="6" 
-                      className={`transition-all duration-500 cursor-pointer ${
-                        isActive 
-                          ? 'fill-[#3B82F6] stroke-[#3B82F6] shadow-[0_0_15px_#3B82F6]' 
-                          : 'fill-[#0a1220] stroke-white/20'
-                      } stroke-[3]`}
-                      style={isActive ? { filter: "url(#glow-blue)" } : {}}
-                    />
-                  </g>
-                );
-              })}
+                    </g>
+                  );
+                })}
 
-              {/* The traveling glowing bead */}
-              <motion.circle 
-                cx={ballX} 
-                cy={ballY} 
-                r="8" 
-                fill="#60A5FA" 
-                className="stroke-white stroke-[2]"
-                style={{ filter: "url(#glow-active)" }}
-              />
-            </svg>
-          </div>
+                {/* The traveling glowing bead — follows exact SVG path via getPointAtLength */}
+                <motion.circle 
+                  cx={ballCx} 
+                  cy={ballCy} 
+                  r="8" 
+                  fill="#60A5FA" 
+                  className="stroke-white stroke-[2]"
+                  style={{ filter: "url(#glow-active)" }}
+                />
+              </svg>
+            </div>
 
-          {/* Right Column: Detailed Text Descriptions (Fading and sliding in place) */}
-          <div className="w-full md:w-[42%] flex items-center justify-center min-h-[320px] md:min-h-[380px] bg-[#0c1829]/60 border border-white/5 rounded-2xl p-4 md:p-6 shadow-2xl relative overflow-hidden">
-            {TIMELINE_STEPS.map((step, idx) => (
-              <motion.div
-                key={idx}
-                initial={false}
-                animate={{
-                  opacity: scrollStage === idx ? 1 : 0,
-                  y: scrollStage === idx ? 0 : scrollStage > idx ? -20 : 20,
-                  scale: scrollStage === idx ? 1 : 0.98,
-                  pointerEvents: scrollStage === idx ? 'auto' : 'none'
-                }}
-                transition={{ duration: 0.3, ease: 'easeInOut' }}
-                className="absolute inset-0 flex flex-col justify-center p-6 space-y-4"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] uppercase font-bold text-accent tracking-widest font-sans px-2.5 py-0.5 rounded-full bg-accent/10 border border-accent/20">
-                    Stage 0{idx + 1}
-                  </span>
-                </div>
-                <h3 className="text-xl md:text-2xl font-heading font-extrabold text-white leading-tight">
-                  {step.title}
-                </h3>
-                <p className="text-xs md:text-sm text-gray-400 leading-relaxed font-sans">
-                  {step.description}
-                </p>
-                <div className="space-y-2 pt-2 text-left">
-                  {step.highlights.map((highlight, hIdx) => (
-                    <div key={hIdx} className="flex items-center gap-2.5">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#3B82F6]" />
-                      <span className="text-xs text-gray-300 font-sans">{highlight}</span>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
+            {/* Right Column: Detailed Text Descriptions (Fading and sliding in place) */}
+            <div className="w-full md:w-[45%] flex items-center justify-center min-h-[320px] md:min-h-[380px] bg-[#0c1829]/60 border border-white/5 rounded-2xl p-4 md:p-6 shadow-2xl relative overflow-hidden">
+              {TIMELINE_STEPS.map((step, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={false}
+                  animate={{
+                    opacity: scrollStage === idx ? 1 : 0,
+                    y: scrollStage === idx ? 0 : scrollStage > idx ? -20 : 20,
+                    scale: scrollStage === idx ? 1 : 0.98,
+                    pointerEvents: scrollStage === idx ? 'auto' : 'none'
+                  }}
+                  transition={{ duration: 0.3, ease: 'easeInOut' }}
+                  className="absolute inset-0 flex flex-col justify-center p-6 space-y-4"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] uppercase font-bold text-accent tracking-widest font-sans px-2.5 py-0.5 rounded-full bg-accent/10 border border-accent/20">
+                      Stage 0{idx + 1}
+                    </span>
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-heading font-extrabold text-white leading-tight">
+                    {step.title}
+                  </h3>
+                  <p className="text-xs md:text-sm text-gray-400 leading-relaxed font-sans">
+                    {step.description}
+                  </p>
+                  <div className="space-y-2 pt-2 text-left">
+                    {step.highlights.map((highlight, hIdx) => (
+                      <div key={hIdx} className="flex items-center gap-2.5">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#3B82F6]" />
+                        <span className="text-xs text-gray-300 font-sans">{highlight}</span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
           </div>
 
         </div>
       </section>
 
       {/* ATS ➔ AegisHire Chaos to Intelligence Transformation Flow */}
-      <section id="transformation" className="py-24 px-6 bg-[#080f1a]/50 border-t border-white/5 relative z-20">
+      <section id="transformation" className="min-h-[60vh] flex flex-col justify-center px-6 py-20 bg-[#080f1a]/50 border-t border-white/5 relative z-20">
         <div className="max-w-6xl mx-auto space-y-12">
           
           <div className="text-center space-y-3">
